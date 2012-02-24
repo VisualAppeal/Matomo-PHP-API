@@ -1,6 +1,7 @@
 <?php
 
 /*
+
 Author: VisualAppeal
 Website: http://www.visualappeal.de
 E-Mail: tim@visualappeal.de
@@ -8,7 +9,6 @@ E-Mail: tim@visualappeal.de
 https://github.com/VisualAppeal/Piwik-PHP-API
 http://piwik.org/docs/analytics-api/reference/
 
-Version: 0.6
 */
 class Piwik {
 
@@ -40,9 +40,23 @@ class Piwik {
 	private $_rangeStart = 'yesterday';
 	private $_rangeEnd = null;
 	
+	private $_limit = '';
+	
 	private $_errors = array();
 	
-	function __construct($site, $token, $siteId, $format, $period = self::PERIOD_DAY, $date = self::DATE_YESTERDAY, $rangeStart = self::DATE_YESTERDAY, $rangeEnd = self::DATE_TODAY) {
+	/*
+	 * Create new instance
+	 *
+	 * @param string $site URL of the piwik installation
+	 * @param string $token API Access token
+	 * @param int $siteId ID of the site
+	 * @param string $format
+	 * @param string $period
+	 * @param string $date
+	 * @param string $rangeStart
+	 * @param string $rangeEnd
+	 */
+	function __construct($site, $token, $siteId, $format = self::FORMAT_JSON, $period = self::PERIOD_DAY, $date = self::DATE_YESTERDAY, $rangeStart = '', $rangeEnd = null) {
 		$this->_site = $site;
 		$this->_token = $token;
 		$this->_siteId = $siteId;
@@ -54,7 +68,18 @@ class Piwik {
 		$this->_date = $rangeStart;
 	}
 	
-	/* Options */
+	/* 
+	 * Getter & Setter
+	 */
+	
+	/*
+	 * Get response format
+	 *
+	 * @return string
+	 */
+	public function getFormat() {
+		return $this->_format;
+	}
 	
 	/*
 	 * Set response format
@@ -71,6 +96,15 @@ class Piwik {
 	}
 	
 	/*
+	 * Get date
+	 *
+	 * @return string
+	 */
+	public function getDate() {
+		return $this->_date;
+	}
+	
+	/*
 	 * Set date
 	 *
 	 * @param string $date
@@ -79,6 +113,15 @@ class Piwik {
 	 */
 	public function setDate($date) {
 		$this->_date = $date;
+	}
+	
+	/*
+	 * Get time period
+	 *
+	 * @return string
+	 */
+	public function getPeriod() {
+		return $this->_period;
 	}
 	
 	/*
@@ -96,6 +139,18 @@ class Piwik {
 	}
 	
 	/*
+	 * Get the date range comma seperated
+	 *
+	 * @return string
+	 */
+	public function getRange() {
+		if (empty($this->_rangeEnd))
+			return $this->_rangeStart;
+		else
+			return $this->_rangeStart.','.$this->_rangeEnd;
+	}
+	
+	/*
 	 * Set date range
 	 *
 	 * @param string $rangeStart e.g. 2012-02-10 (YYYY-mm-dd) or last5(lastX), previous12(previousY)...
@@ -109,6 +164,24 @@ class Piwik {
 		if (is_null($rangeEnd)) {
 			$this->_date = $rangeStart;
 		}
+	}
+	
+	/*
+	 * Get the limit of returned rows
+	 *
+	 * @return int
+	 */
+	public function getLimit() {
+		return intval($this->_limit);
+	}
+	
+	/*
+	 * Set the limit of returned rows
+	 *
+	 * @param int $limit
+	 */
+	public function setLimit($limit) {
+		$this->_limit = $limit;
 	}
 	
 	/*
@@ -212,7 +285,7 @@ class Piwik {
 			}
 		}
 		
-		return $url;
+		return urlencode($url);
 	}
 	
 	/*
@@ -271,14 +344,13 @@ class Piwik {
 	
 	/* 
 	 * MODULE: API 
-	 * Get metadata
+	 * API metadata
 	 */
 	
 	/*
 	 * Get default metric translations
 	 */
 	public function getApiDefaultMetricTranslations() {
-		$this->reset();
 		return $this->_request('API.getDefaultMetricTranslations');
 	}
 	
@@ -286,7 +358,6 @@ class Piwik {
 	 * Get default metrics
 	 */
 	public function getApiDefaultMetrics() {
-		$this->reset();
 		return $this->_request('API.getDefaultMetrics');
 	}
 	
@@ -294,7 +365,6 @@ class Piwik {
 	 * Get default processed metrics
 	 */
 	public function getApiDefaultProcessedMetrics() {
-		$this->reset();
 		return $this->_request('API.getDefaultProcessedMetrics');
 	}
 	
@@ -302,7 +372,6 @@ class Piwik {
 	 * Get default metrics documentation
 	 */
 	public function getApiDefaultMetricsDocumentation() {
-		$this->reset();
 		return $this->_request('API.getDefaultMetricsDocumentation');
 	}
 	
@@ -312,7 +381,6 @@ class Piwik {
 	 * @param array $sites Array with the ID's of the sites
 	 */
 	public function getApiSegmentsMetadata($sites = array()) {
-		$this->reset();
 		return $this->_request('API.getSegmentsMetadata', array('idSites' => $sites));
 	}
 	
@@ -322,7 +390,6 @@ class Piwik {
 	 * @param int $id Site ID
 	 */
 	public function getApiVisitEcommerceStatusFromId($id) {
-		$this->reset();
 		return $this->_request('API.getVisitEcommerceStatusFromId', array('id' => $id));
 	}
 	
@@ -332,7 +399,6 @@ class Piwik {
 	 * @param string $status
 	 */
 	public function getApiVisitEcommerceStatus($status) {
-		$this->reset();
 		return $this->_request('API.getVisitEcommerceStatus', array('status' => $status));
 	}
 	
@@ -342,7 +408,6 @@ class Piwik {
 	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
 	 */
 	public function getApiLogoUrl($pathOnly = false) {
-		$this->reset();
 		return $this->_request('API.getLogoUrl', array('pathOnly' => $pathOnly));
 	}
 	
@@ -352,31 +417,21 @@ class Piwik {
 	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
 	 */
 	public function getApiHeaderLogoUrl($pathOnly) {
-		$this->reset();
 		return $this->_request('API.getHeaderLogoUrl', array('pathOnly' => $pathOnly));
 	}
 	
 	/*
 	 * Get metadata from the API
 	 *
-	 * @param int $idSite Site ID
 	 * @param string $apiModule Module
 	 * @param string $apiAction Action
 	 * @param array $apiParameters Parameters
-	 * @param string $language
-	 * @param string $period
-	 * @param string $date
 	 */
-	public function getApiMetadata($idSite, $apiModule, $apiAction, $apiParameters = array(), $language = '', $period = '', $date = '') {
-		$this->reset();
+	public function getApiMetadata($apiModule, $apiAction, $apiParameters = array()) {
 		return $this->_request('API.getMetadata', array(
-			'idSite' => $idSite,
 			'apiModule' => $apiModule,
 			'apiAction' => $apiAction,
 			'apiParameters' => $apiParameters,
-			'language' => $language,
-			'period' => $period,
-			'date' => $date,
 		));
 	}
 	
@@ -384,44 +439,30 @@ class Piwik {
 	 * Get metadata from a report
 	 *
 	 * @param array $idSites Array with the ID's of the sites
-	 * @param string $period
-	 * @param string $date
 	 */
-	public function getApiReportMetadata($idSites = array(), $period = '', $date = '') {
-		$this->reset();
+	public function getApiReportMetadata($idSites = array()) {
 		return $this->_request('API.getReportMetadata', array(
 			'idSites' => $idSites,
-			'period' => $period,
-			'date' => $date,
 		));
 	}
 	
 	/*
 	 * Get processed report
 	 *
-	 * @param int $idSite ID of the sites
-	 * @param string $period
-	 * @param string $date
 	 * @param string $apiModule Module
 	 * @param string $apiAction Action
 	 * @param string $segment
 	 * @param array $ApiParameters
 	 * @param int $idGoal
-	 * @param string $language
 	 * @param boolean $showTimer
 	 */
-	public function getApiProcessedReport($idSite, $period, $date, $apiModule, $apiAction, $segment = '', $apiParameters = array(), $idGoal = '', $language = '', $showTimer = '1') {
-		$this->reset();
+	public function getApiProcessedReport($apiModule, $apiAction, $segment = '', $apiParameters = array(), $idGoal = '', $showTimer = '1') {
 		return $this->_request('API.getProcessedReport', array(
-			'idSite' => $idSite,
-			'period' => $period,
-			'date' => $date,
 			'apiModule' => $apiModule,
 			'apiAction' => $apiAction,
 			'segment' => $segment,
 			'apiParameters' => $apiParameters,
 			'idGoal' => $idGoal,
-			'language' => $language,
 			'showTimer' => $showTimer,
 		));
 	}
@@ -429,20 +470,189 @@ class Piwik {
 	/*
 	 * Unknown
 	 *
-	 * @param int $idSite ID of the site
-	 * @param string $period
-	 * @param string $date
 	 * @param string $segment
 	 * @param string $columns
 	 */
-	public function getApi($idSite, $period, $date, $segment = '', $columns = '') {
-		$this->reset();
+	public function getApi($segment = '', $columns = '') {
 		return $this->_request('API.get', array(
-			'idSite' => $idSite,
-			'period' => $period,
-			'date' => $date,
 			'segment' => $segment,
 			'columns' => $columns,
+		));
+	}
+	
+	/*
+	 * MODULE: ACTIONS
+	 * Reports for visitor actions
+	 */
+	
+	/*
+	 * Get actions
+	 *
+	 * @param string $segment
+	 * @param string $columns
+	 */
+	public function getAction($segment = '', $columns = '') {
+		return $this->_request('Actions.get', array(
+			'segment' => $segment,
+			'columns' => $columns,
+		));
+	}
+	
+	/*
+	 * Get page urls
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getPageUrls', array(
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get entry page urls
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionEntryPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getEntryPageUrls', array(
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get exit page urls
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionExitPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getExitPageUrls', array(
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get page url information
+	 *
+	 * @param string $pageUrl The page url
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionPageUrl($pageUrl, $segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getPageUrl', array(
+			'pageUrl' => $pageUrl,
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get page titles
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionPageTitles($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getPageTitles', array(
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get page titles
+	 *
+	 * @param string $pageName The page name
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionPageTitle($pageName, $segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getPageTitle', array(
+			'pageName' => $pageName,
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get downloads
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionDownloads($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getDownloads', array(
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get download information
+	 *
+	 * @param string $downloadUrl URL of the download
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionDownload($downloadUrl, $segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getDownload', array(
+			'downloadUrl' => $downloadUrl,
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get outlinks
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionOutlinks($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getOutlinks', array(
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
+		));
+	}
+	
+	/*
+	 * Get outlink information
+	 *
+	 * @param string $outlinkUrl URL of the outlink
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getActionOutlink($outlinkUrl, $segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('Actions.getDownload', array(
+			'outlinkUrl' => $outlinkUrl,
+			'segment' => $segment,
+			'columns' => $columns,
+			'idSubtable' => $idSubtable,
 		));
 	}
 	
