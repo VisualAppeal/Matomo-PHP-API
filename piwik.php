@@ -1847,6 +1847,214 @@ class Piwik {
 	}
 	
 	/* 
+	 * MODULE: USER MANAGER
+	 * Manage piwik users
+	 */
+	
+	/*
+	 * Set user preference
+	 *
+	 * @param string $userLogin Username
+	 * @param string $preferenceName
+	 * @param string $preferenceValue
+	 */
+	public function setUserPreference($userLogin, $preferenceName, $preferenceValue) {
+		return $this->_request($this->_parseUrl('UsersManager.setUserPreference'), array(
+			'userLogin' => $userLogin,
+			'preferenceName' => $preferenceName,
+			'preferenceValue' => $preferenceValue,
+		));
+	}
+	
+	/*
+	 * Get user preference
+	 *
+	 * @param string $userLogin Username
+	 * @param string $preferenceName
+	 */
+	public function getUserPreference($userLogin, $preferenceName) {
+		return $this->_request($this->_parseUrl('UsersManager.getUserPreference'), array(
+			'userLogin' => $userLogin,
+			'preferenceName' => $preferenceName,
+		));
+	}
+	
+	/*
+	 * Get user by username
+	 *
+	 * @param array $userLogins Array with Usernames
+	 */
+	public function getUsers($userLogins = '') {
+		return $this->_request($this->_parseUrl('UsersManager.getUsers'), array(
+			'userLogins' => $userLogins,
+		));
+	}
+	
+	/*
+	 * Get all user logins
+	 */
+	public function getUsersLogin() {
+		return $this->_request($this->_parseUrl('UsersManager.getUsersLogin'));
+	}
+	
+	/*
+	 * Get sites by user access
+	 *
+	 * @param string $access
+	 */
+	public function getUsersSitesFromAccess($access) {
+		return $this->_request($this->_parseUrl('UsersManager.getUsersSitesFromAccess'), array(
+			'access' => $access,
+		));
+	}
+	
+	/*
+	 * Get all users with access level from the current site
+	 */
+	public function getUsersAccess() {
+		return $this->_request($this->_parseUrl('UsersManager.getUsersAccessFromSite'));
+	}
+	
+	/*
+	 * Get all users with access $access to the current site
+	 *
+	 * @param string $access
+	 */
+	public function getUsersWithSiteAccess($access) {
+		return $this->_request($this->_parseUrl('UsersManager.getUsersWithSiteAccess'), array(
+			'access' => $access,
+		));
+	}
+	
+	/*
+	 * Get site access from the user $userLogin
+	 *
+	 * @param string $userLogin Username
+	 */
+	public function getSitesAccessFromUser($userLogin) {
+		return $this->_request($this->_parseUrl('UsersManager.getSitesAccessFromUser'), array(
+			'userLogin' => $userLogin,
+		));
+	}
+	
+	/*
+	 * Get user by login
+	 *
+	 * @param string $userLogin Username
+	 */
+	public function getUser($userLogin) {
+		return $this->_request($this->_parseUrl('UsersManager.getUser'), array(
+			'userLogin' => $userLogin,
+		));
+	}
+	
+	/*
+	 * Get user by email
+	 *
+	 * @param string $email
+	 */
+	public function getUserByEmail($email) {
+		return $this->_request($this->_parseUrl('UsersManager.getUserByEmail'), array(
+			'email' => $email,
+		));
+	}
+	
+	/*
+	 * Add a user
+	 *
+	 * @param string $userLogin Username
+	 * @param string $password Password in clear text
+	 * @param string $email
+	 * @param string $alias
+	 */
+	public function addUser($userLogin, $password, $email, $alias = '') {
+		return $this->_request($this->_parseUrl('UsersManager.addUser'), array(
+			'userLogin' => $userLogin,
+			'password' => $password,
+			'email' => $email,
+			'alias' => $alias,
+		));
+	}
+	
+	/*
+	 * Update a user
+	 *
+	 * @param string $userLogin Username
+	 * @param string $password Password in clear text
+	 * @param string $email
+	 * @param string $alias
+	 */
+	public function addUser($userLogin, $password = '', $email = '', $alias = '') {
+		return $this->_request($this->_parseUrl('UsersManager.updateUser'), array(
+			'userLogin' => $userLogin,
+			'password' => $password,
+			'email' => $email,
+			'alias' => $alias,
+		));
+	}
+	
+	/*
+	 * Delete a user
+	 *
+	 * @param string $userLogin Username
+	 */
+	public function deleteUser($userLogin) {
+		return $this->_request($this->_parseUrl('UsersManager.deleteUser'), array(
+			'userLogin' => $userLogin,
+		));
+	}
+	
+	/*
+	 * Checks if a user exist
+	 *
+	 * @param string $userLogin
+	 */
+	public function userExists($userLogin) {
+		return $this->_request($this->_parseUrl('UsersManager.userExists'), array(
+			'userLogin' => $userLogin,
+		));
+	}
+	
+	/*
+	 * Checks if a user exist by email
+	 *
+	 * @param string $email
+	 */
+	public function userEmailExists($email) {
+		return $this->_request($this->_parseUrl('UsersManager.userEmailExists'), array(
+			'email' => $email,
+		));
+	}
+	
+	/*
+	 * Grant access to multiple sites
+	 *
+	 * @param string $userLogin Username
+	 * @param string $access
+	 * @param array $idSites
+	 */
+	public function userEmailExists($userLogin, $access, $idSites) {
+		return $this->_request($this->_parseUrl('UsersManager.setUserAccess'), array(
+			'userLogin' => $userLogin,
+			'access' => $access,
+			'idSites' => $idSites,
+		));
+	}
+	
+	/*
+	 * Get the token for a user
+	 *
+	 * @param string $userLogin Username
+	 * @param string $password Password in clear text
+	 */
+	public function getTokenAuth($userLogin, $password) {
+		return $this->_request($this->_parseUrl('UsersManager.getTokenAuth'), array(
+			'userLogin' => $userLogin,
+			'password' => md5($password),
+		));
+	}
+	
+	/* 
 	 * MODULE: 
 	 * VisitsSummary 
 	 */
