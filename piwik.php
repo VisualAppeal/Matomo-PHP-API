@@ -76,6 +76,60 @@ class Piwik {
 	 */
 	
 	/*
+	 * Get the url of the piwik installation
+	 *
+	 * @return string
+	 */
+	public function getSite() {
+		return intval($this->_site);
+	}
+	
+	/*
+	 * Set the URL of the piwik installation
+	 *
+	 * @param string $url
+	 */
+	public function setSite($url) {
+		$this->_site = $url;
+	}
+	
+	/*
+	 * Get token
+	 *
+	 * @return string
+	 */
+	public function getToken() {
+		return $this->_token;
+	}
+	
+	/*
+	 * Set token
+	 *
+	 * @param string $token
+	 */
+	public function setToken($token) {
+		$this->_token = $token;
+	}
+	
+	/*
+	 * Get current site ID
+	 *
+	 * @return int
+	 */
+	public function getSiteId() {
+		return $this->_siteId;
+	}
+	
+	/*
+	 * Set current site ID
+	 *
+	 * @param int $id
+	 */
+	public function setSiteId($id) {
+		$this->_siteId = $id;
+	}
+	
+	/*
 	 * Get response format
 	 *
 	 * @return string
@@ -91,11 +145,31 @@ class Piwik {
 	 *		FORMAT_XML
 	 *		FORMAT_JSON
 	 *		FORMAT_CSV
+	 *		FORMAT_TSV
 	 *		FORMAT_HTML
+	 *		FORMAT_RSS
 	 *		FORMAT_PHP
 	 */
 	public function setFormat($format) {
 		$this->_format = $format;
+	}
+	
+	/*
+	 * Get language
+	 *
+	 * @return string
+	 */
+	public function getLanguage() {
+		return $this->_language;
+	}
+	
+	/*
+	 * Set language
+	 *
+	 * @param string $language
+	 */
+	public function setLanguage($language) {
+		$this->_language = $language;
 	}
 	
 	/*
@@ -185,24 +259,6 @@ class Piwik {
 	 */
 	public function setLimit($limit) {
 		$this->_limit = $limit;
-	}
-	
-	/*
-	 * Get language
-	 *
-	 * @return string
-	 */
-	public function getLanguage() {
-		return $this->_language;
-	}
-	
-	/*
-	 * Set language
-	 *
-	 * @param string $language
-	 */
-	public function setLanguage($language) {
-		$this->_language = $language;
 	}
 	
 	/*
