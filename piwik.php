@@ -1075,6 +1075,107 @@ class Piwik {
 	}
 	
 	/* 
+	 * MODULE: PDF REPORST
+	 * Manage pdf reports
+	 */
+	
+	/*
+	 * Add pdf report
+	 *
+	 * @param string $description
+	 * @param string $reportFormat
+	 * @param string $aggregateReportsFormat
+	 * @param string $reports
+	 * @param boolean $emailMe
+	 * @param array $additionalEmails
+	 */
+	public function addReport($description, $reportFormat, $aggregateReportsFormat, $reports, $emailMe = true, $additionalEmails = array()) {
+		return $this->_request('PDFReports.addReport', array(
+			'description' => $description,
+			'reportFormat' => $reportFormat,
+			'aggregateReportsFormat' => $aggregateReportsFormat,
+			'reports' => $reports,
+			'emailMe' => $emailMe,
+			'additionalEmails' => $additionalEmails,
+		));
+	}
+	
+	/*
+	 * Update pdf report
+	 *
+	 * @param int $idReport ID of the report
+	 * @param string $description
+	 * @param string $reportFormat
+	 * @param string $aggregateReportsFormat
+	 * @param string $reports
+	 * @param boolean $emailMe
+	 * @param array $additionalEmails
+	 */
+	public function updateReport($idReport, $description, $reportFormat, $aggregateReportsFormat, $reports, $emailMe = true, $additionalEmails = array()) {
+		return $this->_request('PDFReports.updateReport', array(
+			'idReport' => $idReport,
+			'description' => $description,
+			'reportFormat' => $reportFormat,
+			'aggregateReportsFormat' => $aggregateReportsFormat,
+			'reports' => $reports,
+			'emailMe' => $emailMe,
+			'additionalEmails' => $additionalEmails,
+		));
+	}
+	
+	/*
+	 * Delete report
+	 *
+	 * @param int $idReport ID of the report
+	 */
+	public function deleteReport($idReport) {
+		return $this->_request('PDFReports.deleteReport', array(
+			'idReport' => $idReport,
+		));
+	}
+	
+	/*
+	 * Get all reports
+	 *
+	 * @param int $idReport ID of the report
+	 * @param boolean $ifSuperUserReturnOnlySuperUserReports
+	 */
+	public function getReports($idReport = '', $ifSuperUserReturnOnlySuperUserReports = '') {
+		return $this->_request('PDFReports.getReports', array(
+			'idReport' => $idReport,
+			'ifSuperUserReturnOnlySuperUserReports' => $ifSuperUserReturnOnlySuperUserReports,
+		));
+	}
+	
+	/*
+	 * Generate report
+	 *
+	 * @param int $idReport ID of the report
+	 * @param string $outputType
+	 * @param string $reportFormat
+	 * @param string $aggregateReportsFormat
+	 */
+	public function generateReport($idReport, $outputType = '', $reportFormat = '', $aggregateReportsFormat = '') {
+		return $this->_request('PDFReports.generateReport', array(
+			'idReport' => $idReport,
+			'outputType' => $outputType,
+			'reportFormat' => $reportFormat,
+			'aggregateReportsFormat' => $aggregateReportsFormat,
+		));
+	}
+	
+	/*
+	 * Send report via email
+	 *
+	 * @param int $idReport ID of the report
+	 */
+	public function sendReport($idReport) {
+		return $this->_request('PDFReports.sendEmailReport', array(
+			'idReport' => $idReport,
+		));
+	}
+	
+	/* 
 	 * MODULE: 
 	 * VisitsSummary 
 	 */
