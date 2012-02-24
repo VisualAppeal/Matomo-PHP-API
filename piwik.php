@@ -761,7 +761,200 @@ class Piwik {
 		return $this->_request('ExampleAPI.getMultiArray');
 	}
 	
-	/* VisitsSummary */
+	/*
+	 * MODULE: GOALS
+	 * Handle goals
+	 */
+	
+	/*
+	 * Get all goals
+	 */
+	public function getGoals() {
+		return $this->_request('Goals.getGoals');
+	}
+	
+	/*
+	 * Add a goal
+	 *
+	 * @param string $name
+	 * @param string $matchAttribute
+	 * @param string $pattern
+	 * @param string $patternType
+	 * @param boolean $caseSensitive
+	 * @param float $revenue
+	 * @param boolean $allowMultipleConversionsPerVisit
+	 */
+	public function addGoal($name, $matchAttribute, $pattern, $patternType, $caseSensitive = '', $revenue = '', $allowMultipleConversionsPerVisit = '') {
+		return $this->_request('Goals.addGoal', array(
+			'name' => $name,
+			'matchAttribute' => $matchAttribute,
+			'pattern' => $pattern,
+			'patternType' => $patternType,
+			'caseSensitive' => $caseSensitive,
+			'revenue' => $revenue,
+			'allowMultipleConversionsPerVisit' => $allowMultipleConversionsPerVisit,
+		));
+	}
+	
+	/*
+	 * Update a goal
+	 *
+	 * @param int $idGoal
+	 * @param string $name
+	 * @param string $matchAttribute
+	 * @param string $pattern
+	 * @param string $patternType
+	 * @param boolean $caseSensitive
+	 * @param float $revenue
+	 * @param boolean $allowMultipleConversionsPerVisit
+	 */
+	public function updateGoal($idGoal, $name, $matchAttribute, $pattern, $patternType, $caseSensitive = '', $revenue = '', $allowMultipleConversionsPerVisit = '') {
+		return $this->_request('Goals.updateGoal', array(
+			'idGoal' => $idGoal,
+			'name' => $name,
+			'matchAttribute' => $matchAttribute,
+			'pattern' => $pattern,
+			'patternType' => $patternType,
+			'caseSensitive' => $caseSensitive,
+			'revenue' => $revenue,
+			'allowMultipleConversionsPerVisit' => $allowMultipleConversionsPerVisit,
+		));
+	}
+	
+	/*
+	 * Delete a goal
+	 *
+	 * @param int $idGoal
+	 */
+	public function deleteGoal($idGoal) {
+		return $this->_request('Goals.deleteGoal', array(
+			'idGoal' => $idGoal,
+		));
+	}
+	
+	/*
+	 * Get the SKU of the items
+	 *
+	 * @param boolean abandonedCarts
+	 */
+	public function getItemsSku($abandonedCarts) {
+		return $this->_request('Goals.getItemsSku', array(
+			'abandonedCarts' => $abandonedCarts,
+		));
+	}
+	
+	/*
+	 * Get the name of the items
+	 *
+	 * @param boolean abandonedCarts
+	 */
+	public function getItemsName($abandonedCarts) {
+		return $this->_request('Goals.getItemsName', array(
+			'abandonedCarts' => $abandonedCarts,
+		));
+	}
+	
+	/*
+	 * Get the categories of the items
+	 *
+	 * @param boolean abandonedCarts
+	 */
+	public function getItemsCategory($abandonedCarts) {
+		return $this->_request('Goals.getItemsCategory', array(
+			'abandonedCarts' => $abandonedCarts,
+		));
+	}
+	
+	/*
+	 * Get conversion rates from a goal
+	 *
+	 * @param string $segment
+	 * @param int $idGoal
+	 * @param array $columns
+	 */
+	public function getGoal($segment = '', $idGoal = '', $columns = array()) {
+		return $this->_request('Goals.get', array(
+			'segment' => $segment,
+			'idGoal' => $idGoal,
+			'columns' => $columns,
+		));
+	}
+	
+	/*
+	 * Get information about a time period and it's conversion rates
+	 *
+	 * @param string $segment
+	 * @param int $idGoal
+	 */
+	public function getDaysToConversion($segment = '', $idGoal = '')) {
+		return $this->_request('Goals.getDaysToConversion', array(
+			'segment' => $segment,
+			'idGoal' => $idGoal,
+		));
+	}
+	
+	/*
+	 * Get information about how many site visits create a conversion
+	 *
+	 * @param string $segment
+	 * @param int $idGoal
+	 */
+	public function getVisitsUntilConversion($segment = '', $idGoal = '')) {
+		return $this->_request('Goals.getVisitsUntilConversion', array(
+			'segment' => $segment,
+			'idGoal' => $idGoal,
+		));
+	}
+	
+	/* 
+	 * MODULE: IMAGE GRAPH
+	 * Generate png graphs
+	 */
+	
+	const GRAPH_EVOLUTION = 'evolution';
+	const GRAPH_VERTICAL_BAR = 'verticalBar';
+	const GRAPH_PIE = 'pie';
+	const GRAPH_PIE_3D = '3dPie';
+	
+	/*
+	 * Generate a png report
+	 *
+	 * @param string $apiModule Module
+	 * @param string $apiAction Action
+	 * @param string
+	 *		GRAPH_EVOLUTION
+	 *		GRAPH_VERTICAL_BAR
+	 *		GRAPH_PIE
+	 *		GRAPH_PIE_3D
+	 * @param int $outputType
+	 * @param string $column
+	 * @param boolean $showMetricTitle
+	 * @param int $width
+	 * @param int $height
+	 * @param int $fontSize
+	 * @param boolean $aliasedGraph "by default, Graphs are "smooth" (anti-aliased). If you are generating hundreds of graphs and are concerned with performance, you can set aliasedGraph=0. This will disable anti aliasing and graphs will be generated faster, but look less pretty."
+	 * @param array $colors Use own colors instead of the default. The colors has to be in hexadecimal value without '#'
+	 */
+	public function getImageGraph($apiModule, $apiAction, $graphType = '', $outputType = '0', $column = '', $showMetricTitle = '1', $width = '', $height = '', $fontSize = '9', $aliasedGraph = '1', $colors = array()) {
+		return $this->_request('ImageGraph.get', array(
+			'segment' => $apiModule,
+			'apiAction' => $apiAction,
+			'graphType' => $graphType,
+			'outputType' => $outputType,
+			'column' => $column,
+			'showMetricTitle' => $showMetricTitle,
+			'width' => $width,
+			'height' => $height,
+			'fontSize' => $fontSize,
+			'aliasedGraph' => $aliasedGraph,
+			'colors' => $colors,
+		));
+	}
+	
+	/* 
+	 * MODULE: 
+	 * VisitsSummary 
+	 */
 	 
 	/*
 	 * Get visitor count
