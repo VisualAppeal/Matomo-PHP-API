@@ -350,28 +350,28 @@ class Piwik {
 	/*
 	 * Get default metric translations
 	 */
-	public function getApiDefaultMetricTranslations() {
+	public function getDefaultMetricTranslations() {
 		return $this->_request('API.getDefaultMetricTranslations');
 	}
 	
 	/*
 	 * Get default metrics
 	 */
-	public function getApiDefaultMetrics() {
+	public function getDefaultMetrics() {
 		return $this->_request('API.getDefaultMetrics');
 	}
 	
 	/*
 	 * Get default processed metrics
 	 */
-	public function getApiDefaultProcessedMetrics() {
+	public function getDefaultProcessedMetrics() {
 		return $this->_request('API.getDefaultProcessedMetrics');
 	}
 	
 	/*
 	 * Get default metrics documentation
 	 */
-	public function getApiDefaultMetricsDocumentation() {
+	public function getDefaultMetricsDocumentation() {
 		return $this->_request('API.getDefaultMetricsDocumentation');
 	}
 	
@@ -380,7 +380,7 @@ class Piwik {
 	 *
 	 * @param array $sites Array with the ID's of the sites
 	 */
-	public function getApiSegmentsMetadata($sites = array()) {
+	public function getSegmentsMetadata($sites = array()) {
 		return $this->_request('API.getSegmentsMetadata', array('idSites' => $sites));
 	}
 	
@@ -389,7 +389,7 @@ class Piwik {
 	 *
 	 * @param int $id Site ID
 	 */
-	public function getApiVisitEcommerceStatusFromId($id) {
+	public function getVisitEcommerceStatusFromId($id) {
 		return $this->_request('API.getVisitEcommerceStatusFromId', array('id' => $id));
 	}
 	
@@ -398,7 +398,7 @@ class Piwik {
 	 *
 	 * @param string $status
 	 */
-	public function getApiVisitEcommerceStatus($status) {
+	public function getVisitEcommerceStatus($status) {
 		return $this->_request('API.getVisitEcommerceStatus', array('status' => $status));
 	}
 	
@@ -407,7 +407,7 @@ class Piwik {
 	 *
 	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
 	 */
-	public function getApiLogoUrl($pathOnly = false) {
+	public function getLogoUrl($pathOnly = false) {
 		return $this->_request('API.getLogoUrl', array('pathOnly' => $pathOnly));
 	}
 	
@@ -416,7 +416,7 @@ class Piwik {
 	 *
 	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
 	 */
-	public function getApiHeaderLogoUrl($pathOnly) {
+	public function getHeaderLogoUrl($pathOnly) {
 		return $this->_request('API.getHeaderLogoUrl', array('pathOnly' => $pathOnly));
 	}
 	
@@ -427,7 +427,7 @@ class Piwik {
 	 * @param string $apiAction Action
 	 * @param array $apiParameters Parameters
 	 */
-	public function getApiMetadata($apiModule, $apiAction, $apiParameters = array()) {
+	public function getMetadata($apiModule, $apiAction, $apiParameters = array()) {
 		return $this->_request('API.getMetadata', array(
 			'apiModule' => $apiModule,
 			'apiAction' => $apiAction,
@@ -440,7 +440,7 @@ class Piwik {
 	 *
 	 * @param array $idSites Array with the ID's of the sites
 	 */
-	public function getApiReportMetadata($idSites = array()) {
+	public function getReportMetadata($idSites = array()) {
 		return $this->_request('API.getReportMetadata', array(
 			'idSites' => $idSites,
 		));
@@ -456,7 +456,7 @@ class Piwik {
 	 * @param int $idGoal
 	 * @param boolean $showTimer
 	 */
-	public function getApiProcessedReport($apiModule, $apiAction, $segment = '', $apiParameters = array(), $idGoal = '', $showTimer = '1') {
+	public function getProcessedReport($apiModule, $apiAction, $segment = '', $apiParameters = array(), $idGoal = '', $showTimer = '1') {
 		return $this->_request('API.getProcessedReport', array(
 			'apiModule' => $apiModule,
 			'apiAction' => $apiAction,
@@ -505,7 +505,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageUrls($segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageUrls', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -520,7 +520,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionEntryPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+	public function getEntryPageUrls($segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getEntryPageUrls', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -535,7 +535,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionExitPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+	public function getExitPageUrls($segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getExitPageUrls', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -551,7 +551,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionPageUrl($pageUrl, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageUrl($pageUrl, $segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageUrl', array(
 			'pageUrl' => $pageUrl,
 			'segment' => $segment,
@@ -567,7 +567,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionPageTitles($segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageTitles($segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageTitles', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -583,7 +583,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionPageTitle($pageName, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageTitle($pageName, $segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageTitle', array(
 			'pageName' => $pageName,
 			'segment' => $segment,
@@ -599,7 +599,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionDownloads($segment = '', $expanded = '', $idSubtable = '') {
+	public function getDownloads($segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getDownloads', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -615,7 +615,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionDownload($downloadUrl, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getDownload($downloadUrl, $segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getDownload', array(
 			'downloadUrl' => $downloadUrl,
 			'segment' => $segment,
@@ -631,7 +631,7 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionOutlinks($segment = '', $expanded = '', $idSubtable = '') {
+	public function getOutlinks($segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getOutlinks', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -647,13 +647,118 @@ class Piwik {
 	 * @param string $expanded
 	 * @param int $idSubtable
 	 */
-	public function getActionOutlink($outlinkUrl, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getOutlink($outlinkUrl, $segment = '', $expanded = '', $idSubtable = '') {
 		return $this->_request('Actions.getDownload', array(
 			'outlinkUrl' => $outlinkUrl,
 			'segment' => $segment,
 			'columns' => $columns,
 			'idSubtable' => $idSubtable,
 		));
+	}
+	
+	/*
+	 * MODULE: CUSTOM VATIABLES
+	 * Custom variable information
+	 */
+	
+	/*
+	 * Get custom variables
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 */
+	public function getCustomVariables($segment = '', $expanded = '') {
+		return $this->_request('CustomVariables.getCustomVariables', array(
+			'segment' => $segment,
+			'columns' => $columns,
+		));
+	}
+	
+	/*
+	 * Get information about a custom variable
+	 *
+	 * @param int $idSubtable
+	 * @param string $segment
+	 * @param string $expanded
+	 */
+	public function getCustomVariable($idSubtable, $segment = '', $expanded = '') {
+		return $this->_request('CustomVariables.getCustomVariablesValuesFromNameId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+			'columns' => $columns,
+		));
+	}
+	
+	/*
+	 * MODULE: EXAMPLE API
+	 * Get api and piwiki information
+	 */
+	
+	/*
+	 * Get the piwik version
+	 */
+	public function getPiwikiVersion() {
+		return $this->_request('ExampleAPI.getPiwikVersion');
+	}
+	
+	/*
+	 * http://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#The_number_42
+	 */
+	public function getAnswerToLife() {
+		return $this->_request('ExampleAPI.getAnswerToLife');
+	}
+	
+	/*
+	 * 
+	 */
+	public function getObject() {
+		return $this->_request('ExampleAPI.getObject');
+	}
+	
+	/*
+	 * Get the sum of the parameters
+	 *
+	 * @param int $a
+	 * @param int $b
+	 */
+	public function getSum($a, $b) {
+		return $this->_request('ExampleAPI.getSum');
+	}
+	
+	/*
+	 * Returns nothing but the success of the request
+	 */
+	public function getNull() {
+		return $this->_request('ExampleAPI.getNull');
+	}
+	
+	/*
+	 * Get a short piwik description
+	 */
+	public function getDescriptionArray() {
+		return $this->_request('ExampleAPI.getDescriptionArray');
+	}
+	
+	/*
+	 * Get a short comparison with other analytic software
+	 */
+	public function getCompetitionDatatable() {
+		return $this->_request('ExampleAPI.getCompetitionDatatable');
+	}
+	
+	/*
+	 * Get information about 42
+	 * http://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#The_number_42
+	 */
+	public function getMoreInformationAnswerToLife() {
+		return $this->_request('ExampleAPI.getMoreInformationAnswerToLife');
+	}
+	
+	/*
+	 * Get a multidimensional array
+	 */
+	public function getMultiArray() {
+		return $this->_request('ExampleAPI.getMultiArray');
 	}
 	
 	/* VisitsSummary */
