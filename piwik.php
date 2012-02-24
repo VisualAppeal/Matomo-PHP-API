@@ -1176,6 +1176,221 @@ class Piwik {
 	}
 	
 	/* 
+	 * MODULE: PROVIDER
+	 * Get provider information
+	 */
+	
+	/*
+	 * Get information about visitors internet providers
+	 *
+	 * @param string $segment
+	 */
+	public function sendReport($segment) {
+		return $this->_request('Provider.getProvider', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/* 
+	 * MODULE: REFERERS
+	 * Get information about the referers
+	 */
+	
+	/*
+	 * Get referer types
+	 *
+	 * @param string $segment
+	 * @param string $typeReferer
+	 */
+	public function getRefererType($segment = '', $refererType = '') {
+		return $this->_request('Referers.getRefererType', array(
+			'segment' => $segment,
+			'refererType' => $refererType,
+		));
+	}
+	
+	/*
+	 * Get referer keywords
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 */
+	public function getRefererType($segment = '', $expanded = '') {
+		return $this->_request('Referers.getKeywords', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+	
+	/*
+	 * Get keywords for an url
+	 *
+	 * @param string $url
+	 */
+	public function getKeywordsForPageUrl($url) {
+		return $this->_request('Referers.getKeywordsForPageUrl', array(
+			'url' => $url,
+		));
+	}
+	
+	/*
+	 * Get keywords for an page title
+	 *
+	 * @param string $title
+	 */
+	public function getKeywordsForPageTitle($url) {
+		return $this->_request('Referers.getKeywordsForPageTitle', array(
+			'title' => $title,
+		));
+	}
+	
+	/*
+	 * Get search engines by keyword
+	 *
+ 	 * @param int $idSubtable
+	 * @param string $segment
+	 */
+	public function getSearchEnginesFromKeywordId($idSubtable, $segment = '') {
+		return $this->_request('Referers.getSearchEnginesFromKeywordId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get search engines
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 */
+	public function getSearchEngines($segment = '', $expanded = '') {
+		return $this->_request('Referers.getSearchEngines', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+	
+	/*
+	 * Get search engines by search engine ID
+	 *
+ 	 * @param int $idSubtable
+	 * @param string $segment
+	 */
+	public function getKeywordsFromSearchEngineId($idSubtable, $segment = '') {
+		return $this->_request('Referers.getKeywordsFromSearchEngineId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get campaigns
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 */
+	public function getCampaigns($segment = '', $expanded = '') {
+		return $this->_request('Referers.getCampaigns', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+	
+	/*
+	 * Get keywords by campaign ID
+	 *
+ 	 * @param int $idSubtable
+	 * @param string $segment
+	 */
+	public function getKeywordsFromCampaignId($idSubtable, $segment = '') {
+		return $this->_request('Referers.getKeywordsFromCampaignId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get website refererals
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 */
+	public function getWebsites($segment = '', $expanded = '') {
+		return $this->_request('Referers.getWebsites', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+	
+	/*
+	 * Get urls by website ID
+	 *
+ 	 * @param int $idSubtable
+	 * @param string $segment
+	 */
+	public function getUrlsFromWebsiteId($idSubtable, $segment = '') {
+		return $this->_request('Referers.getUrlsFromWebsiteId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of distinct search engines
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfSearchEngines($segment = '') {
+		return $this->_request('Referers.getNumberOfDistinctSearchEngines', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of distinct keywords
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfKeywords($segment = '') {
+		return $this->_request('Referers.getNumberOfDistinctKeywords', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of distinct campaigns
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfCampaigns($segment = '') {
+		return $this->_request('Referers.getNumberOfDistinctCampaigns', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of distinct websites
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfWebsites($segment = '') {
+		return $this->_request('Referers.getNumberOfDistinctWebsites', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of distinct websites urls
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfWebsitesUrls($segment = '') {
+		return $this->_request('Referers.getNumberOfDistinctWebsitesUrls', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/* 
 	 * MODULE: 
 	 * VisitsSummary 
 	 */
