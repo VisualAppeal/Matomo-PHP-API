@@ -952,6 +952,77 @@ class Piwik {
 	}
 	
 	/* 
+	 * MODULE: LANGUAGES MANAGER
+	 * Manage languages
+	 */
+	
+	/*
+	 * Proofe if language is available
+	 *
+	 * @param string $languageCode
+	 */
+	public function getLanguageAvailable($languageCode)) {
+		return $this->_request('LanguagesManager.isLanguageAvailable', array(
+			'languageCode' => $languageCode,
+		));
+	}
+	
+	/*
+	 * Get all available languages
+	 */
+	public function getAvailableLanguages()) {
+		return $this->_request('LanguagesManager.getAvailableLanguages');
+	}
+	
+	/*
+	 * Get all available languages with information
+	 */
+	public function getAvailableLanguagesInfo()) {
+		return $this->_request('LanguagesManager.getAvailableLanguagesInfo');
+	}
+	
+	/*
+	 * Get all available languages with their names
+	 */
+	public function getAvailableLanguageNames()) {
+		return $this->_request('LanguagesManager.getAvailableLanguageNames');
+	}
+	
+	/*
+	 * Get translations for a language
+	 *
+	 * @param string $languageCode
+	 */
+	public function getTranslations($languageCode)) {
+		return $this->_request('LanguagesManager.getTranslationsForLanguage', array(
+			'languageCode' => $languageCode,
+		));
+	}
+	
+	/*
+	 * Get the language for the user with the login $login
+	 *
+	 * @param string $login
+	 */
+	public function getLanguageForUser($login)) {
+		return $this->_request('LanguagesManager.getLanguageForUser', array(
+			'login' => $login,
+		));
+	}
+	
+	/*
+	 * Set the language for the user with the login $login
+	 *
+	 * @param string $login
+	 */
+	public function getLanguageForUser($login, $languageCode)) {
+		return $this->_request('LanguagesManager.setLanguageForUser', array(
+			'login' => $login,
+			'languageCode' => $languageCode,
+		));
+	}
+	
+	/* 
 	 * MODULE: 
 	 * VisitsSummary 
 	 */
