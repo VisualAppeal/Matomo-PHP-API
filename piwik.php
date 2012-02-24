@@ -1391,6 +1391,342 @@ class Piwik {
 	}
 	
 	/* 
+	 * MODULE: SEO
+	 * Get SEO information 
+	 */
+	
+	/*
+	 * Get the SEO rank of an url
+	 *
+	 * @param string $url
+	 */
+	public function getSeoRank($url) {
+		return $this->_request('SEO.getRank', array(
+			'url' => $url,
+		));
+	}
+	
+	/* 
+	 * MODULE: SITES MANAGER
+	 * Manage sites
+	 */
+	
+	/*
+	 * Get the JS tag of the current site
+	 *
+	 * @param string $piwikUrl
+	 */
+	public function getJavascriptTag($piwikUrl) {
+		return $this->_request('SitesManager.getJavascriptTag', array(
+			'piwikUrl' => $piwikUrl,
+		));
+	}
+	
+	/*
+	 * Get sites from a group
+	 *
+	 * @param string $group
+	 */
+	public function getSitesFromGroup($group) {
+		return $this->_request('SitesManager.getSitesFromGroup', array(
+			'group' => $group,
+		));
+	}
+	
+	/*
+	 * Get all site groups
+	 */
+	public function getSitesGroups() {
+		return $this->_request('SitesManager.getSitesGroups');
+	}
+	
+	/*
+	 * Get information about the current site
+	 */
+	public function getSite() {
+		return $this->_request('SitesManager.getSiteFromId');
+	}
+	
+	/*
+	 * Get urls from current site
+	 */
+	public function getSiteUrls() {
+		return $this->_request('SitesManager.getSiteUrlsFromId');
+	}
+	
+	/*
+	 * Get all sites
+	 */
+	public function getAllSites() {
+		return $this->_request('SitesManager.getAllSites');
+	}
+	
+	/*
+	 * Get all sites with ID
+	 */
+	public function getAllSitesId() {
+		return $this->_request('SitesManager.getAllSitesId');
+	}
+	
+	/*
+	 * Get all sites with the visit count since $timestamp
+	 *
+	 * @param string $timestamp
+	 */
+	public function getSitesIdWithVisits($timestamp) {
+		return $this->_request('SitesManager.getSitesIdWithVisits', array(
+			'group' => $group,
+		));
+	}
+	
+	/*
+	 * Get all sites where the current user has admin access
+	 */
+	public function getSitesWithAdminAccess() {
+		return $this->_request('SitesManager.getSitesWithAdminAccess');
+	}
+	
+	/*
+	 * Get all sites where the current user has view access
+	 */
+	public function getSitesWithViewAccess() {
+		return $this->_request('SitesManager.getSitesWithViewAccess');
+	}
+	
+	/*
+	 * Get all sites where the current user has a least view access
+	 *
+	 * @param int $limit
+	 */
+	public function getSitesWithAtLeastViewAccess($limit = '') {
+		return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', array(
+			'limit' => $limit,
+		));
+	}
+	
+	/*
+	 * Get all sites with ID where the current user has admin access
+	 */
+	public function getSitesIdWithAdminAccess() {
+		return $this->_request('SitesManager.getSitesIdWithAdminAccess');
+	}
+	
+	/*
+	 * Get all sites with ID where the current user has view access
+	 */
+	public function getSitesIdWithViewAccess() {
+		return $this->_request('SitesManager.getSitesIdWithViewAccess');
+	}
+	
+	/*
+	 * Get all sites with ID where the current user has at least view access
+	 */
+	public function getSitesIdWithAtLeastViewAccess() {
+		return $this->_request('SitesManager.getSitesIdWithAtLeastViewAccess');
+	}
+	
+	/*
+	 * Get a site by it's URL
+	 */
+	public function getSitesIdFromSiteUrl() {
+		return $this->_request('SitesManager.getSitesIdFromSiteUrl');
+	}
+	
+	/*
+	 * Add a site
+	 *
+	 * @param string $siteName
+	 * @param array $urls
+	 * @param boolean $ecommerce
+	 * @param array $excludeIps
+	 * @param array $excludedQueryParameters
+	 * @param string $timezone
+	 * @param string $currency
+	 * @param string $group
+	 * @param string $startDate
+	 */
+	public function addSite($siteName, $urls, $ecommerce = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '') {
+		return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', array(
+			'siteName' => $siteName,
+			'urls' => $urls,
+			'ecommerce' => $ecommerce,
+			'excludeIps' => $excludeIps,
+			'excludedQueryParameters' => $excludedQueryParameters,
+			'timezone' => $timezone,
+			'currency' => $currency,
+			'group' => $group,
+			'startDate' => $startDate,
+		));
+	}
+	
+	/*
+	 * Update current site
+	 *
+	 * @param string $siteName
+	 * @param array $urls
+	 * @param boolean $ecommerce
+	 * @param array $excludeIps
+	 * @param array $excludedQueryParameters
+	 * @param string $timezone
+	 * @param string $currency
+	 * @param string $group
+	 * @param string $startDate
+	 */
+	public function addSite($siteName, $urls, $ecommerce = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '') {
+		return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', array(
+			'siteName' => $siteName,
+			'urls' => $urls,
+			'ecommerce' => $ecommerce,
+			'excludeIps' => $excludeIps,
+			'excludedQueryParameters' => $excludedQueryParameters,
+			'timezone' => $timezone,
+			'currency' => $currency,
+			'group' => $group,
+			'startDate' => $startDate,
+		));
+	}
+	
+	/*
+	 * Delete current site
+	 */
+	public function deleteSite() {
+		return $this->_request('SitesManager.deleteSite');
+	}
+	
+	/*
+	 * Add alias urls to the current site
+	 *
+	 * @param array $urls
+	 */
+	public function addSiteAliasUrls($urls) {
+		return $this->_request('SitesManager.addSiteAliasUrls', array(
+			'urls' => $urls,
+		));
+	}
+	
+	/*
+	 * Get IP's for a specific range
+	 *
+	 * @param string $ipRange
+	 */
+	public function getIpsForRange($ipRange) {
+		return $this->_request('SitesManager.getIpsForRange', array(
+			'ipRange' => $ipRange,
+		));
+	}
+	
+	/*
+	 * Get the global excluded query parameters
+	 */
+	public function getExcludedParameters() {
+		return $this->_request('SitesManager.getExcludedQueryParametersGlobal');
+	}
+	
+	/*
+	 * Set the global excluded query parameters
+	 *
+	 * @param array $excludedQueryParameters
+	 */
+	public function setExcludedParameters($excludedQueryParameters) {
+		return $this->_request('SitesManager.setGlobalExcludedQueryParameters', array(
+			'excludedQueryParameters' => $excludedQueryParameters,
+		));
+	}
+	
+	/*
+	 * Get the global excluded IP's
+	 */
+	public function getExcludedIps() {
+		return $this->_request('SitesManager.getExcludedIpsGlobal');
+	}
+	
+	/*
+	 * Set the global excluded IP's
+	 *
+	 * @param array $excludedIps
+	 */
+	public function setExcludedIps($excludedIps) {
+		return $this->_request('SitesManager.setGlobalExcludedIps', array(
+			'excludedIps' => $excludedIps,
+		));
+	}
+	
+	/*
+	 * Get the default currency
+	 */
+	public function getDefaultCurrency() {
+		return $this->_request('SitesManager.getDefaultCurrency');
+	}
+	
+	/*
+	 * Set the default currency
+	 *
+	 * @param string $defaultCurrency
+	 */
+	public function setDefaultCurrency($defaultCurrency) {
+		return $this->_request('SitesManager.setDefaultCurrency', array(
+			'defaultCurrency' => $defaultCurrency,
+		));
+	}
+	
+	/*
+	 * Get a list with all available currencies
+	 */
+	public function getCurrencyList() {
+		return $this->_request('SitesManager.getCurrencyList');
+	}
+	
+	/*
+	 * Get a list with all currency symbols
+	 */
+	public function getCurrencySymbols() {
+		return $this->_request('SitesManager.getCurrencySymbols');
+	}
+	
+	/*
+	 * Get the default timezone
+	 */
+	public function getDefaultTimezone() {
+		return $this->_request('SitesManager.getDefaultTimezone');
+	}
+	
+	/*
+	 * Set the default timezone
+	 *
+	 * @param string $defaultTimezone
+	 */
+	public function setDefaultTimezone($defaultTimezone) {
+		return $this->_request('SitesManager.setDefaultTimezone', array(
+			'defaultTimezone' => $defaultTimezone,
+		));
+	}
+	
+	/*
+	 * Get a list with available timezones
+	 */
+	public function getTimezonesList() {
+		return $this->_request('SitesManager.getTimezonesList');
+	}
+	
+	/*
+	 * Unknown
+	 */
+	public function getUniqueSiteTimezones() {
+		return $this->_request('SitesManager.getUniqueSiteTimezones');
+	}
+	
+	/*
+	 * Get all sites which matches the pattern
+	 *
+	 * @param string $pattern
+	 */
+	public function setDefaultTimezone($pattern) {
+		return $this->_request('SitesManager.getPatternMatchSites', array(
+			'pattern' => $pattern,
+		));
+	}
+	
+	/* 
 	 * MODULE: 
 	 * VisitsSummary 
 	 */
