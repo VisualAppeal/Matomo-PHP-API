@@ -128,8 +128,8 @@ class Piwik {
 	 *
 	 * @param string $method
 	 */
-	private function _request($method) {
-		$url = $this->_parseUrl($method);
+	private function _request($method, $params = array()) {
+		$url = $this->_parseUrl($method, $params);
 		
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
@@ -175,14 +175,14 @@ class Piwik {
 	 * @param array $params Request params
 	 */
 	private function _parseUrl($method, array $params = array()) {
-		$params = $params + array(
+		$params = array(
 			'module' => 'API',
 			'method' => $method,
 			'token_auth' => $this->_token,
 			'idSite' => $this->_siteId,
 			'period' => $this->_period,
 			'format' => $this->_format,
-		);
+		) + $params;
 		
 		if ($this->_period != self::PERIOD_RANGE) {
 			$params = $params + array(
@@ -199,12 +199,17 @@ class Piwik {
 		
 		$i = 0;
 		foreach ($params as $param => $val) {
-			$i++;
-			if ($i > 1)
-				$url .= '&';
-			else
-				$url .= '?';
-			$url .= $param . '=' . $val;
+			if (!empty($val)) {
+				$i++;
+				if ($i > 1)
+					$url .= '&';
+				else
+					$url .= '?';
+				
+				if (is_array($val))
+					$val = implode(',', $val);
+				$url .= $param . '=' . $val;
+			}
 		}
 		
 		return $url;
@@ -264,13 +269,181 @@ class Piwik {
 		return $this->_errors;
 	}
 	
-	/* MODULE: API */
+	/* 
+	 * MODULE: API 
+	 * Get metadata
+	 */
 	
 	/*
 	 * Get default metric translations
 	 */
-	public function getDefaultMetricTranslations() {
+	public function getApiDefaultMetricTranslations() {
+		$this->reset();
 		return $this->_request('API.getDefaultMetricTranslations');
+	}
+	
+	/*
+	 * Get default metrics
+	 */
+	public function getApiDefaultMetrics() {
+		$this->reset();
+		return $this->_request('API.getDefaultMetrics');
+	}
+	
+	/*
+	 * Get default processed metrics
+	 */
+	public function getApiDefaultProcessedMetrics() {
+		$this->reset();
+		return $this->_request('API.getDefaultProcessedMetrics');
+	}
+	
+	/*
+	 * Get default metrics documentation
+	 */
+	public function getApiDefaultMetricsDocumentation() {
+		$this->reset();
+		return $this->_request('API.getDefaultMetricsDocumentation');
+	}
+	
+	/*
+	 * Get default metric translations
+	 *
+	 * @param array $sites Array with the ID's of the sites
+	 */
+	public function getApiSegmentsMetadata($sites = array()) {
+		$this->reset();
+		return $this->_request('API.getSegmentsMetadata', array('idSites' => $sites));
+	}
+	
+	/*
+	 * Get visit ecommerce status from a site
+	 *
+	 * @param int $id Site ID
+	 */
+	public function getApiVisitEcommerceStatusFromId($id) {
+		$this->reset();
+		return $this->_request('API.getVisitEcommerceStatusFromId', array('id' => $id));
+	}
+	
+	/*
+	 * Get visit ecommerce status
+	 *
+	 * @param string $status
+	 */
+	public function getApiVisitEcommerceStatus($status) {
+		$this->reset();
+		return $this->_request('API.getVisitEcommerceStatus', array('status' => $status));
+	}
+	
+	/*
+	 * Get the url of the logo
+	 *
+	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
+	 */
+	public function getApiLogoUrl($pathOnly = false) {
+		$this->reset();
+		return $this->_request('API.getLogoUrl', array('pathOnly' => $pathOnly));
+	}
+	
+	/*
+	 * Get the url of the header logo
+	 *
+	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
+	 */
+	public function getApiHeaderLogoUrl($pathOnly) {
+		$this->reset();
+		return $this->_request('API.getHeaderLogoUrl', array('pathOnly' => $pathOnly));
+	}
+	
+	/*
+	 * Get metadata from the API
+	 *
+	 * @param int $idSite Site ID
+	 * @param string $apiModule Module
+	 * @param string $apiAction Action
+	 * @param array $apiParameters Parameters
+	 * @param string $language
+	 * @param string $period
+	 * @param string $date
+	 */
+	public function getApiMetadata($idSite, $apiModule, $apiAction, $apiParameters = array(), $language = '', $period = '', $date = '') {
+		$this->reset();
+		return $this->_request('API.getMetadata', array(
+			'idSite' => $idSite,
+			'apiModule' => $apiModule,
+			'apiAction' => $apiAction,
+			'apiParameters' => $apiParameters,
+			'language' => $language,
+			'period' => $period,
+			'date' => $date,
+		));
+	}
+	
+	/*
+	 * Get metadata from a report
+	 *
+	 * @param array $idSites Array with the ID's of the sites
+	 * @param string $period
+	 * @param string $date
+	 */
+	public function getApiReportMetadata($idSites = array(), $period = '', $date = '') {
+		$this->reset();
+		return $this->_request('API.getReportMetadata', array(
+			'idSites' => $idSites,
+			'period' => $period,
+			'date' => $date,
+		));
+	}
+	
+	/*
+	 * Get processed report
+	 *
+	 * @param int $idSite ID of the sites
+	 * @param string $period
+	 * @param string $date
+	 * @param string $apiModule Module
+	 * @param string $apiAction Action
+	 * @param string $segment
+	 * @param array $ApiParameters
+	 * @param int $idGoal
+	 * @param string $language
+	 * @param boolean $showTimer
+	 */
+	public function getApiProcessedReport($idSite, $period, $date, $apiModule, $apiAction, $segment = '', $apiParameters = array(), $idGoal = '', $language = '', $showTimer = '1') {
+		$this->reset();
+		return $this->_request('API.getProcessedReport', array(
+			'idSite' => $idSite,
+			'period' => $period,
+			'date' => $date,
+			'apiModule' => $apiModule,
+			'apiAction' => $apiAction,
+			'segment' => $segment,
+			'apiParameters' => $apiParameters,
+			'idGoal' => $idGoal,
+			'language' => $language,
+			'showTimer' => $showTimer,
+		));
+	}
+	
+	/*
+	 * Unknown
+	 *
+	 * @param int $idSite ID of the site
+	 * @param string $period
+	 * @param string $date
+	 * @param string $segment
+	 * @param string $columns
+	 */
+	public function getApi($idSite, $period, $date, $segment = '', $columns = '') {
+		$this->reset();
+		return $this->_request('API.get', array(
+			'idSite' => $idSite,
+			'period' => $period,
+			'date' => $date,
+			'segment' => $segment,
+			'columns' => $columns,
+		));
 	}
 	
 	/* VisitsSummary */
