@@ -886,7 +886,7 @@ class Piwik {
 	 * @param string $segment
 	 * @param int $idGoal
 	 */
-	public function getDaysToConversion($segment = '', $idGoal = '')) {
+	public function getDaysToConversion($segment = '', $idGoal = '') {
 		return $this->_request('Goals.getDaysToConversion', array(
 			'segment' => $segment,
 			'idGoal' => $idGoal,
@@ -899,7 +899,7 @@ class Piwik {
 	 * @param string $segment
 	 * @param int $idGoal
 	 */
-	public function getVisitsUntilConversion($segment = '', $idGoal = '')) {
+	public function getVisitsUntilConversion($segment = '', $idGoal = '') {
 		return $this->_request('Goals.getVisitsUntilConversion', array(
 			'segment' => $segment,
 			'idGoal' => $idGoal,
@@ -961,7 +961,7 @@ class Piwik {
 	 *
 	 * @param string $languageCode
 	 */
-	public function getLanguageAvailable($languageCode)) {
+	public function getLanguageAvailable($languageCode) {
 		return $this->_request('LanguagesManager.isLanguageAvailable', array(
 			'languageCode' => $languageCode,
 		));
@@ -970,21 +970,21 @@ class Piwik {
 	/*
 	 * Get all available languages
 	 */
-	public function getAvailableLanguages()) {
+	public function getAvailableLanguages() {
 		return $this->_request('LanguagesManager.getAvailableLanguages');
 	}
 	
 	/*
 	 * Get all available languages with information
 	 */
-	public function getAvailableLanguagesInfo()) {
+	public function getAvailableLanguagesInfo() {
 		return $this->_request('LanguagesManager.getAvailableLanguagesInfo');
 	}
 	
 	/*
 	 * Get all available languages with their names
 	 */
-	public function getAvailableLanguageNames()) {
+	public function getAvailableLanguageNames() {
 		return $this->_request('LanguagesManager.getAvailableLanguageNames');
 	}
 	
@@ -993,7 +993,7 @@ class Piwik {
 	 *
 	 * @param string $languageCode
 	 */
-	public function getTranslations($languageCode)) {
+	public function getTranslations($languageCode) {
 		return $this->_request('LanguagesManager.getTranslationsForLanguage', array(
 			'languageCode' => $languageCode,
 		));
@@ -1004,7 +1004,7 @@ class Piwik {
 	 *
 	 * @param string $login
 	 */
-	public function getLanguageForUser($login)) {
+	public function getLanguageForUser($login) {
 		return $this->_request('LanguagesManager.getLanguageForUser', array(
 			'login' => $login,
 		));
@@ -1014,11 +1014,63 @@ class Piwik {
 	 * Set the language for the user with the login $login
 	 *
 	 * @param string $login
+	 * @param string $languageCode
 	 */
-	public function getLanguageForUser($login, $languageCode)) {
+	public function getLanguageForUser($login, $languageCode) {
 		return $this->_request('LanguagesManager.setLanguageForUser', array(
 			'login' => $login,
 			'languageCode' => $languageCode,
+		));
+	}
+	
+	/* 
+	 * MODULE: LIVE
+	 * Request live data
+	 */
+	
+	/*
+	 * Get a short information about the visit counts in the last minutes 
+	 *
+	 * @param int $lastMinutes Default: 60
+	 * @param string $segment
+	 */
+	public function getCounters($lastMinutes = 60, $segment = '') {
+		return $this->_request('Live.getCounters', array(
+			'lastMinutes' => $lastMinutes,
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get information about the last visits
+	 *
+	 * @param string $segment
+	 * @param int $filterLimit
+	 * @param int $maxIdVisit
+	 * @param string $minTimestamp
+	 */
+	public function getLastVisitsDetails($segment = '', $filterLimit = '', $maxIdVisit = '', $minTimestamp = '') {
+		return $this->_request('Live.getLastVisitsDetails', array(
+			'segment' => $segment,
+			'filterLimit' => $filterLimit,
+			'maxIdVisit' => $maxIdVisit,
+			'minTimestamp' => $minTimestamp,
+		));
+	}
+	
+	/* 
+	 * MODULE: MULTI SITES
+	 * Get information about multiple sites
+	 */
+	
+	/*
+	 * Get information about multiple sites
+	 *
+	 * @param string $segment
+	 */
+	public function getMultiSites($segment = '') {
+		return $this->_request('MultiSites.getAll', array(
+			'segment' => $segment,
 		));
 	}
 	
