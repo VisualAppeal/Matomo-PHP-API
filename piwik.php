@@ -33,7 +33,7 @@ class Piwik {
 	private $_token = '';
 	private $_siteId = 0;
 	private $_format = self::FORMAT_PHP;
-	private $_language = 'de';
+	private $_language = 'en';
 	
 	private $_period = self::PERIOD_DAY;
 	private $_date = '';
@@ -64,8 +64,11 @@ class Piwik {
 		$this->_period = self::PERIOD_DAY;
 		$this->_rangeStart = $rangeStart;
 		$this->_rangeEnd = $rangeEnd;
-
-		$this->_date = $rangeStart;
+		
+		if (!empty($rangeStart))
+			$this->setRange($rangeStart, $rangeEnd);
+		else
+			$this->setDate($date);
 	}
 	
 	/* 
@@ -185,6 +188,24 @@ class Piwik {
 	}
 	
 	/*
+	 * Get language
+	 *
+	 * @return string
+	 */
+	public function getLanguage() {
+		return $this->_language;
+	}
+	
+	/*
+	 * Set language
+	 *
+	 * @param string $language
+	 */
+	public function setLanguage($language) {
+		$this->_language = $language;
+	}
+	
+	/*
 	 * Reset all default variables
 	 */
 	public function reset() {
@@ -255,6 +276,7 @@ class Piwik {
 			'idSite' => $this->_siteId,
 			'period' => $this->_period,
 			'format' => $this->_format,
+			'language' => $this->_language,
 		) + $params;
 		
 		if ($this->_period != self::PERIOD_RANGE) {
