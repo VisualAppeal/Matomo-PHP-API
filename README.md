@@ -11,7 +11,7 @@ A PHP wrapper class for [Piwik](http://piwik.org/)
 ### Create an instance of piwik
 
 	require('piwik.php');
-	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 'siteId')
+	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 'siteId');
 
 There are some basic parameters (period, date, range) which you can define at the beginning. They do not change until you reset them with
 
@@ -93,6 +93,19 @@ All available formats
 	Piwik::FORMAT_HTML
 	Piwik::FORMAT_RSS
 	Piwik::FORMAT_PHP
+
+
+## Example
+
+Get all the unique visitors from yesterday:
+
+	require('piwik.php');
+	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 1, Piwik::FORMAT_JSON);
+	
+	$piwik->setPeriod(Piwik::PERIOD_DAY);
+	$piwik->setDate(Piwik::DATE_YESTERDAY);
+	
+	echo "Unique visitors yesterday: ".$piwik->getUniqueVisitors();
 
 ## License
 

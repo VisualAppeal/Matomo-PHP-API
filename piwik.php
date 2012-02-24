@@ -1521,7 +1521,7 @@ class Piwik {
 	/*
 	 * Get information about the current site
 	 */
-	public function getSite() {
+	public function getSiteInformation() {
 		return $this->_request('SitesManager.getSiteFromId');
 	}
 	
