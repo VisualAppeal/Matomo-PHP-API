@@ -1727,6 +1727,126 @@ class Piwik {
 	}
 	
 	/* 
+	 * MODULE: USER COUNTRY
+	 * Get visitors country information
+	 */
+	
+	/*
+	 * Get countries of all visitors
+	 *
+	 * @param string $segment
+	 */
+	public function getCountry($segment = '') {
+		return $this->_request('UserCountry.getCountry', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get continents of all visitors
+	 *
+	 * @param string $segment
+	 */
+	public function getContinent($segment = '') {
+		return $this->_request('UserCountry.getContinent', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of disting countries
+	 *
+	 * @param string $segment
+	 */
+	public function getCountryNumber($segment = '') {
+		return $this->_request('UserCountry.getNumberOfDistinctCountries', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/* 
+	 * MODULE: USER SETTINGS
+	 * Get the user settings 
+	 */
+	
+	/*
+	 * Get resolution
+	 *
+	 * @param string $segment
+	 */
+	public function getResolution($segment = '') {
+		return $this->_request($this->_parseUrl('UserSettings.getResolution'), array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get configuration
+	 *
+	 * @param string $segment
+	 */
+	public function getConfiguration($segment = '') {
+		return $this->_request($this->_parseUrl('UserSettings.getConfiguration'), array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get operatiing system
+	 *
+	 * @param string $segment
+	 */
+	public function getOs($segment = '') {
+		return $this->_request($this->_parseUrl('UserSettings.getOS'), array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get browser
+	 *
+	 * @param string $segment
+	 */
+	public function getBrowser($segment = '') {
+		return $this->_request($this->_parseUrl('UserSettings.getBrowser'), array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get browser type
+	 *
+	 * @param string $segment
+	 */
+	public function getBrowserType($segment = '') {
+		return $this->_request($this->_parseUrl('UserSettings.getBrowserType'), array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get wide screen information
+	 *
+	 * @param string $segment
+	 */
+	public function getWideScreen($segment = '') {
+		return $this->_request($this->_parseUrl('UserSettings.getWideScreen'), array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get plugins
+	 *
+	 * @param string $segment
+	 */
+	public function getUserPlugin($segment = '') {
+		return $this->_request($this->_parseUrl('UserSettings.getPlugin'), array(
+			'segment' => $segment,
+		));
+	}
+	
+	/* 
 	 * MODULE: 
 	 * VisitsSummary 
 	 */
@@ -1750,50 +1870,6 @@ class Piwik {
 	 */
 	public function getVisitsLength() {
 		return $this->_request('VisitsSummary.getSumVisitsLength');
-	}
-	
-	/* UserSettings */
-	
-	/*
-	 * Get user resolution
-	 */
-	public function getUserResolution() {
-		return $this->_request($this->_parseUrl('UserSettings.getResolution'));
-	}
-	
-	/*
-	 * Get user configuration
-	 */
-	public function getUserConfiguration() {
-		return $this->_request($this->_parseUrl('UserSettings.getConfiguration'));
-	}
-	
-	/*
-	 * Get user operatiing system
-	 */
-	public function getUserOS() {
-		return $this->_request($this->_parseUrl('UserSettings.getOS'));
-	}
-	
-	/*
-	 * Get user browser
-	 */
-	public function getUserBrowser() {
-		return $this->_request($this->_parseUrl('UserSettings.getBrowser'));
-	}
-	
-	/*
-	 * Get user browser type
-	 */
-	public function getUserBrowserType() {
-		return $this->_request($this->_parseUrl('UserSettings.getBrowserType'));
-	}
-	
-	/*
-	 * Get user plugins
-	 */
-	public function getUserPlugin() {
-		return $this->_request($this->_parseUrl('UserSettings.getPlugin'));
 	}
 }
 
