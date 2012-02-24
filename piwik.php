@@ -285,7 +285,7 @@ class Piwik {
 			}
 		}
 		
-		return urlencode($url);
+		return $url;
 	}
 	
 	/*
@@ -1016,7 +1016,7 @@ class Piwik {
 	 * @param string $login
 	 * @param string $languageCode
 	 */
-	public function getLanguageForUser($login, $languageCode) {
+	public function setLanguageForUser($login, $languageCode) {
 		return $this->_request('LanguagesManager.setLanguageForUser', array(
 			'login' => $login,
 			'languageCode' => $languageCode,
@@ -1185,7 +1185,7 @@ class Piwik {
 	 *
 	 * @param string $segment
 	 */
-	public function sendReport($segment) {
+	public function getProvider($segment) {
 		return $this->_request('Provider.getProvider', array(
 			'segment' => $segment,
 		));
@@ -1215,7 +1215,7 @@ class Piwik {
 	 * @param string $segment
 	 * @param string $expanded
 	 */
-	public function getRefererType($segment = '', $expanded = '') {
+	public function getKeywords($segment = '', $expanded = '') {
 		return $this->_request('Referers.getKeywords', array(
 			'segment' => $segment,
 			'expanded' => $expanded,
@@ -1546,7 +1546,7 @@ class Piwik {
 	 * @param string $startDate
 	 */
 	public function addSite($siteName, $urls, $ecommerce = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '') {
-		return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', array(
+		return $this->_request('SitesManager.addSite', array(
 			'siteName' => $siteName,
 			'urls' => $urls,
 			'ecommerce' => $ecommerce,
@@ -1572,8 +1572,8 @@ class Piwik {
 	 * @param string $group
 	 * @param string $startDate
 	 */
-	public function addSite($siteName, $urls, $ecommerce = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '') {
-		return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', array(
+	public function updateSite($siteName, $urls, $ecommerce = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '') {
+		return $this->_request('SitesManager.updateSite', array(
 			'siteName' => $siteName,
 			'urls' => $urls,
 			'ecommerce' => $ecommerce,
@@ -1720,7 +1720,7 @@ class Piwik {
 	 *
 	 * @param string $pattern
 	 */
-	public function setDefaultTimezone($pattern) {
+	public function getPatternMatchSites($pattern) {
 		return $this->_request('SitesManager.getPatternMatchSites', array(
 			'pattern' => $pattern,
 		));
@@ -1984,7 +1984,7 @@ class Piwik {
 	 * @param string $email
 	 * @param string $alias
 	 */
-	public function addUser($userLogin, $password = '', $email = '', $alias = '') {
+	public function updateUser($userLogin, $password = '', $email = '', $alias = '') {
 		return $this->_request($this->_parseUrl('UsersManager.updateUser'), array(
 			'userLogin' => $userLogin,
 			'password' => $password,
@@ -2033,7 +2033,7 @@ class Piwik {
 	 * @param string $access
 	 * @param array $idSites
 	 */
-	public function userEmailExists($userLogin, $access, $idSites) {
+	public function setUserAccess($userLogin, $access, $idSites) {
 		return $this->_request($this->_parseUrl('UsersManager.setUserAccess'), array(
 			'userLogin' => $userLogin,
 			'access' => $access,
@@ -2055,29 +2055,205 @@ class Piwik {
 	}
 	
 	/* 
-	 * MODULE: 
-	 * VisitsSummary 
+	 * MODULE: VISIT FREQUENCY
+	 * Get visit frequency 
 	 */
+	
+	/*
+	 * Get the visit frequency
+	 *
+	 * @param string $segment
+	 * @param string $columns
+	 */
+	public function getVisitFrequency($segment = '', $columns = '') {
+		return $this->_request('VisitFrequency.get', array(
+			'segment' => $segment,
+			'columns' => $columns,
+		));
+	}
+	
+	/* 
+	 * MODULE: VISIT TIME
+	 * Get visit time 
+	 */
+	
+	/*
+	 * Get the visit by local time
+	 *
+	 * @param string $segment
+	 */
+	public function getVisitLocalTime($segment = '') {
+		return $this->_request('VisitTime.getVisitInformationPerLocalTime', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the visit by server time
+	 *
+	 * @param string $segment
+	 * @param boolean $hideFutureHoursWhenToday Hide the future hours when the report is created for today
+	 */
+	public function getVisitServerTime($segment = '', $hideFutureHoursWhenToday = '') {
+		return $this->_request('VisitTime.getVisitInformationPerServerTime', array(
+			'segment' => $segment,
+			'hideFutureHoursWhenToday' => $hideFutureHoursWhenToday,
+		));
+	}
+	
+	/* 
+	 * MODULE: VISITOR INTEREST
+	 * Get the interests of the visitor 
+	 */
+	
+	/*
+	 * Get the number of visits per visit duration
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfVisitsPerDuration($segment = '') {
+		return $this->_request('VisitorInterest.getNumberOfVisitsPerVisitDuration', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of visits per visited page
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfVisitsPerPage($segment = '') {
+		return $this->_request('VisitorInterest.getNumberOfVisitsPerPage', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of days elapsed since the last visit
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfVisitsByDaySinceLast($segment = '') {
+		return $this->_request('VisitorInterest.getNumberOfVisitsByDaysSinceLast', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the number of visits by visit count
+	 *
+	 * @param string $segment
+	 */
+	public function getNumberOfVisitsByCount($segment = '') {
+		return $this->_request('VisitorInterest.getNumberOfVisitsByVisitCount', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/* 
+	 * MODULE: VISITS SUMMARY
+	 * Get visit summary information
+	 */
+	
+	/*
+	 * Get a visit summary
+	 *
+	 * @param string $segment
+	 * @param string $columns
+	 */
+	public function getVisitsSummary($segment = '', $columns = '') {
+		return $this->_request('VisitsSummary.get', array(
+			'segment' => $segment,
+			'columns' => $columns,
+		));
+	}
 	 
 	/*
-	 * Get visitor count
+	 * Get visits
+	 *
+	 * @param string $segment
 	 */
-	public function getVisits() {
-		return $this->_request('VisitsSummary.getVisits');
+	public function getVisits($segment = '') {
+		return $this->_request('VisitsSummary.getVisits', array(
+			'segment' => $segment,
+		));
 	}
 	
 	/*
-	 * Get unique visitor count
+	 * Get unique visits
+	 *
+	 * @param string $segment
 	 */
-	public function getVisitsUnique() {
-		return $this->_request('VisitsSummary.getUniqueVisitors');
+	public function getUniqueVisitors($segment = '') {
+		return $this->_request('VisitsSummary.getUniqueVisitors', array(
+			'segment' => $segment,
+		));
 	}
 	
 	/*
-	 * Get the visit lengths
+	 * Get actions
+	 *
+	 * @param string $segment
 	 */
-	public function getVisitsLength() {
-		return $this->_request('VisitsSummary.getSumVisitsLength');
+	public function getActions($segment = '') {
+		return $this->_request('VisitsSummary.getActions', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get max actions
+	 *
+	 * @param string $segment
+	 */
+	public function getMaxActions($segment = '') {
+		return $this->_request('VisitsSummary.getMaxActions', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get bounce count
+	 *
+	 * @param string $segment
+	 */
+	public function getBounceCount($segment = '') {
+		return $this->_request('VisitsSummary.getBounceCount', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get converted visits
+	 *
+	 * @param string $segment
+	 */
+	public function getVisitsConverted($segment = '') {
+		return $this->_request('VisitsSummary.getVisitsConverted', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the sum of all visit lengths
+	 *
+	 * @param string $segment
+	 */
+	public function getSumVisitsLength($segment = '') {
+		return $this->_request('VisitsSummary.getSumVisitsLength', array(
+			'segment' => $segment,
+		));
+	}
+	
+	/*
+	 * Get the sum of all visit lengths formated in the current language
+	 *
+	 * @param string $segment
+	 */
+	public function getSumVisitsLengthPretty($segment = '') {
+		return $this->_request('VisitsSummary.getSumVisitsLengthPretty', array(
+			'segment' => $segment,
+		));
 	}
 }
 
