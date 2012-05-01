@@ -34,7 +34,7 @@ class Piwik {
 	private $_siteId = 0;
 	private $_format = self::FORMAT_PHP;
 	private $_language = 'en';
-	
+
 	private $_period = self::PERIOD_DAY;
 	private $_date = '';
 	private $_rangeStart = 'yesterday';
@@ -580,10 +580,10 @@ class Piwik {
 	 * Get page urls
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageUrls($segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageUrls', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -595,10 +595,10 @@ class Piwik {
 	 * Get entry page urls
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getEntryPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+	public function getEntryPageUrls($segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getEntryPageUrls', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -610,10 +610,10 @@ class Piwik {
 	 * Get exit page urls
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getExitPageUrls($segment = '', $expanded = '', $idSubtable = '') {
+	public function getExitPageUrls($segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getExitPageUrls', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -626,10 +626,10 @@ class Piwik {
 	 *
 	 * @param string $pageUrl The page url
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getPageUrl($pageUrl, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageUrl($pageUrl, $segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageUrl', array(
 			'pageUrl' => $pageUrl,
 			'segment' => $segment,
@@ -642,10 +642,10 @@ class Piwik {
 	 * Get page titles
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getPageTitles($segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageTitles($segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageTitles', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -658,10 +658,10 @@ class Piwik {
 	 *
 	 * @param string $pageName The page name
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getPageTitle($pageName, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getPageTitle($pageName, $segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getPageTitle', array(
 			'pageName' => $pageName,
 			'segment' => $segment,
@@ -674,10 +674,10 @@ class Piwik {
 	 * Get downloads
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getDownloads($segment = '', $expanded = '', $idSubtable = '') {
+	public function getDownloads($segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getDownloads', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -690,10 +690,10 @@ class Piwik {
 	 *
 	 * @param string $downloadUrl URL of the download
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getDownload($downloadUrl, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getDownload($downloadUrl, $segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getDownload', array(
 			'downloadUrl' => $downloadUrl,
 			'segment' => $segment,
@@ -706,10 +706,10 @@ class Piwik {
 	 * Get outlinks
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getOutlinks($segment = '', $expanded = '', $idSubtable = '') {
+	public function getOutlinks($segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getOutlinks', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -722,10 +722,10 @@ class Piwik {
 	 *
 	 * @param string $outlinkUrl URL of the outlink
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 * @param int $idSubtable
 	 */
-	public function getOutlink($outlinkUrl, $segment = '', $expanded = '', $idSubtable = '') {
+	public function getOutlink($outlinkUrl, $segment = '', $columns = '', $idSubtable = '') {
 		return $this->_request('Actions.getDownload', array(
 			'outlinkUrl' => $outlinkUrl,
 			'segment' => $segment,
@@ -743,9 +743,9 @@ class Piwik {
 	 * Get custom variables
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 */
-	public function getCustomVariables($segment = '', $expanded = '') {
+	public function getCustomVariables($segment = '', $columns = '') {
 		return $this->_request('CustomVariables.getCustomVariables', array(
 			'segment' => $segment,
 			'columns' => $columns,
@@ -757,9 +757,9 @@ class Piwik {
 	 *
 	 * @param int $idSubtable
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 */
-	public function getCustomVariable($idSubtable, $segment = '', $expanded = '') {
+	public function getCustomVariable($idSubtable, $segment = '', $columns = '') {
 		return $this->_request('CustomVariables.getCustomVariablesValuesFromNameId', array(
 			'idSubtable' => $idSubtable,
 			'segment' => $segment,
@@ -1291,12 +1291,12 @@ class Piwik {
 	 * Get referer keywords
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 */
-	public function getKeywords($segment = '', $expanded = '') {
+	public function getKeywords($segment = '', $columns = '') {
 		return $this->_request('Referers.getKeywords', array(
 			'segment' => $segment,
-			'expanded' => $expanded,
+			'columns' => $columns,
 		));
 	}
 	
@@ -1339,12 +1339,12 @@ class Piwik {
 	 * Get search engines
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 */
-	public function getSearchEngines($segment = '', $expanded = '') {
+	public function getSearchEngines($segment = '', $columns = '') {
 		return $this->_request('Referers.getSearchEngines', array(
 			'segment' => $segment,
-			'expanded' => $expanded,
+			'columns' => $columns,
 		));
 	}
 	
@@ -1365,12 +1365,12 @@ class Piwik {
 	 * Get campaigns
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 */
-	public function getCampaigns($segment = '', $expanded = '') {
+	public function getCampaigns($segment = '', $columns = '') {
 		return $this->_request('Referers.getCampaigns', array(
 			'segment' => $segment,
-			'expanded' => $expanded,
+			'columns' => $columns,
 		));
 	}
 	
@@ -1391,12 +1391,12 @@ class Piwik {
 	 * Get website refererals
 	 *
 	 * @param string $segment
-	 * @param string $expanded
+	 * @param string $columns
 	 */
-	public function getWebsites($segment = '', $expanded = '') {
+	public function getWebsites($segment = '', $columns = '') {
 		return $this->_request('Referers.getWebsites', array(
 			'segment' => $segment,
-			'expanded' => $expanded,
+			'columns' => $columns,
 		));
 	}
 	
@@ -2334,6 +2334,4 @@ class Piwik {
 		));
 	}
 }
-
-
 ?>
