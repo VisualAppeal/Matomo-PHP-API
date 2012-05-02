@@ -11,6 +11,9 @@ http://piwik.org/docs/analytics-api/reference/
 
 */
 class Piwik {
+	
+	const ERROR_INVALID = 10;
+	const ERROR_EMPTY = 11;
 
 	const PERIOD_DAY = 'day';
 	const PERIOD_WEEK = 'week';
@@ -372,14 +375,19 @@ class Piwik {
 	 * @param obj $request
 	 */
 	private function _validRequest($request) {
-		if ($request !== false) {
+		if (($request !== false) and (!is_null($request))) {
 			if (!isset($request->result) or ($request->result != 'error')) {
 				return true;
 			}
 			return $request->message;
 		}
 		
-		return 'The Request was invalid';
+		if (is_null($request)) {
+			return self::ERROR_EMPTY;
+		}
+		else {
+			return self::ERROR_INVALID;
+		}
 	}
 	
 	/*
