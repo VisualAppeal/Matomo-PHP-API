@@ -1022,7 +1022,7 @@ class Piwik {
 	 */
 	public function getImageGraph($apiModule, $apiAction, $graphType = '', $outputType = '0', $column = '', $showMetricTitle = '1', $width = '', $height = '', $fontSize = '9', $aliasedGraph = '1', $colors = array()) {
 		return $this->_request('ImageGraph.get', array(
-			'segment' => $apiModule,
+			'apiModule' => $apiModule,
 			'apiAction' => $apiAction,
 			'graphType' => $graphType,
 			'outputType' => $outputType,
