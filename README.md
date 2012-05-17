@@ -10,7 +10,7 @@ A PHP wrapper class for [Piwik](http://piwik.org/)
 
 ### Create an instance of piwik
 
-	require('piwik.php');
+	require('Piwik.php');
 	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 'siteId');
 
 There are some basic parameters (period, date, range) which you can define at the beginning. They do not change until you reset them with
