@@ -44,21 +44,21 @@ else {
 	<ul>
 		<li>Visit count: <?php echo $visits; ?></li>
 		<li>Unique visit count: <?php echo $visitsU; ?></li>
-		<li>Summary of the visit lengths: <?php echo ($visitsL !== false) ? $visitsL : 0; ?></li>
+		<li>Summary of the visit lengths: <?php echo ($visitsL !== false) ? utf8_decode($visitsL) : 0; ?></li>
 	</ul>
 
 	<h2>Summary <?php echo date('Y') ?></h2>
 	<ul>
 		<li>Visit count: <?php echo $visitsYear; ?></li>
 		<li>Unique visit count: <?php echo $visitsUYear; ?></li>
-		<li>Summary of the visit lengths: <?php echo ($visitsLYear !== false) ? $visitsLYear : 0; ?></li>
+		<li>Summary of the visit lengths: <?php echo ($visitsLYear !== false) ? utf8_decode($visitsLYear) : 0; ?></li>
 	</ul>
 
 	<h2>Summary <?php echo date('Y-m-d', mktime(0, 0, 0, 12, 24, 2011)); ?> - <?php echo date('Y-m-d', mktime(0, 0, 0, 12, 31, 2011)); ?></h2>
 	<ul>
 		<li>Visit count: <?php echo $visitsRange; ?></li>
 		<li>Unique visit count: <?php echo $visitsURange; ?></li>
-		<li>Summary of the visit lengths: <?php echo ($visitsLRange !== false) ? $visitsLRange : 0; ?></li>
+		<li>Summary of the visit lengths: <?php echo ($visitsLRange !== false) ? utf8_decode($visitsLRange) : 0; ?></li>
 	</ul>
 
 	<?php if ($piwik->hasError()): ?>

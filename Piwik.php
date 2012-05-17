@@ -83,7 +83,7 @@ class Piwik {
 	 * @return string
 	 */
 	public function getSite() {
-		return intval($this->_site);
+		return $this->_site;
 	}
 	
 	/*
@@ -119,7 +119,7 @@ class Piwik {
 	 * @return int
 	 */
 	public function getSiteId() {
-		return $this->_siteId;
+		return intval($this->_siteId);
 	}
 	
 	/*
@@ -294,8 +294,8 @@ class Piwik {
 			$request = $this->_parseRequest($buffer);
 		else
 			$request = false;
-		
-		return $this->_finishRequest($request, $method);
+
+		return $this->_finishRequest($request, $method, $params);
 	}
 	
 	/*
@@ -303,8 +303,9 @@ class Piwik {
 	 *
 	 * @param obj $request
 	 * @param string $method
+	 * @param array $params
 	 */
-	private function _finishRequest($request, $method) {
+	private function _finishRequest($request, $method, $params) {
 		$valid = $this->_validRequest($request);
 		
 		if ($valid === true) {
@@ -315,7 +316,7 @@ class Piwik {
 			}
 		}
 		else {
-			$request = $this->_addError($valid.' ('.$this->_parseUrl($method).')');
+			$request = $this->_addError($valid.' ('.$this->_parseUrl($method, $params).')');
 			return false;
 		}
 	}
@@ -397,6 +398,9 @@ class Piwik {
 	private function _parseRequest($request) {
 		switch ($this->_format) {
 			case self::FORMAT_JSON:
+				if (strpos($request, '{') != 0)
+					return $request;
+				
 				return json_decode($request);
 				break;
 			default:
