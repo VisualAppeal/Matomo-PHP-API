@@ -1227,12 +1227,12 @@ class Piwik {
 	 * Get all reports
 	 *
 	 * @param int $idReport ID of the report
-	 * @param boolean $ifSuperUserReturnOnlySuperUserReports
+	 * @param boolean $iflevelReturnOnlylevelReports
 	 */
-	public function getReports($idReport = '', $ifSuperUserReturnOnlySuperUserReports = '') {
+	public function getReports($idReport = '', $iflevelReturnOnlylevelReports = '') {
 		return $this->_request('PDFReports.getReports', array(
 			'idReport' => $idReport,
-			'ifSuperUserReturnOnlySuperUserReports' => $ifSuperUserReturnOnlySuperUserReports,
+			'iflevelReturnOnlylevelReports' => $iflevelReturnOnlylevelReports,
 		));
 	}
 	
