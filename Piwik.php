@@ -42,7 +42,7 @@ class Piwik {
 
 	private $_errors = array();
 
-	/*
+	/**
 	 * Create new instance
 	 *
 	 * @param string $site URL of the piwik installation
@@ -69,11 +69,11 @@ class Piwik {
 			$this->setDate($date);
 	}
 
-	/* 
+	/** 
 	 * Getter & Setter
 	 */
 
-	/*
+	/**
 	 * Get the url of the piwik installation
 	 *
 	 * @return string
@@ -82,7 +82,7 @@ class Piwik {
 		return $this->_site;
 	}
 
-	/*
+	/**
 	 * Set the URL of the piwik installation
 	 *
 	 * @param string $url
@@ -91,7 +91,7 @@ class Piwik {
 		$this->_site = $url;
 	}
 
-	/*
+	/**
 	 * Get token
 	 *
 	 * @return string
@@ -100,7 +100,7 @@ class Piwik {
 		return $this->_token;
 	}
 
-	/*
+	/**
 	 * Set token
 	 *
 	 * @param string $token
@@ -109,7 +109,7 @@ class Piwik {
 		$this->_token = $token;
 	}
 
-	/*
+	/**
 	 * Get current site ID
 	 *
 	 * @return int
@@ -118,7 +118,7 @@ class Piwik {
 		return intval($this->_siteId);
 	}
 
-	/*
+	/**
 	 * Set current site ID
 	 *
 	 * @param int $id
@@ -127,7 +127,7 @@ class Piwik {
 		$this->_siteId = $id;
 	}
 
-	/*
+	/**
 	 * Get response format
 	 *
 	 * @return string
@@ -136,7 +136,7 @@ class Piwik {
 		return $this->_format;
 	}
 
-	/*
+	/**
 	 * Set response format
 	 *
 	 * @param string $format
@@ -152,7 +152,7 @@ class Piwik {
 		$this->_format = $format;
 	}
 
-	/*
+	/**
 	 * Get language
 	 *
 	 * @return string
@@ -161,7 +161,7 @@ class Piwik {
 		return $this->_language;
 	}
 
-	/*
+	/**
 	 * Set language
 	 *
 	 * @param string $language
@@ -170,7 +170,7 @@ class Piwik {
 		$this->_language = $language;
 	}
 
-	/*
+	/**
 	 * Get date
 	 *
 	 * @return string
@@ -179,7 +179,7 @@ class Piwik {
 		return $this->_date;
 	}
 
-	/*
+	/**
 	 * Set date
 	 *
 	 * @param string $date
@@ -190,7 +190,7 @@ class Piwik {
 		$this->_date = $date;
 	}
 
-	/*
+	/**
 	 * Get time period
 	 *
 	 * @return string
@@ -199,7 +199,7 @@ class Piwik {
 		return $this->_period;
 	}
 
-	/*
+	/**
 	 * Set time period
 	 *
 	 * @param string $period
@@ -213,7 +213,7 @@ class Piwik {
 		$this->_period = $period;
 	}
 
-	/*
+	/**
 	 * Get the date range comma seperated
 	 *
 	 * @return string
@@ -225,7 +225,7 @@ class Piwik {
 			return $this->_rangeStart . ',' . $this->_rangeEnd;
 	}
 
-	/*
+	/**
 	 * Set date range
 	 *
 	 * @param string $rangeStart e.g. 2012-02-10 (YYYY-mm-dd) or last5(lastX), previous12(previousY)...
@@ -241,7 +241,7 @@ class Piwik {
 		}
 	}
 
-	/*
+	/**
 	 * Get the limit of returned rows
 	 *
 	 * @return int
@@ -250,7 +250,7 @@ class Piwik {
 		return intval($this->_limit);
 	}
 
-	/*
+	/**
 	 * Set the limit of returned rows
 	 *
 	 * @param int $limit
@@ -259,7 +259,7 @@ class Piwik {
 		$this->_limit = $limit;
 	}
 
-	/*
+	/**
 	 * Reset all default variables
 	 */
 	public function reset() {
@@ -271,7 +271,7 @@ class Piwik {
 		$this->_errors = array();
 	}
 
-	/* 
+	/** 
 	 * Make API request
 	 *
 	 * @param string $method
@@ -294,7 +294,7 @@ class Piwik {
 		return $this->_finishRequest($request, $method, $params);
 	}
 
-	/*
+	/**
 	 * Validate request and return the values
 	 *
 	 * @param obj $request
@@ -316,7 +316,7 @@ class Piwik {
 		}
 	}
 
-	/*
+	/**
 	 * Create request url with parameters
 	 *
 	 * @param string $method The request method
@@ -363,7 +363,7 @@ class Piwik {
 		return $url;
 	}
 
-	/*
+	/**
 	 * Validate the request result
 	 *
 	 * @param obj $request
@@ -383,7 +383,7 @@ class Piwik {
 		}
 	}
 
-	/*
+	/**
 	 * Parse request result
 	 *
 	 * @param obj $request
@@ -401,7 +401,7 @@ class Piwik {
 		}
 	}
 
-	/* 
+	/** 
 	 * Add error
 	 *
 	 * @param string $msg Error message
@@ -410,54 +410,54 @@ class Piwik {
 		$this->_errors = $this->_errors + array($msg);
 	}
 
-	/*
+	/**
 	 * Check for errors
 	 */
 	public function hasError() {
 		return (count($this->_errors));
 	}
 
-	/*
+	/**
 	 * Return all errors
 	 */
 	public function getErrors() {
 		return $this->_errors;
 	}
 
-	/* 
+	/** 
 	 * MODULE: API 
 	 * API metadata
 	 */
 
-	/*
+	/**
 	 * Get default metric translations
 	 */
 	public function getDefaultMetricTranslations() {
 		return $this->_request('API.getDefaultMetricTranslations');
 	}
 
-	/*
+	/**
 	 * Get default metrics
 	 */
 	public function getDefaultMetrics() {
 		return $this->_request('API.getDefaultMetrics');
 	}
 
-	/*
+	/**
 	 * Get default processed metrics
 	 */
 	public function getDefaultProcessedMetrics() {
 		return $this->_request('API.getDefaultProcessedMetrics');
 	}
 
-	/*
+	/**
 	 * Get default metrics documentation
 	 */
 	public function getDefaultMetricsDocumentation() {
 		return $this->_request('API.getDefaultMetricsDocumentation');
 	}
 
-	/*
+	/**
 	 * Get default metric translations
 	 *
 	 * @param array $sites Array with the ID's of the sites
@@ -467,7 +467,7 @@ class Piwik {
 			'idSites' => $sites));
 	}
 
-	/*
+	/**
 	 * Get the url of the logo
 	 *
 	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
@@ -477,7 +477,7 @@ class Piwik {
 			'pathOnly' => $pathOnly));
 	}
 
-	/*
+	/**
 	 * Get the url of the header logo
 	 *
 	 * @param boolean $pathOnly Return the url (false) or the absolute path (true)
@@ -487,7 +487,7 @@ class Piwik {
 			'pathOnly' => $pathOnly));
 	}
 
-	/*
+	/**
 	 * Get metadata from the API
 	 *
 	 * @param string $apiModule Module
@@ -502,7 +502,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get metadata from a report
 	 *
 	 * @param array $idSites Array with the ID's of the sites
@@ -517,7 +517,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get processed report
 	 *
 	 * @param string $apiModule Module
@@ -542,7 +542,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Unknown
 	 *
 	 * @param string $segment
@@ -556,7 +556,7 @@ class Piwik {
 	}
 
 
-	/**
+	/***
 	 * Unknown
 	 *
 	 * @param $apiModule
@@ -580,7 +580,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the result of multiple requests bundled together
 	 *
 	 * @param array $urls
@@ -591,12 +591,12 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * MODULE: ACTIONS
 	 * Reports for visitor actions
 	 */
 
-	/*
+	/**
 	 * Get actions
 	 *
 	 * @param string $segment
@@ -609,7 +609,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get page urls
 	 *
 	 * @param string $segment
@@ -624,7 +624,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get page URLs after a site search
 	 *
 	 * @param string $segment
@@ -639,7 +639,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get page titles after a site search
 	 *
 	 * @param string $segment
@@ -654,7 +654,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get entry page urls
 	 *
 	 * @param string $segment
@@ -669,7 +669,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get exit page urls
 	 *
 	 * @param string $segment
@@ -684,7 +684,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get page url information
 	 *
 	 * @param string $pageUrl The page url
@@ -699,7 +699,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get page titles
 	 *
 	 * @param string $segment
@@ -714,7 +714,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get entry page urls
 	 *
 	 * @param string $segment
@@ -729,7 +729,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get exit page urls
 	 *
 	 * @param string $segment
@@ -744,7 +744,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get page titles
 	 *
 	 * @param string $pageName The page name
@@ -759,7 +759,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get downloads
 	 *
 	 * @param string $segment
@@ -774,7 +774,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get download information
 	 *
 	 * @param string $downloadUrl URL of the download
@@ -789,7 +789,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get outlinks
 	 *
 	 * @param string $segment
@@ -804,7 +804,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get outlink information
 	 *
 	 * @param string $outlinkUrl URL of the outlink
@@ -819,7 +819,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get
 	 *
 	 * @param string $segment
@@ -830,7 +830,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get
 	 *
 	 * @param array $dataTable
@@ -843,7 +843,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get
 	 *
 	 * @param string $segment
@@ -854,7 +854,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get
 	 *
 	 * @param string $segment
@@ -866,12 +866,12 @@ class Piwik {
 	}
 
 
-	/*
+	/**
 	 * MODULE: CUSTOM VATIABLES
 	 * Custom variable information
 	 */
 
-	/*
+	/**
 	 * Get custom variables
 	 *
 	 * @param string $segment
@@ -884,7 +884,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get information about a custom variable
 	 *
 	 * @param int $idSubtable
@@ -897,33 +897,33 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * MODULE: EXAMPLE API
 	 * Get api and piwiki information
 	 */
 
-	/*
+	/**
 	 * Get the piwik version
 	 */
 	public function getPiwikiVersion() {
 		return $this->_request('ExampleAPI.getPiwikVersion');
 	}
 
-	/*
+	/**
 	 * http://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#The_number_42
 	 */
 	public function getAnswerToLife() {
 		return $this->_request('ExampleAPI.getAnswerToLife');
 	}
 
-	/*
+	/**
 	 * 
 	 */
 	public function getObject() {
 		return $this->_request('ExampleAPI.getObject');
 	}
 
-	/*
+	/**
 	 * Get the sum of the parameters
 	 *
 	 * @param int $a
@@ -936,28 +936,28 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Returns nothing but the success of the request
 	 */
 	public function getNull() {
 		return $this->_request('ExampleAPI.getNull');
 	}
 
-	/*
+	/**
 	 * Get a short piwik description
 	 */
 	public function getDescriptionArray() {
 		return $this->_request('ExampleAPI.getDescriptionArray');
 	}
 
-	/*
+	/**
 	 * Get a short comparison with other analytic software
 	 */
 	public function getCompetitionDatatable() {
 		return $this->_request('ExampleAPI.getCompetitionDatatable');
 	}
 
-	/*
+	/**
 	 * Get information about 42
 	 * http://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#The_number_42
 	 */
@@ -965,26 +965,26 @@ class Piwik {
 		return $this->_request('ExampleAPI.getMoreInformationAnswerToLife');
 	}
 
-	/*
+	/**
 	 * Get a multidimensional array
 	 */
 	public function getMultiArray() {
 		return $this->_request('ExampleAPI.getMultiArray');
 	}
 
-	/*
+	/**
 	 * MODULE: GOALS
 	 * Handle goals
 	 */
 
-	/*
+	/**
 	 * Get all goals
 	 */
 	public function getGoals() {
 		return $this->_request('Goals.getGoals');
 	}
 
-	/*
+	/**
 	 * Add a goal
 	 *
 	 * @param string $name
@@ -1007,7 +1007,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Update a goal
 	 *
 	 * @param int $idGoal
@@ -1032,7 +1032,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Delete a goal
 	 *
 	 * @param int $idGoal
@@ -1043,7 +1043,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the SKU of the items
 	 *
 	 * @param boolean abandonedCarts
@@ -1054,7 +1054,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the name of the items
 	 *
 	 * @param boolean abandonedCarts
@@ -1065,7 +1065,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the categories of the items
 	 *
 	 * @param boolean abandonedCarts
@@ -1076,7 +1076,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get conversion rates from a goal
 	 *
 	 * @param string $segment
@@ -1092,7 +1092,7 @@ class Piwik {
 	}
 
 
-	/*
+	/**
 	 * Get information about a time period and it's conversion rates
 	 *
 	 * @param string $segment
@@ -1105,7 +1105,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get information about how many site visits create a conversion
 	 *
 	 * @param string $segment
@@ -1118,7 +1118,7 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: IMAGE GRAPH
 	 * Generate png graphs
 	 */
@@ -1128,7 +1128,7 @@ class Piwik {
 	const GRAPH_PIE = 'pie';
 	const GRAPH_PIE_3D = '3dPie';
 
-	/*
+	/**
 	 * Generate a png report
 	 *
 	 * @param string $apiModule Module
@@ -1166,12 +1166,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: LANGUAGES MANAGER
 	 * Manage languages
 	 */
 
-	/*
+	/**
 	 * Proofe if language is available
 	 *
 	 * @param string $languageCode
@@ -1182,28 +1182,28 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get all available languages
 	 */
 	public function getAvailableLanguages() {
 		return $this->_request('LanguagesManager.getAvailableLanguages');
 	}
 
-	/*
+	/**
 	 * Get all available languages with information
 	 */
 	public function getAvailableLanguagesInfo() {
 		return $this->_request('LanguagesManager.getAvailableLanguagesInfo');
 	}
 
-	/*
+	/**
 	 * Get all available languages with their names
 	 */
 	public function getAvailableLanguageNames() {
 		return $this->_request('LanguagesManager.getAvailableLanguageNames');
 	}
 
-	/*
+	/**
 	 * Get translations for a language
 	 *
 	 * @param string $languageCode
@@ -1214,7 +1214,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the language for the user with the login $login
 	 *
 	 * @param string $login
@@ -1225,7 +1225,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Set the language for the user with the login $login
 	 *
 	 * @param string $login
@@ -1239,12 +1239,12 @@ class Piwik {
 	}
 
 
-	/*
+	/**
 	 * MODULE: LIVE
 	 * Request live data
 	 */
 
-	/*
+	/**
 	 * Get a short information about the visit counts in the last minutes 
 	 *
 	 * @param int $lastMinutes Default: 60
@@ -1257,7 +1257,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get information about the last visits
 	 *
 	 * @param string $segment
@@ -1274,12 +1274,12 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * MODULE: MOBILEMESSAGING
 	 * The MobileMessaging API lets you manage and access all the MobileMessaging plugin features including : - manage SMS API credential - activate phone numbers - check remaining credits - send SMS
 	 */
 
-	/*
+	/**
 	 * Checks if SMSAPI has been configured
 	 *
 	 * @return mixed
@@ -1288,7 +1288,7 @@ class Piwik {
 		return $this->_request('MobileMessaging.areSMSAPICredentialProvided');
 	}
 
-	/*
+	/**
 	 * Get
 	 *
 	 * @return mixed
@@ -1297,7 +1297,7 @@ class Piwik {
 		return $this->_request('MobileMessaging.getSMSProvider');
 	}
 
-	/*
+	/**
 	 * Set SMSAPI credentials
 	 *
 	 * @param string $provider
@@ -1311,7 +1311,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Add phone number
 	 *
 	 * @param string $phoneNumber
@@ -1323,7 +1323,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get credits left
 	 *
 	 * @return mixed
@@ -1332,7 +1332,7 @@ class Piwik {
 		return $this->_request('MobileMessaging.getCreditLeft');
 	}
 
-	/*
+	/**
 	 * Remove phone number
 	 *
 	 * @param string $phoneNumber
@@ -1344,7 +1344,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Validate phone number
 	 *
 	 * @param string $phoneNumber
@@ -1358,7 +1358,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Delete SMSAPI credentials
 	 *
 	 * @return mixed
@@ -1367,7 +1367,7 @@ class Piwik {
 		return $this->_request('MobileMessaging.deleteSMSAPICredential');
 	}
 
-	/**
+	/***
 	 * Set unknown
 	 *
 	 * @param $delegatedManagement
@@ -1379,7 +1379,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get unknown
 	 *
 	 * @return mixed
@@ -1389,12 +1389,12 @@ class Piwik {
 	}
 
 
-	/* 
+	/** 
 	 * MODULE: MULTI SITES
 	 * Get information about multiple sites
 	 */
 
-	/*
+	/**
 	 * Get information about multiple sites
 	 *
 	 * @param string $segment
@@ -1407,7 +1407,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get key metrics about one of the sites the user manages
 	 *
 	 * @param string $segment
@@ -1421,12 +1421,12 @@ class Piwik {
 	}
 
 
-	/* 
+	/** 
 	 * MODULE: PDF REPORST
 	 * Manage pdf reports
 	 */
 
-	/*
+	/**
 	 * Add pdf report
 	 *
 	 * @param string $description
@@ -1445,7 +1445,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Update pdf report
 	 *
 	 * @param int $idReport ID of the report
@@ -1466,7 +1466,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Delete report
 	 *
 	 * @param int $idReport ID of the report
@@ -1477,7 +1477,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get all reports
 	 *
 	 * @param int $idReport ID of the report
@@ -1490,7 +1490,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Generate report
 	 *
 	 * @param int $idReport ID of the report
@@ -1507,7 +1507,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Send report via email
 	 *
 	 * @param int $idReport ID of the report
@@ -1518,12 +1518,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: PROVIDER
 	 * Get provider information
 	 */
 
-	/*
+	/**
 	 * Get information about visitors internet providers
 	 *
 	 * @param string $segment
@@ -1534,12 +1534,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: REFERERS
 	 * Get information about the referers
 	 */
 
-	/*
+	/**
 	 * Get referer types
 	 *
 	 * @param string $segment
@@ -1552,7 +1552,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get referer keywords
 	 *
 	 * @param string $segment
@@ -1565,7 +1565,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get keywords for an url
 	 *
 	 * @param string $url
@@ -1576,7 +1576,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get keywords for an page title
 	 *
 	 * @param string $title
@@ -1587,7 +1587,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get search engines by keyword
 	 *
  	 * @param int $idSubtable
@@ -1600,7 +1600,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get search engines
 	 *
 	 * @param string $segment
@@ -1613,7 +1613,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get search engines by search engine ID
 	 *
  	 * @param int $idSubtable
@@ -1626,7 +1626,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get campaigns
 	 *
 	 * @param string $segment
@@ -1639,7 +1639,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get keywords by campaign ID
 	 *
  	 * @param int $idSubtable
@@ -1652,7 +1652,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get website refererals
 	 *
 	 * @param string $segment
@@ -1665,7 +1665,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get urls by website ID
 	 *
  	 * @param int $idSubtable
@@ -1678,7 +1678,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of distinct search engines
 	 *
 	 * @param string $segment
@@ -1689,7 +1689,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of distinct keywords
 	 *
 	 * @param string $segment
@@ -1700,7 +1700,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of distinct campaigns
 	 *
 	 * @param string $segment
@@ -1711,7 +1711,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of distinct websites
 	 *
 	 * @param string $segment
@@ -1722,7 +1722,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of distinct websites urls
 	 *
 	 * @param string $segment
@@ -1733,12 +1733,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: SEO
 	 * Get SEO information 
 	 */
 
-	/*
+	/**
 	 * Get the SEO rank of an url
 	 *
 	 * @param string $url
@@ -1749,12 +1749,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: SITES MANAGER
 	 * Manage sites
 	 */
 
-	/*
+	/**
 	 * Get the JS tag of the current site
 	 *
 	 * @param string $piwikUrl
@@ -1765,7 +1765,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get sites from a group
 	 *
 	 * @param string $group
@@ -1776,42 +1776,42 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get all site groups
 	 */
 	public function getSitesGroups() {
 		return $this->_request('SitesManager.getSitesGroups');
 	}
 
-	/*
+	/**
 	 * Get information about the current site
 	 */
 	public function getSiteInformation() {
 		return $this->_request('SitesManager.getSiteFromId');
 	}
 
-	/*
+	/**
 	 * Get urls from current site
 	 */
 	public function getSiteUrls() {
 		return $this->_request('SitesManager.getSiteUrlsFromId');
 	}
 
-	/*
+	/**
 	 * Get all sites
 	 */
 	public function getAllSites() {
 		return $this->_request('SitesManager.getAllSites');
 	}
 
-	/*
+	/**
 	 * Get all sites with ID
 	 */
 	public function getAllSitesId() {
 		return $this->_request('SitesManager.getAllSitesId');
 	}
 
-	/*
+	/**
 	 * Get all sites with the visit count since $timestamp
 	 *
 	 * @param string $timestamp
@@ -1822,21 +1822,21 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get all sites where the current user has admin access
 	 */
 	public function getSitesWithAdminAccess() {
 		return $this->_request('SitesManager.getSitesWithAdminAccess');
 	}
 
-	/*
+	/**
 	 * Get all sites where the current user has view access
 	 */
 	public function getSitesWithViewAccess() {
 		return $this->_request('SitesManager.getSitesWithViewAccess');
 	}
 
-	/*
+	/**
 	 * Get all sites where the current user has a least view access
 	 *
 	 * @param int $limit
@@ -1847,28 +1847,28 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get all sites with ID where the current user has admin access
 	 */
 	public function getSitesIdWithAdminAccess() {
 		return $this->_request('SitesManager.getSitesIdWithAdminAccess');
 	}
 
-	/*
+	/**
 	 * Get all sites with ID where the current user has view access
 	 */
 	public function getSitesIdWithViewAccess() {
 		return $this->_request('SitesManager.getSitesIdWithViewAccess');
 	}
 
-	/*
+	/**
 	 * Get all sites with ID where the current user has at least view access
 	 */
 	public function getSitesIdWithAtLeastViewAccess() {
 		return $this->_request('SitesManager.getSitesIdWithAtLeastViewAccess');
 	}
 
-	/*
+	/**
 	 * Get a site by it's URL
 	 *
 	 * @param string $url
@@ -1879,7 +1879,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Add a site
 	 *
 	 * @param string $siteName
@@ -1913,14 +1913,14 @@ class Piwik {
 	}
 
 
-	/*
+	/**
 	 * Delete current site
 	 */
 	public function deleteSite() {
 		return $this->_request('SitesManager.deleteSite');
 	}
 
-	/*
+	/**
 	 * Add alias urls to the current site
 	 *
 	 * @param array $urls
@@ -1931,7 +1931,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get IP's for a specific range
 	 *
 	 * @param string $ipRange
@@ -1942,7 +1942,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Set the global excluded IP's
 	 *
 	 * @param array $excludedIps
@@ -1953,7 +1953,7 @@ class Piwik {
 		));
 	}
 
-	/**
+	/***
 	 * Set global search parameters
 	 *
 	 * @param $searchKeywordParameters
@@ -1967,28 +1967,28 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get search keywords
 	 */
 	public function getSearchKeywordParametersGlobal() {
 		return $this->_request('SitesManager.getSearchKeywordParametersGlobal  ');
 	}
 
-	/*
+	/**
 	 * Get search categories
 	 */
 	public function getSearchCategoryParametersGlobal() {
 		return $this->_request('SitesManager.getSearchCategoryParametersGlobal ');
 	}
 
-	/*
+	/**
 	 * Get the global excluded query parameters
 	 */
 	public function getExcludedParameters() {
 		return $this->_request('SitesManager.getExcludedQueryParametersGlobal');
 	}
 
-	/*
+	/**
 	 * Set the global excluded query parameters
 	 *
 	 * @param array $excludedQueryParameters
@@ -1999,7 +1999,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the global excluded IP's
 	 */
 	public function getExcludedIps() {
@@ -2007,14 +2007,14 @@ class Piwik {
 	}
 
 
-	/*
+	/**
 	 * Get the default currency
 	 */
 	public function getDefaultCurrency() {
 		return $this->_request('SitesManager.getDefaultCurrency');
 	}
 
-	/*
+	/**
 	 * Set the default currency
 	 *
 	 * @param string $defaultCurrency
@@ -2026,14 +2026,14 @@ class Piwik {
 	}
 
 
-	/*
+	/**
 	 * Get the default timezone
 	 */
 	public function getDefaultTimezone() {
 		return $this->_request('SitesManager.getDefaultTimezone');
 	}
 
-	/*
+	/**
 	 * Set the default timezone
 	 *
 	 * @param string $defaultTimezone
@@ -2044,7 +2044,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Update current site
 	 *
 	 * @param string $siteName
@@ -2077,35 +2077,35 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get a list with all available currencies
 	 */
 	public function getCurrencyList() {
 		return $this->_request('SitesManager.getCurrencyList');
 	}
 
-	/*
+	/**
 	 * Get a list with all currency symbols
 	 */
 	public function getCurrencySymbols() {
 		return $this->_request('SitesManager.getCurrencySymbols');
 	}
 
-	/*
+	/**
 	 * Get a list with available timezones
 	 */
 	public function getTimezonesList() {
 		return $this->_request('SitesManager.getTimezonesList');
 	}
 
-	/*
+	/**
 	 * Unknown
 	 */
 	public function getUniqueSiteTimezones() {
 		return $this->_request('SitesManager.getUniqueSiteTimezones');
 	}
 
-	/*
+	/**
 	 * Get all sites which matches the pattern
 	 *
 	 * @param string $pattern
@@ -2117,12 +2117,12 @@ class Piwik {
 	}
 
 
-	/*
+	/**
 	 * MODULE: TRANSITIONS
 	 * Get transitions for page URLs, titles and actions
 	 */
 
-	/**
+	/***
 	 * Get transitions for a page title
 	 *
 	 * @param $pageTitle
@@ -2138,7 +2138,7 @@ class Piwik {
 		));
 	}
 
-	/**
+	/***
 	 * Get transitions for a page URL
 	 *
 	 * @param $pageUrl
@@ -2154,7 +2154,7 @@ class Piwik {
 		));
 	}
 
-	/**
+	/***
 	 * Get transitions for a page URL
 	 *
 	 * @param $actionName
@@ -2176,7 +2176,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get translations for the transitions
 	 *
 	 * @return mixed
@@ -2185,12 +2185,12 @@ class Piwik {
 		return $this->_request('Transitions.getTranslations');
 	}
 
-	/* 
+	/** 
 	 * MODULE: USER COUNTRY
 	 * Get visitors country information
 	 */
 
-	/*
+	/**
 	 * Get countries of all visitors
 	 *
 	 * @param string $segment
@@ -2201,7 +2201,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get continents of all visitors
 	 *
 	 * @param string $segment
@@ -2212,7 +2212,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get regions of all visitors
 	 *
 	 * @param string $segment
@@ -2223,7 +2223,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get cities of all visitors
 	 *
 	 * @param string $segment
@@ -2234,7 +2234,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of disting countries
 	 *
 	 * @param string $segment
@@ -2245,12 +2245,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: USER SETTINGS
 	 * Get the user settings 
 	 */
 
-	/*
+	/**
 	 * Get resolution
 	 *
 	 * @param string $segment
@@ -2261,7 +2261,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get configuration
 	 *
 	 * @param string $segment
@@ -2272,7 +2272,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get operating system
 	 *
 	 * @param string $segment
@@ -2285,7 +2285,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get operating system family
 	 *
 	 * @param string $segment
@@ -2296,7 +2296,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get Mobile vs Desktop
 	 *
 	 * @param string $segment
@@ -2307,7 +2307,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get browser version
 	 *
 	 * @param string $segment
@@ -2318,7 +2318,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get browser
 	 *
 	 * @param string $segment
@@ -2329,7 +2329,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get browser type
 	 *
 	 * @param string $segment
@@ -2340,7 +2340,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get wide screen information
 	 *
 	 * @param string $segment
@@ -2351,7 +2351,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get plugins
 	 *
 	 * @param string $segment
@@ -2362,12 +2362,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: USER MANAGER
 	 * Manage piwik users
 	 */
 
-	/*
+	/**
 	 * Set user preference
 	 *
 	 * @param string $userLogin Username
@@ -2382,7 +2382,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get user preference
 	 *
 	 * @param string $userLogin Username
@@ -2395,7 +2395,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get user by username
 	 *
 	 * @param array $userLogins Array with Usernames
@@ -2406,14 +2406,14 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get all user logins
 	 */
 	public function getUsersLogin() {
 		return $this->_request($this->_parseUrl('UsersManager.getUsersLogin'));
 	}
 
-	/*
+	/**
 	 * Get sites by user access
 	 *
 	 * @param string $access
@@ -2424,14 +2424,14 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get all users with access level from the current site
 	 */
 	public function getUsersAccess() {
 		return $this->_request($this->_parseUrl('UsersManager.getUsersAccessFromSite'));
 	}
 
-	/*
+	/**
 	 * Get all users with access $access to the current site
 	 *
 	 * @param string $access
@@ -2442,7 +2442,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get site access from the user $userLogin
 	 *
 	 * @param string $userLogin Username
@@ -2453,7 +2453,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get user by login
 	 *
 	 * @param string $userLogin Username
@@ -2464,7 +2464,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get user by email
 	 *
 	 * @param string $userEmail
@@ -2475,7 +2475,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Add a user
 	 *
 	 * @param string $userLogin Username
@@ -2492,7 +2492,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Update a user
 	 *
 	 * @param string $userLogin Username
@@ -2509,7 +2509,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Delete a user
 	 *
 	 * @param string $userLogin Username
@@ -2520,7 +2520,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Checks if a user exist
 	 *
 	 * @param string $userLogin
@@ -2531,7 +2531,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Checks if a user exist by email
 	 *
 	 * @param string $userEmail
@@ -2542,7 +2542,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Grant access to multiple sites
 	 *
 	 * @param string $userLogin Username
@@ -2557,7 +2557,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the token for a user
 	 *
 	 * @param string $userLogin Username
@@ -2570,12 +2570,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: VISIT FREQUENCY
 	 * Get visit frequency 
 	 */
 
-	/*
+	/**
 	 * Get the visit frequency
 	 *
 	 * @param string $segment
@@ -2588,12 +2588,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: VISIT TIME
 	 * Get visit time 
 	 */
 
-	/*
+	/**
 	 * Get the visit by local time
 	 *
 	 * @param string $segment
@@ -2604,7 +2604,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the visit by server time
 	 *
 	 * @param string $segment
@@ -2617,7 +2617,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the visit by server time
 	 *
 	 * @param string $segment
@@ -2628,12 +2628,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: VISITOR INTEREST
 	 * Get the interests of the visitor 
 	 */
 
-	/*
+	/**
 	 * Get the number of visits per visit duration
 	 *
 	 * @param string $segment
@@ -2644,7 +2644,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of visits per visited page
 	 *
 	 * @param string $segment
@@ -2655,7 +2655,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of days elapsed since the last visit
 	 *
 	 * @param string $segment
@@ -2666,7 +2666,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the number of visits by visit count
 	 *
 	 * @param string $segment
@@ -2677,12 +2677,12 @@ class Piwik {
 		));
 	}
 
-	/* 
+	/** 
 	 * MODULE: VISITS SUMMARY
 	 * Get visit summary information
 	 */
 
-	/*
+	/**
 	 * Get a visit summary
 	 *
 	 * @param string $segment
@@ -2695,7 +2695,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get visits
 	 *
 	 * @param string $segment
@@ -2706,7 +2706,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get unique visits
 	 *
 	 * @param string $segment
@@ -2717,7 +2717,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get actions
 	 *
 	 * @param string $segment
@@ -2728,7 +2728,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get max actions
 	 *
 	 * @param string $segment
@@ -2739,7 +2739,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get bounce count
 	 *
 	 * @param string $segment
@@ -2750,7 +2750,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get converted visits
 	 *
 	 * @param string $segment
@@ -2761,7 +2761,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the sum of all visit lengths
 	 *
 	 * @param string $segment
@@ -2772,7 +2772,7 @@ class Piwik {
 		));
 	}
 
-	/*
+	/**
 	 * Get the sum of all visit lengths formated in the current language
 	 *
 	 * @param string $segment
