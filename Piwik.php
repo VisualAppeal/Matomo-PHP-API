@@ -1,14 +1,8 @@
 <?php
-/*
+/**
 
-Author: VisualAppeal
-Website: http://www.visualappeal.de
-E-Mail: tim@visualappeal.de
-
-Updated by interfaSys sàrl, 26/10/2012, http://www.interfasys.ch
-
-https://github.com/VisualAppeal/Piwik-PHP-API
-http://piwik.org/docs/analytics-api/reference/
+Repository: https://github.com/VisualAppeal/Piwik-PHP-API
+Official api reference: http://piwik.org/docs/analytics-api/reference/
 
 */
 class Piwik {
