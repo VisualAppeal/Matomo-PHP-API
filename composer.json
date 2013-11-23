@@ -1,5 +1,5 @@
 {
-        "name" : "mdcallinone/mandrill-php",
+        "name" : "mdcallinone/Piwik-PHP-API",
         "require" : {
                 "php" : ">=5.3.0"
         }
