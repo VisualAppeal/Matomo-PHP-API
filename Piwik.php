@@ -191,7 +191,7 @@ class Piwik {
 	}
 
 	/**
-	 * Get time period
+	 * Get  period
 	 *
 	 * @return string
 	 */
@@ -278,7 +278,7 @@ class Piwik {
 	 */
 	private function _request($method, $params = array()) {
 		$url = $this->_parseUrl($method, $params);
-
+var_dump($url);
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
@@ -759,6 +759,59 @@ class Piwik {
 		));
 	}
 
+	/**
+	 * Get Device Type. 
+	 * 
+	 * It requires DevicesDetection to be enabled
+	 * 
+	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getDeviceType($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('DevicesDetection.getType', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+	
+	/**
+	 * Get Device Brand. 
+	 * 
+	 * It requires DevicesDetection to be enabled
+	 * 
+	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getDeviceType($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('DevicesDetection.getBrand', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+	
+	/**
+	 * Get Device Model. 
+	 * 
+	 * It requires DevicesDetection to be enabled
+	 * 
+	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getDeviceType($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('DevicesDetection.getModel', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
 	/**
 	 * Get downloads
 	 *
