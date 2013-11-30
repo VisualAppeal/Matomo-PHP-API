@@ -278,7 +278,7 @@ class Piwik {
 	 */
 	private function _request($method, $params = array()) {
 		$url = $this->_parseUrl($method, $params);
-
+var_dump($url);
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
@@ -2271,7 +2271,7 @@ class Piwik {
 	 * @param string $segment
 	 */
 	public function getRegion($segment = '') {
-		return $this->_request('UserCountry.getRegion ', array(
+		return $this->_request('UserCountry.getRegion', array(
 			'segment' => $segment,
 		));
 	}
@@ -2282,7 +2282,7 @@ class Piwik {
 	 * @param string $segment
 	 */
 	public function getCity($segment = '') {
-		return $this->_request('UserCountry.getCity ', array(
+		return $this->_request('UserCountry.getCity', array(
 			'segment' => $segment,
 		));
 	}
