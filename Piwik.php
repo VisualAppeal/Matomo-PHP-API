@@ -278,7 +278,7 @@ class Piwik {
 	 */
 	private function _request($method, $params = array()) {
 		$url = $this->_parseUrl($method, $params);
-var_dump($url);
+		// 	var_dump($url);
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
@@ -1581,7 +1581,7 @@ var_dump($url);
 	 *
 	 * @param string $segment
 	 */
-	public function getProvider($segment) {
+	public function getProvider($segment = '') {
 		return $this->_request('Provider.getProvider', array(
 			'segment' => $segment,
 		));
