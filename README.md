@@ -1,5 +1,3 @@
-[![Analytics](https://ga-beacon.appspot.com/UA-46905576-1/VisualAppeal/Piwik-PHP-API)](https://github.com/VisualAppeal/Piwik-PHP-API)
-
 ## Readme
 
 A PHP wrapper class for [Piwik](http://piwik.org/)
