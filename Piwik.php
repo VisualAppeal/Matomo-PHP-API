@@ -585,12 +585,9 @@ class Piwik {
 	 *
 	 * @param array $urls
 	 */
-	public function getBulkRequest($urls = array()) {
-		return $this->_request('API.getBulkRequest', array(
-			'urls' => $urls,
-		));
+	public function getBulkRequest($urls = array()) {              
+		return $this->_request('API.getBulkRequest', $urls);
 	}
-
 	/**
 	 * MODULE: ACTIONS
 	 * Reports for visitor actions
