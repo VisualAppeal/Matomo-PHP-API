@@ -1,12 +1,11 @@
 <?php
+
 /**
-
-Repository: https://github.com/VisualAppeal/Piwik-PHP-API
-Official api reference: http://piwik.org/docs/analytics-api/reference/
-
-*/
-class Piwik {
-
+ * Repository: https://github.com/VisualAppeal/Piwik-PHP-API
+ * Official api reference: http://piwik.org/docs/analytics-api/reference/
+ */
+class Piwik
+{
 	const ERROR_INVALID = 10;
 	const ERROR_EMPTY = 11;
 
@@ -69,7 +68,7 @@ class Piwik {
 			$this->setDate($date);
 	}
 
-	/** 
+	/**
 	 * Getter & Setter
 	 */
 
@@ -271,7 +270,7 @@ class Piwik {
 		$this->_errors = array();
 	}
 
-	/** 
+	/**
 	 * Make API request
 	 *
 	 * @param string $method
@@ -401,7 +400,7 @@ class Piwik {
 		}
 	}
 
-	/** 
+	/**
 	 * Add error
 	 *
 	 * @param string $msg Error message
@@ -424,8 +423,8 @@ class Piwik {
 		return $this->_errors;
 	}
 
-	/** 
-	 * MODULE: API 
+	/**
+	 * MODULE: API
 	 * API metadata
 	 */
 
@@ -583,18 +582,18 @@ class Piwik {
 	/**
 	 * Get the result of multiple requests bundled together
 	 * Take as an argument an array of the API methods to send together
-         * For example, array('API.get', 'Action.get', 'DeviceDetection.getType') 
-         *
-	 * @param array $methods 
+		 * For example, array('API.get', 'Action.get', 'DeviceDetection.getType')
+		 *
+	 * @param array $methods
 	 */
-	public function getBulkRequest($methods = array()) { 
-          $urls = array();
-          foreach ($methods as $key => $method){
-            $urls['urls['.$key.']'] = urlencode('method='.$method);
-          }    
+	public function getBulkRequest($methods = array()) {
+		  $urls = array();
+		  foreach ($methods as $key => $method){
+			$urls['urls['.$key.']'] = urlencode('method='.$method);
+		  }
 	  return $this->_request('API.getBulkRequest', $urls);
 	}
-	
+
 	/**
 	 * MODULE: ACTIONS
 	 * Reports for visitor actions
@@ -764,10 +763,10 @@ class Piwik {
 	}
 
 	/**
-	 * Get Device Type. 
-	 * 
+	 * Get Device Type.
+	 *
 	 * It requires DevicesDetection to be enabled
-	 * 
+	 *
 	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
 	 *
 	 * @param string $segment
@@ -780,12 +779,12 @@ class Piwik {
 			'expanded' => $expanded,
 		));
 	}
-	
+
 	/**
-	 * Get Device Brand. 
-	 * 
+	 * Get Device Brand.
+	 *
 	 * It requires DevicesDetection to be enabled
-	 * 
+	 *
 	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
 	 *
 	 * @param string $segment
@@ -798,12 +797,12 @@ class Piwik {
 			'expanded' => $expanded,
 		));
 	}
-	
+
 	/**
-	 * Get Device Model. 
-	 * 
+	 * Get Device Model.
+	 *
 	 * It requires DevicesDetection to be enabled
-	 * 
+	 *
 	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
 	 *
 	 * @param string $segment
@@ -974,7 +973,7 @@ class Piwik {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public function getObject() {
 		return $this->_request('ExampleAPI.getObject');
@@ -1175,7 +1174,7 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: IMAGE GRAPH
 	 * Generate png graphs
 	 */
@@ -1223,7 +1222,7 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: LANGUAGES MANAGER
 	 * Manage languages
 	 */
@@ -1302,7 +1301,7 @@ class Piwik {
 	 */
 
 	/**
-	 * Get a short information about the visit counts in the last minutes 
+	 * Get a short information about the visit counts in the last minutes
 	 *
 	 * @param int $lastMinutes Default: 60
 	 * @param string $segment
@@ -1446,7 +1445,7 @@ class Piwik {
 	}
 
 
-	/** 
+	/**
 	 * MODULE: MULTI SITES
 	 * Get information about multiple sites
 	 */
@@ -1478,7 +1477,7 @@ class Piwik {
 	}
 
 
-	/** 
+	/**
 	 * MODULE: PDF REPORST
 	 * Manage pdf reports
 	 */
@@ -1575,7 +1574,7 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: PROVIDER
 	 * Get provider information
 	 */
@@ -1591,7 +1590,7 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: REFERERS
 	 * Get information about the referers
 	 */
@@ -1647,7 +1646,7 @@ class Piwik {
 	/**
 	 * Get search engines by keyword
 	 *
- 	 * @param int $idSubtable
+	 * @param int $idSubtable
 	 * @param string $segment
 	 */
 	public function getSearchEnginesFromKeywordId($idSubtable, $segment = '') {
@@ -1673,7 +1672,7 @@ class Piwik {
 	/**
 	 * Get search engines by search engine ID
 	 *
- 	 * @param int $idSubtable
+	 * @param int $idSubtable
 	 * @param string $segment
 	 */
 	public function getKeywordsFromSearchEngineId($idSubtable, $segment = '') {
@@ -1699,7 +1698,7 @@ class Piwik {
 	/**
 	 * Get keywords by campaign ID
 	 *
- 	 * @param int $idSubtable
+	 * @param int $idSubtable
 	 * @param string $segment
 	 */
 	public function getKeywordsFromCampaignId($idSubtable, $segment = '') {
@@ -1725,7 +1724,7 @@ class Piwik {
 	/**
 	 * Get urls by website ID
 	 *
- 	 * @param int $idSubtable
+	 * @param int $idSubtable
 	 * @param string $segment
 	 */
 	public function getUrlsFromWebsiteId($idSubtable, $segment = '') {
@@ -1790,9 +1789,9 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: SEO
-	 * Get SEO information 
+	 * Get SEO information
 	 */
 
 	/**
@@ -1806,7 +1805,7 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: SITES MANAGER
 	 * Manage sites
 	 */
@@ -2242,7 +2241,7 @@ class Piwik {
 		return $this->_request('Transitions.getTranslations');
 	}
 
-	/** 
+	/**
 	 * MODULE: USER COUNTRY
 	 * Get visitors country information
 	 */
@@ -2302,9 +2301,9 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: USER SETTINGS
-	 * Get the user settings 
+	 * Get the user settings
 	 */
 
 	/**
@@ -2419,7 +2418,7 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: USER MANAGER
 	 * Manage piwik users
 	 */
@@ -2627,9 +2626,9 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: VISIT FREQUENCY
-	 * Get visit frequency 
+	 * Get visit frequency
 	 */
 
 	/**
@@ -2645,9 +2644,9 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: VISIT TIME
-	 * Get visit time 
+	 * Get visit time
 	 */
 
 	/**
@@ -2685,9 +2684,9 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: VISITOR INTEREST
-	 * Get the interests of the visitor 
+	 * Get the interests of the visitor
 	 */
 
 	/**
@@ -2734,7 +2733,7 @@ class Piwik {
 		));
 	}
 
-	/** 
+	/**
 	 * MODULE: VISITS SUMMARY
 	 * Get visit summary information
 	 */
@@ -2840,5 +2839,3 @@ class Piwik {
 		));
 	}
 }
-
-?>

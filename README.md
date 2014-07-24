@@ -6,12 +6,17 @@ A PHP wrapper class for [Piwik](http://piwik.org/)
 
 * cUrl
 
-## Use
+## Install
+
+This library can be installed via composer: `"visualappeal/piwik-php-api": "dev-master"`
+
+## Usage
 
 ### Create an instance of piwik
 
-	require('Piwik.php');
-	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 'siteId');
+	require(dirname(__FILE__) . '/vendor/autoload.php');
+
+	$piwik = new \Piwik('http://stats.example.org', 'my_access_token', 'siteId');
 
 There are some basic parameters (period, date, range) which you can define at the beginning. They do not change until you reset them with
 
@@ -19,13 +24,13 @@ There are some basic parameters (period, date, range) which you can define at th
 
 So you can execute multiple requests without specifying the parameters again.
 
-### siteId 
+### siteId
 
 The ID of your website, single number, list separated through comma "1,4,7", or "all"
 
 ### period
 
-The period you request the statistics for 
+The period you request the statistics for
 
 	Piwik::PERIOD_DAY
 	Piwik::PERIOD_WEEK
@@ -58,7 +63,7 @@ Set the date via
 	$piwik->setDate('YYYY-mm-dd');
 
 Or use the constants
-	
+
 	$piwik->setDate(Piwik::DATE_TODAY);
 	$piwik->setDate(Piwik::DATE_YESTERDAY);
 
@@ -99,26 +104,11 @@ All available formats
 
 Get all the unique visitors from yesterday:
 
-	require('piwik.php');
-	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 1, Piwik::FORMAT_JSON);
-	
+	require(dirname(__FILE__) . '/vendor/autoload.php');
+
+	$piwik = new \Piwik('http://stats.example.org', 'my_access_token', 1, Piwik::FORMAT_JSON);
+
 	$piwik->setPeriod(Piwik::PERIOD_DAY);
 	$piwik->setDate(Piwik::DATE_YESTERDAY);
-	
+
 	echo "Unique visitors yesterday: ".$piwik->getUniqueVisitors();
-
-## License
-
-Copyright 2012 - VisualAppeal GbR - www.visualappeal.de
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-`http://www.apache.org/licenses/LICENSE-2.0`
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
