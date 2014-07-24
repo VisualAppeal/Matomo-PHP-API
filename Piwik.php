@@ -602,16 +602,18 @@ class Piwik
 	/**
 	 * Get the result of multiple requests bundled together
 	 * Take as an argument an array of the API methods to send together
-		 * For example, array('API.get', 'Action.get', 'DeviceDetection.getType')
-		 *
+	 * For example, array('API.get', 'Action.get', 'DeviceDetection.getType')
+	 *
 	 * @param array $methods
 	 */
 	public function getBulkRequest($methods = array()) {
-		  $urls = array();
-		  foreach ($methods as $key => $method){
+		$urls = array();
+
+		foreach ($methods as $key => $method){
 			$urls['urls['.$key.']'] = urlencode('method='.$method);
-		  }
-	  return $this->_request('API.getBulkRequest', $urls);
+		}
+
+		return $this->_request('API.getBulkRequest', $urls);
 	}
 
 	/**
