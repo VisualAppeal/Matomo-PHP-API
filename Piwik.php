@@ -88,6 +88,8 @@ class Piwik
 	 */
 	public function setSite($url) {
 		$this->_site = $url;
+
+		return $this;
 	}
 
 	/**
@@ -106,6 +108,8 @@ class Piwik
 	 */
 	public function setToken($token) {
 		$this->_token = $token;
+
+		return $this;
 	}
 
 	/**
@@ -124,6 +128,8 @@ class Piwik
 	 */
 	public function setSiteId($id) {
 		$this->_siteId = $id;
+
+		return $this;
 	}
 
 	/**
@@ -149,6 +155,8 @@ class Piwik
 	 */
 	public function setFormat($format) {
 		$this->_format = $format;
+
+		return $this;
 	}
 
 	/**
@@ -167,6 +175,8 @@ class Piwik
 	 */
 	public function setLanguage($language) {
 		$this->_language = $language;
+
+		return $this;
 	}
 
 	/**
@@ -187,6 +197,8 @@ class Piwik
 	 */
 	public function setDate($date) {
 		$this->_date = $date;
+
+		return $this;
 	}
 
 	/**
@@ -210,6 +222,8 @@ class Piwik
 	 */
 	public function setPeriod($period) {
 		$this->_period = $period;
+
+		return $this;
 	}
 
 	/**
@@ -238,6 +252,8 @@ class Piwik
 		if (is_null($rangeEnd)) {
 			$this->_date = $rangeStart;
 		}
+
+		return $this;
 	}
 
 	/**
@@ -256,6 +272,8 @@ class Piwik
 	 */
 	public function setLimit($limit) {
 		$this->_limit = $limit;
+
+		return $this;
 	}
 
 	/**
@@ -268,6 +286,8 @@ class Piwik
 		$this->_rangeEnd = null;
 
 		$this->_errors = array();
+
+		return $this;
 	}
 
 	/**
