@@ -1,6 +1,6 @@
 {
-        "name" : "mdcallinone/Piwik-PHP-API",
-        "require" : {
-                "php" : ">=5.3.0"
-        }
+	"name" : "VisualAppeal/Piwik-PHP-API",
+	"require" : {
+		"php" : ">=5.3.0"
+	}
 }
