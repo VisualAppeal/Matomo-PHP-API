@@ -582,15 +582,19 @@ class Piwik {
 
 	/**
 	 * Get the result of multiple requests bundled together
-	 *
-	 * @param array $urls
+	 * Take as an argument an array of the API methods to send together
+         * For example, array('API.get', 'Action.get', 'DeviceDetection.getType') 
+         *
+	 * @param array $methods 
 	 */
-	public function getBulkRequest($urls = array()) {
-		return $this->_request('API.getBulkRequest', array(
-			'urls' => $urls,
-		));
+	public function getBulkRequest($methods = array()) { 
+          $urls = array();
+          foreach ($methods as $key => $method){
+            $urls['urls['.$key.']'] = urlencode('method='.$method);
+          }    
+	  return $this->_request('API.getBulkRequest', $urls);
 	}
-
+	
 	/**
 	 * MODULE: ACTIONS
 	 * Reports for visitor actions
