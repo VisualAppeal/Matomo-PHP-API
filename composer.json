@@ -1,5 +1,5 @@
 {
-	"name" : "visual-appeal/piwik-php-api",
+	"name" : "visualappeal/piwik-php-api",
 	"require" : {
 		"php" : ">=5.3.0"
 	}
