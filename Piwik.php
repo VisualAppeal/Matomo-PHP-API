@@ -301,7 +301,8 @@ class Piwik
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
-		curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
 		$buffer = curl_exec($handle);
 		curl_close($handle);
 
