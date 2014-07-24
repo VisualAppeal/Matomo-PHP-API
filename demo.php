@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 require('Piwik.php');
 
@@ -37,7 +37,6 @@ else {
 	$visitsRange = $piwik->getVisits();
 	$visitsURange = $piwik->getUniqueVisitors();
 	$visitsLRange = $piwik->getSumVisitsLengthPretty();
-
 	?>
 
 	<h2>Summary Yesterday</h2>
@@ -62,13 +61,15 @@ else {
 	</ul>
 
 	<?php if ($piwik->hasError()): ?>
-	<h2>Error Summary</h2>
+		<h2>Error Summary</h2>
 		<ul>
-		<?php foreach ($piwik->getErrors() as $error): ?>
-			<li><?php echo $error; ?></li>
-		<?php endforeach; ?>
+			<?php foreach ($piwik->getErrors() as $error): ?>
+				<li><?php echo $error; ?></li>
+			<?php endforeach; ?>
 		</ul>
 	<?php else: ?>
-	<p><strong>No error!</strong></p>
+		<p><strong>No errors!</strong></p>
 	<?php endif; ?>
-<?php } ?>
+
+<?php
+}
