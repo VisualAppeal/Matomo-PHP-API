@@ -411,9 +411,6 @@ class Piwik
 	private function _parseRequest($request) {
 		switch ($this->_format) {
 			case self::FORMAT_JSON:
-				if (strpos($request, '{') != 0)
-					return $request;
-
 				return json_decode($request);
 				break;
 			default:
