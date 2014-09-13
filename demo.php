@@ -1,11 +1,7 @@
 <?php
 
 require('Piwik.php');
-
-//Edit
-define('SITE_URL', '');
-define('SITE_ID', 1);
-define('TOKEN', '123456789abcdefghijklmnopqrstuvwxyz');
+require('config.php');
 
 $piwik = new Piwik(SITE_URL, TOKEN, SITE_ID, Piwik::FORMAT_JSON);
 $piwik->setLanguage('en');

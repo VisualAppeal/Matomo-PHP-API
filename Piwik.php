@@ -297,7 +297,6 @@ class Piwik
 	 */
 	private function _request($method, $params = array()) {
 		$url = $this->_parseUrl($method, $params);
-		// 	var_dump($url);
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
@@ -352,6 +351,10 @@ class Piwik
 			'format' => $this->_format,
 			'language' => $this->_language,
 		) + $params;
+
+		foreach ($params as $key => $value) {
+			$params[$key] = urlencode($value);
+		}
 
 		if ($this->_period != self::PERIOD_RANGE) {
 			$params = $params + array(
