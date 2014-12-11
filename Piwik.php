@@ -40,6 +40,8 @@ class Piwik
 	private $_limit = '';
 
 	private $_errors = array();
+	
+	public $verifySsl = true;
 
 	/**
 	 * Create new instance
@@ -302,6 +304,9 @@ class Piwik
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
+		if (!$this->verifySsl)
+			curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
+		
 		$buffer = curl_exec($handle);
 		curl_close($handle);
 
