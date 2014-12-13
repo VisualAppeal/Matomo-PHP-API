@@ -455,6 +455,27 @@ class Piwik
 	 */
 
 	/**
+	 * Get current piwik version
+	 */
+	public function getPiwikVersion() {
+		return $this->_request('API.getPiwikVersion');
+	}
+
+	/**
+	 * Get current ip address (from the server executing this script)
+	 */
+	public function getIpFromHeader() {
+		return $this->_request('API.getIpFromHeader');
+	}
+
+	/**
+	 * Get current settings
+	 */
+	public function getSettings() {
+		return $this->_request('API.getSettings');
+	}
+
+	/**
 	 * Get default metric translations
 	 */
 	public function getDefaultMetricTranslations() {
@@ -580,8 +601,7 @@ class Piwik
 		));
 	}
 
-
-	/***
+	/**
 	 * Unknown
 	 *
 	 * @param $apiModule
@@ -606,6 +626,16 @@ class Piwik
 	}
 
 	/**
+	 * Unknown
+	 *
+	 * @param string $segment
+	 * @param string $columns
+	 */
+	public function getLastDate() {
+		return $this->_request('API.getLastDate');
+	}
+
+	/**
 	 * Get the result of multiple requests bundled together
 	 * Take as an argument an array of the API methods to send together
 	 * For example, array('API.get', 'Action.get', 'DeviceDetection.getType')
@@ -620,6 +650,17 @@ class Piwik
 		}
 
 		return $this->_request('API.getBulkRequest', $urls);
+	}
+
+	/**
+	 * Get suggested values for segments
+	 *
+	 * @param string $segmentName
+	 */
+	public function getSuggestedValuesForSegment($segmentName) {
+		return $this->_request('API.getSuggestedValuesForSegment', array(
+			'segmentName' => $segmentName,
+		));
 	}
 
 	/**
@@ -791,59 +832,6 @@ class Piwik
 	}
 
 	/**
-	 * Get Device Type.
-	 *
-	 * It requires DevicesDetection to be enabled
-	 *
-	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
-	 *
-	 * @param string $segment
-	 * @param string $expanded
-	 * @param int $idSubtable
-	 */
-	public function getDeviceType($segment = '', $expanded = '', $idSubtable = '') {
-		return $this->_request('DevicesDetection.getType', array(
-			'segment' => $segment,
-			'expanded' => $expanded,
-		));
-	}
-
-	/**
-	 * Get Device Brand.
-	 *
-	 * It requires DevicesDetection to be enabled
-	 *
-	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
-	 *
-	 * @param string $segment
-	 * @param string $expanded
-	 * @param int $idSubtable
-	 */
-	public function getDeviceBrand($segment = '', $expanded = '', $idSubtable = '') {
-		return $this->_request('DevicesDetection.getBrand', array(
-			'segment' => $segment,
-			'expanded' => $expanded,
-		));
-	}
-
-	/**
-	 * Get Device Model.
-	 *
-	 * It requires DevicesDetection to be enabled
-	 *
-	 * @see http://piwik.org/blog/2013/05/last-piwik-1-x-release-v1-12-new-features-api-improvements-screenshots/#toc-new-big-feature-device-detection-reports
-	 *
-	 * @param string $segment
-	 * @param string $expanded
-	 * @param int $idSubtable
-	 */
-	public function getDeviceModel($segment = '', $expanded = '', $idSubtable = '') {
-		return $this->_request('DevicesDetection.getModel', array(
-			'segment' => $segment,
-			'expanded' => $expanded,
-		));
-	}
-	/**
 	 * Get downloads
 	 *
 	 * @param string $segment
@@ -904,7 +892,7 @@ class Piwik
 	}
 
 	/**
-	 * Get
+	 * Get the site search keywords
 	 *
 	 * @param string $segment
 	 */
@@ -915,20 +903,7 @@ class Piwik
 	}
 
 	/**
-	 * Get
-	 *
-	 * @param array $dataTable
-	 * @param string $columnToRead
-	 */
-	public function addPagesPerSearchColumn($dataTable = array(), $columnToRead = 'nb_hits') {
-		return $this->_request('Actions.addPagesPerSearchColumn', array(
-			'dataTable' => $dataTable,
-			'columnToRead' => $columnToRead,
-		));
-	}
-
-	/**
-	 * Get
+	 * Get search keywords with no search results
 	 *
 	 * @param string $segment
 	 */
@@ -939,7 +914,7 @@ class Piwik
 	}
 
 	/**
-	 * Get
+	 * Get site search categories
 	 *
 	 * @param string $segment
 	 */
@@ -949,9 +924,256 @@ class Piwik
 		));
 	}
 
+	/**
+	 * MODULE: ANNOTATIONS
+	 */
 
 	/**
-	 * MODULE: CUSTOM VATIABLES
+	 * Add annotation
+	 *
+	 * @param string $note
+	 * @param integer $starred
+	 */
+	public function addAnnotation($note, $starred = 0) {
+		return $this->_request('Annotations.add', array(
+			'note' => $note,
+			'starred' => $starred,
+		));
+	}
+
+	/**
+	 * Save annotation
+	 *
+	 * @param integer $idNote
+	 * @param string $note
+	 * @param integer $starred
+	 */
+	public function saveAnnotation($idNote, $note = '', $starred = '') {
+		return $this->_request('Annotations.save', array(
+			'idNote' => $idNote,
+			'note' => $note,
+			'starred' => $starred,
+		));
+	}
+
+	/**
+	 * Delete annotation
+	 *
+	 * @param integer $idNote
+	 */
+	public function deleteAnnotation($idNote) {
+		return $this->_request('Annotations.delete', array(
+			'idNote' => $idNote,
+		));
+	}
+
+	/**
+	 * Delete all annotations
+	 */
+	public function deleteAllAnnotations() {
+		return $this->_request('Annotations.deleteAll');
+	}
+
+	/**
+	 * Get annotation
+	 *
+	 * @param integer $idNote
+	 */
+	public function getAnnotation($idNote) {
+		return $this->_request('Annotations.get', array(
+			'idNote' => $idNote,
+		));
+	}
+
+	/**
+	 * Get all annotations
+	 *
+	 * @param integer $lastN
+	 */
+	public function getAllAnnotation($lastN = '') {
+		return $this->_request('Annotations.getAll', array(
+			'lastN' => $lastN,
+		));
+	}
+
+	/**
+	 * Get number of annotation for current period
+	 *
+	 * @param integer $lastN
+	 * @param string $getAnnotationText
+	 */
+	public function getAnnotationCountForDates($lastN) {
+		return $this->_request('Annotations.getAnnotationCountForDates', array(
+			'lastN' => $lastN,
+			'getAnnotationText' => $getAnnotationText
+		));
+	}
+
+	/**
+	 * MODULE: CONTENTS
+	 */
+
+	/**
+	 * Get content names
+	 *
+	 * @param string $segment
+	 * @param integer $idSubtable
+	 */
+	public function getContentNames($segment = '', $idSubtable = '') {
+		return $this->_request('Contents.getContentNames', array(
+			'segment' => $segment,
+			'idSubtable' => $idSubtable,
+		));
+	}
+
+	/**
+	 * Get content pieces
+	 *
+	 * @param string $segment
+	 * @param integer $idSubtable
+	 */
+	public function getContentPieces($segment = '', $idSubtable = '') {
+		return $this->_request('Contents.getContentPieces', array(
+			'segment' => $segment,
+			'idSubtable' => $idSubtable,
+		));
+	}
+
+	/**
+	 * MODULE: CUSTOM ALERTS
+	 */
+
+	/**
+	 * Get alert details
+	 *
+	 * @param integer $idAlert
+	 */
+	public function getAlert($idAlert) {
+		return $this->_request('CustomAlerts.getAlert', array(
+			'idAlert' => $idAlert,
+		));
+	}
+
+	/**
+	 * Get values for alerts in the past
+	 *
+	 * @param integer $idAlert
+	 * @param unknown $subPeriodN
+	 */
+	public function getValuesForAlertInPast($idAlert, $subPeriodN) {
+		return $this->_request('CustomAlerts.getValuesForAlertInPast', array(
+			'idAlert' => $idAlert,
+			'subPeriodN' => $subPeriodN,
+		));
+	}
+
+	/**
+	 * Get all alert details
+	 *
+	 * @param array $idSites Array of site IDs
+	 * @param integer $ifSuperUserReturnAllAlerts
+	 */
+	public function getAlerts($idSites, $ifSuperUserReturnAllAlerts = '') {
+		return $this->_request('CustomAlerts.getAlerts', array(
+			'idSites' => $idSites,
+			'ifSuperUserReturnAllAlerts' => $ifSuperUserReturnAllAlerts,
+		));
+	}
+
+	/**
+	 * Add alert
+	 *
+	 * @param string $name
+	 * @param array $idSites Array of site IDs
+	 * @param integer $emailMe
+	 * @param unknown $additionalEmails
+	 * @param unknown $phoneNumbers
+	 * @param unknown $metric
+	 * @param unknown $metricCondition
+	 * @param unknown $metricValue
+	 * @param unknown $comparedTo
+	 * @param unknown $reportUniqueId
+	 * @param unknown $reportCondition
+	 * @param unknown $reportValue
+	 */
+	public function addAlert($name, $idSites, $emailMe, $additionalEmails, $phoneNumbers, $metric, $metricCondition,
+		$metricValue, $comparedTo, $reportUniqueId, $reportCondition = '', $reportValue = '') {
+		return $this->_request('CustomAlerts.addAlert', array(
+			'name' => $name,
+			'idSites' => $idSites,
+			'emailMe' => $emailMe,
+			'additionalEmails' => $additionalEmails,
+			'phoneNumbers' => $phoneNumbers,
+			'metric' => $metric,
+			'metricCondition' => $metricCondition,
+			'metricValue' => $metricValue,
+			'comparedTo' => $comparedTo,
+			'reportUniqueId' => $reportUniqueId,
+			'reportCondition' => $reportCondition,
+			'reportValue' => $reportValue,
+		));
+	}
+
+	/**
+	 * Edit alert
+	 *
+	 * @param integer $idAlert
+	 * @param string $name
+	 * @param array $idSites Array of site IDs
+	 * @param integer $emailMe
+	 * @param unknown $additionalEmails
+	 * @param unknown $phoneNumbers
+	 * @param unknown $metric
+	 * @param unknown $metricCondition
+	 * @param unknown $metricValue
+	 * @param unknown $comparedTo
+	 * @param unknown $reportUniqueId
+	 * @param unknown $reportCondition
+	 * @param unknown $reportValue
+	 */
+	public function editAlert($idAlert, $name, $idSites, $emailMe, $additionalEmails, $phoneNumbers, $metric, $metricCondition,
+		$metricValue, $comparedTo, $reportUniqueId, $reportCondition = '', $reportValue = '') {
+		return $this->_request('CustomAlerts.editAlert', array(
+			'idAlert' => $idAlert,
+			'name' => $name,
+			'idSites' => $idSites,
+			'emailMe' => $emailMe,
+			'additionalEmails' => $additionalEmails,
+			'phoneNumbers' => $phoneNumbers,
+			'metric' => $metric,
+			'metricCondition' => $metricCondition,
+			'metricValue' => $metricValue,
+			'comparedTo' => $comparedTo,
+			'reportUniqueId' => $reportUniqueId,
+			'reportCondition' => $reportCondition,
+			'reportValue' => $reportValue,
+		));
+	}
+
+	/**
+	 * Delete Alert
+	 *
+	 * @param integer $idAlert
+	 */
+	public function deleteAlert($idAlert) {
+		return $this->_request('CustomAlerts.deleteAlert', array(
+			'idAlert' => $idAlert,
+		));
+	}
+
+	/**
+	 * Get triggered alerts
+	 *
+	 * @param array $idSites
+	 */
+	public function getTriggeredAlerts($idSites) {
+		return $this->_request('CustomAlerts.getTriggeredAlerts', array(
+			'idSites' => $idSites,
+		));
+	}
+
+	/**
+	 * MODULE: CUSTOM VARIABLES
 	 * Custom variable information
 	 */
 
@@ -982,6 +1204,245 @@ class Piwik
 	}
 
 	/**
+	 * MODULE: Dashboard
+	 */
+
+	/**
+	 * Get list of dashboards
+	 */
+	public function getDashboards() {
+		return $this->_request('Dashboard.getDashboards');
+	}
+
+	/**
+	 * MODULE: DEVICES DETECTION
+	 */
+
+	/**
+	 * Get Device Type.
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getDeviceType($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('DevicesDetection.getType', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+
+	/**
+	 * Get Device Brand.
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getDeviceBrand($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('DevicesDetection.getBrand', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+
+	/**
+	 * Get Device Model.
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 * @param int $idSubtable
+	 */
+	public function getDeviceModel($segment = '', $expanded = '', $idSubtable = '') {
+		return $this->_request('DevicesDetection.getModel', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+
+	/**
+	 * Get operating system families
+	 *
+	 * @param string $segment
+	 */
+	public function getOSFamilies($segment = '') {
+		return $this->_request('DevicesDetection.getOsFamilies', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get os versions
+	 *
+	 * @param string $segment
+	 */
+	public function getOsVersions($segment = '') {
+		return $this->_request('DevicesDetection.getOsVersions', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get browsers
+	 *
+	 * @param string $segment
+	 */
+	public function getBrowsers($segment = '') {
+		return $this->_request('DevicesDetection.getBrowsers', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get browser versions
+	 *
+	 * @param string $segment
+	 */
+	public function getBrowserVersions($segment = '') {
+		return $this->_request('DevicesDetection.getBrowserVersions', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get browser engines
+	 *
+	 * @param string $segment
+	 */
+	public function getBrowserEngines($segment = '') {
+		return $this->_request('DevicesDetection.getBrowserEngines', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * MODULE: EVENTS
+	 */
+
+	/**
+	 * Get event categories
+	 *
+	 * @param string $segment
+	 * @param unknown $expanded
+	 * @param string $secondaryDimension ('eventAction' or 'eventName')
+	 */
+	public function getEventCategory($segment = '', $expanded = '', $secondaryDimension = '') {
+		return $this->_request('Events.getCategory', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+			'secondaryDimension' => $secondaryDimension,
+		));
+	}
+
+	/**
+	 * Get event actions
+	 *
+	 * @param string $segment
+	 * @param unknown $expanded
+	 * @param string $secondaryDimension ('eventName' or 'eventCategory')
+	 */
+	public function getEventAction($segment = '', $expanded = '', $secondaryDimension = '') {
+		return $this->_request('Events.getAction', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+			'secondaryDimension' => $secondaryDimension,
+		));
+	}
+
+	/**
+	 * Get event names
+	 *
+	 * @param string $segment
+	 * @param unknown $expanded
+	 * @param string $secondaryDimension ('eventAction' or 'eventCategory')
+	 */
+	public function getEventName($segment = '', $expanded = '', $secondaryDimension = '') {
+		return $this->_request('Events.getName', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+			'secondaryDimension' => $secondaryDimension,
+		));
+	}
+
+	/**
+	 * Get action from category ID
+	 *
+	 * @param integer $idSubtable
+	 * @param string $segment
+	 */
+	public function getActionFromCategoryId($idSubtable, $segment = '') {
+		return $this->_request('Events.getActionFromCategoryId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get name from category ID
+	 *
+	 * @param integer $idSubtable
+	 * @param string $segment
+	 */
+	public function getNameFromCategoryId($idSubtable, $segment = '') {
+		return $this->_request('Events.getNameFromCategoryId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get category from action ID
+	 *
+	 * @param integer $idSubtable
+	 * @param string $segment
+	 */
+	public function getCategoryFromActionId($idSubtable, $segment = '') {
+		return $this->_request('Events.getCategoryFromActionId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get name from action ID
+	 *
+	 * @param integer $idSubtable
+	 * @param string $segment
+	 */
+	public function getNameFromActionId($idSubtable, $segment = '') {
+		return $this->_request('Events.getNameFromActionId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get action from name ID
+	 *
+	 * @param integer $idSubtable
+	 * @param string $segment
+	 */
+	public function getActionFromNameId($idSubtable, $segment = '') {
+		return $this->_request('Events.getActionFromNameId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get category from name ID
+	 *
+	 * @param integer $idSubtable
+	 * @param string $segment
+	 */
+	public function getCategoryFromNameId($idSubtable, $segment = '') {
+		return $this->_request('Events.getCategoryFromNameId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment,
+		));
+	}
+
+	/**
 	 * MODULE: EXAMPLE API
 	 * Get api and piwiki information
 	 */
@@ -989,21 +1450,21 @@ class Piwik
 	/**
 	 * Get the piwik version
 	 */
-	public function getPiwikiVersion() {
+	public function getExamplePiwikVersion() {
 		return $this->_request('ExampleAPI.getPiwikVersion');
 	}
 
 	/**
 	 * http://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#The_number_42
 	 */
-	public function getAnswerToLife() {
+	public function getExampleAnswerToLife() {
 		return $this->_request('ExampleAPI.getAnswerToLife');
 	}
 
 	/**
-	 *
+	 * Unknown
 	 */
-	public function getObject() {
+	public function getExampleObject() {
 		return $this->_request('ExampleAPI.getObject');
 	}
 
@@ -1013,7 +1474,7 @@ class Piwik
 	 * @param int $a
 	 * @param int $b
 	 */
-	public function getSum($a = '0', $b = '0') {
+	public function getExampleSum($a = '0', $b = '0') {
 		return $this->_request('ExampleAPI.getSum', array(
 			'a' => $a,
 			'b' => $b,
@@ -1023,21 +1484,21 @@ class Piwik
 	/**
 	 * Returns nothing but the success of the request
 	 */
-	public function getNull() {
+	public function getExampleNull() {
 		return $this->_request('ExampleAPI.getNull');
 	}
 
 	/**
 	 * Get a short piwik description
 	 */
-	public function getDescriptionArray() {
+	public function getExampleDescriptionArray() {
 		return $this->_request('ExampleAPI.getDescriptionArray');
 	}
 
 	/**
 	 * Get a short comparison with other analytic software
 	 */
-	public function getCompetitionDatatable() {
+	public function getExampleCompetitionDatatable() {
 		return $this->_request('ExampleAPI.getCompetitionDatatable');
 	}
 
@@ -1045,15 +1506,60 @@ class Piwik
 	 * Get information about 42
 	 * http://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#The_number_42
 	 */
-	public function getMoreInformationAnswerToLife() {
+	public function getExampleMoreInformationAnswerToLife() {
 		return $this->_request('ExampleAPI.getMoreInformationAnswerToLife');
 	}
 
 	/**
 	 * Get a multidimensional array
 	 */
-	public function getMultiArray() {
+	public function getExampleMultiArray() {
 		return $this->_request('ExampleAPI.getMultiArray');
+	}
+
+	/**
+	 * MODULE: EXAMPLE PLUGIN
+	 */
+
+	/**
+	 * Get a multidimensional array
+	 *
+	 * @param integer $truth
+	 */
+	public function getExamplePluginAnswerToLife($truth = 1) {
+		return $this->_request('ExamplePlugin.getAnswerToLife', array(
+			'truth' => $truth,
+		));
+	}
+
+	/**
+	 * Get a multidimensional array
+	 *
+	 * @param string $segment
+	 */
+	public function getExamplePluginReport($segment = '') {
+		return $this->_request('ExamplePlugin.getExampleReport', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * MODULE: FEEDBACK
+	 */
+
+	/**
+	 * Get a multidimensional array
+	 *
+	 * @param string $featureName
+	 * @param unknown $like
+	 * @param string $message
+	 */
+	public function sendFeedbackForFeature($featureName, $like, $message = '') {
+		return $this->_request('Feedback.sendFeedbackForFeature', array(
+			'featureName' => $featureName,
+			'like' => $like,
+			'message' => $message,
+		));
 	}
 
 	/**
@@ -1252,11 +1758,93 @@ class Piwik
 
 	/**
 	 * MODULE: LANGUAGES MANAGER
+	 * Get plugin insights
+	 */
+
+	/**
+	 * Check if piwik can generate insights for current period
+	 */
+	public function canGenerateInsights() {
+		return $this->_request('Insights.canGenerateInsights');
+	}
+
+	/**
+	 * Get insights overview
+	 *
+	 * @param string $segment
+	 */
+	public function getInsightsOverview($segment) {
+		return $this->_request('Insights.getInsightsOverview', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Unknown
+	 *
+	 * @param string $segment
+	 */
+	public function getMoversAndShakersOverview($segment) {
+		return $this->_request('Insights.getMoversAndShakersOverview', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Unknown
+	 *
+	 * @param integer $reportUniqueId
+	 * @param string $segment
+	 * @param integer $comparedToXPeriods
+	 * @param integer $limitIncreaser
+	 * @param integer $limitDecreaser
+	 */
+	public function getMoversAndShakers($reportUniqueId, $segment, $comparedToXPeriods = '1', $limitIncreaser = '4',
+		$limitDecreaser = '4') {
+		return $this->_request('Insights.getMoversAndShakers', array(
+			'reportUniqueId' => $reportUniqueId,
+			'segment' => $segment,
+			'comparedToXPeriods' => $comparedToXPeriods,
+			'limitIncreaser' => $limitIncreaser,
+			'limitDecreaser' => $limitDecreaser,
+		));
+	}
+
+	/**
+	 * Unknown
+	 *
+	 * @param integer $reportUniqueId
+	 * @param string $segment
+	 * @param integer $limitIncreaser
+	 * @param integer $limitDecreaser
+	 * @param string $filterBy
+	 * @param integer minImpactPercent (0-100)
+	 * @param integer minGrowthPercent (0-100)
+	 * @param integer $comparedToXPeriods
+	 * @param string $orderBy
+	 */
+	public function getInsights($reportUniqueId, $segment, $limitIncreaser = '5', $limitDecreaser = '5', $filterBy = '',
+		$minImpactPercent = '2', $minGrowthPercent = '20', $comparedToXPeriods = '1', $orderBy = 'absolute') {
+		return $this->_request('Insights.getInsights', array(
+			'reportUniqueId' => $reportUniqueId,
+			'segment' => $segment,
+			'limitIncreaser' => $limitIncreaser,
+			'limitDecreaser' => $limitDecreaser,
+			'filterBy' => $filterBy,
+			'minImpactPercent' => $minImpactPercent,
+			'minGrowthPercent' => $minGrowthPercent,
+			'comparedToXPeriods' => $comparedToXPeriods,
+			'orderBy' => $orderBy,
+		));
+	}
+
+	/**
+	 * MODULE: LANGUAGES MANAGER
 	 * Manage languages
 	 */
 
 	/**
-	 * Proofe if language is available
+	 * Proof if language is available
 	 *
 	 * @param string $languageCode
 	 */
@@ -1359,6 +1947,30 @@ class Piwik
 	}
 
 	/**
+	 * Get a profile for a visitor
+	 *
+	 * @param integer $visitorId
+	 * @param string $segment
+	 */
+	public function getVisitorProfile($visitorId = '', $segment = '') {
+		return $this->_request('Live.getVisitorProfile', array(
+			'visitorId' => $visitorId,
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get the ID of the most recent visitor
+	 *
+	 * @param string $segment
+	 */
+	public function getMostRecentVisitorId($segment = '') {
+		return $this->_request('Live.getMostRecentVisitorId', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
 	 * MODULE: MOBILEMESSAGING
 	 * The MobileMessaging API lets you manage and access all the MobileMessaging plugin features including : - manage SMS API credential - activate phone numbers - check remaining credits - send SMS
 	 */
@@ -1373,7 +1985,7 @@ class Piwik
 	}
 
 	/**
-	 * Get
+	 * Get list with sms provider
 	 *
 	 * @return mixed
 	 */
@@ -1451,7 +2063,7 @@ class Piwik
 		return $this->_request('MobileMessaging.deleteSMSAPICredential');
 	}
 
-	/***
+	/**
 	 * Set unknown
 	 *
 	 * @param $delegatedManagement
@@ -1504,102 +2116,29 @@ class Piwik
 		));
 	}
 
-
 	/**
-	 * MODULE: PDF REPORST
-	 * Manage pdf reports
+	 * MODULE: OVERLAY
 	 */
 
 	/**
-	 * Add pdf report
-	 *
-	 * @param string $description
-	 * @param string $reportType
-	 * @param string $reportFormat
-	 * @param string $reports
-	 * @param array $parameters
+	 * Unknown
 	 */
-	public function addReport($description, $reportType, $reportFormat, $reports, $parameters = array()) {
-		return $this->_request('PDFReports.addReport', array(
-			'description' => $description,
-			'reportType' => $reportType,
-			'reportFormat' => $reportFormat,
-			'reports' => $reports,
-			'parameters' => $parameters,
-		));
+	public function getOverlayTranslations() {
+		return $this->_request('Overlay.getTranslations');
 	}
 
 	/**
-	 * Update pdf report
-	 *
-	 * @param int $idReport ID of the report
-	 * @param string $description
-	 * @param string $reportType
-	 * @param string $reportFormat
-	 * @param string $reports
-	 * @param array $parameters
+	 * Unknown
 	 */
-	public function updateReport($idReport, $description, $reportType, $reportFormat, $reports, $parameters = array()) {
-		return $this->_request('PDFReports.updateReport', array(
-			'idReport' => $idReport,
-			'description' => $description,
-			'reportType' => $reportType,
-			'reportFormat' => $reportFormat,
-			'reports' => $reports,
-			'parameters' => $parameters,
-		));
+	public function getOverlayExcludedQueryParameters() {
+		return $this->_request('Overlay.getExcludedQueryParameters');
 	}
 
 	/**
-	 * Delete report
-	 *
-	 * @param int $idReport ID of the report
+	 * Unknown
 	 */
-	public function deleteReport($idReport) {
-		return $this->_request('PDFReports.deleteReport', array(
-			'idReport' => $idReport,
-		));
-	}
-
-	/**
-	 * Get all reports
-	 *
-	 * @param int $idReport ID of the report
-	 * @param boolean $iflevelReturnOnlylevelReports
-	 */
-	public function getReports($idReport = '', $iflevelReturnOnlylevelReports = '') {
-		return $this->_request('PDFReports.getReports', array(
-			'idReport' => $idReport,
-			'iflevelReturnOnlylevelReports' => $iflevelReturnOnlylevelReports,
-		));
-	}
-
-	/**
-	 * Generate report
-	 *
-	 * @param int $idReport ID of the report
-	 * @param string $outputType
-	 * @param string $reportFormat
-	 * @param array $parameters
-	 */
-	public function generateReport($idReport, $outputType = '', $reportFormat = '', $parameters = array()) {
-		return $this->_request('PDFReports.generateReport', array(
-			'idReport' => $idReport,
-			'outputType' => $outputType,
-			'reportFormat' => $reportFormat,
-			'parameters' => $parameters,
-		));
-	}
-
-	/**
-	 * Send report via email
-	 *
-	 * @param int $idReport ID of the report
-	 */
-	public function sendReport($idReport) {
-		return $this->_request('PDFReports.sendReport', array(
-			'idReport' => $idReport,
-		));
+	public function getOverlayFollowingPages() {
+		return $this->_request('Overlay.getFollowingPages');
 	}
 
 	/**
@@ -1620,30 +2159,41 @@ class Piwik
 
 	/**
 	 * MODULE: REFERERS
-	 * Get information about the referers
+	 * Get information about the referrers
 	 */
 
 	/**
-	 * Get referer types
+	 * Get referrer types
 	 *
 	 * @param string $segment
-	 * @param string $typeReferer
+	 * @param string $typeReferrer
 	 */
-	public function getRefererType($segment = '', $typeReferer = '') {
-		return $this->_request('Referers.getRefererType', array(
+	public function getReferrerType($segment = '', $typeReferrer = '') {
+		return $this->_request('Referrers.getReferrerType', array(
 			'segment' => $segment,
-			'typeReferer' => $typeReferer,
+			'typeReferrer' => $typeReferrer,
 		));
 	}
 
 	/**
-	 * Get referer keywords
+	 * Get all referrers
+	 *
+	 * @param string $segment
+	 */
+	public function getAllReferrers($segment = '') {
+		return $this->_request('Referrers.getAll', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get referrer keywords
 	 *
 	 * @param string $segment
 	 * @param string $expanded
 	 */
 	public function getKeywords($segment = '', $expanded = '') {
-		return $this->_request('Referers.getKeywords', array(
+		return $this->_request('Referrers.getKeywords', array(
 			'segment' => $segment,
 			'expanded' => $expanded,
 		));
@@ -1655,7 +2205,7 @@ class Piwik
 	 * @param string $url
 	 */
 	public function getKeywordsForPageUrl($url) {
-		return $this->_request('Referers.getKeywordsForPageUrl', array(
+		return $this->_request('Referrers.getKeywordsForPageUrl', array(
 			'url' => $url,
 		));
 	}
@@ -1666,7 +2216,7 @@ class Piwik
 	 * @param string $title
 	 */
 	public function getKeywordsForPageTitle($title) {
-		return $this->_request('Referers.getKeywordsForPageTitle', array(
+		return $this->_request('Referrers.getKeywordsForPageTitle', array(
 			'title' => $title,
 		));
 	}
@@ -1678,7 +2228,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getSearchEnginesFromKeywordId($idSubtable, $segment = '') {
-		return $this->_request('Referers.getSearchEnginesFromKeywordId', array(
+		return $this->_request('Referrers.getSearchEnginesFromKeywordId', array(
 			'idSubtable' => $idSubtable,
 			'segment' => $segment,
 		));
@@ -1691,7 +2241,7 @@ class Piwik
 	 * @param string $expanded
 	 */
 	public function getSearchEngines($segment = '', $expanded = '') {
-		return $this->_request('Referers.getSearchEngines', array(
+		return $this->_request('Referrers.getSearchEngines', array(
 			'segment' => $segment,
 			'expanded' => $expanded,
 		));
@@ -1704,7 +2254,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getKeywordsFromSearchEngineId($idSubtable, $segment = '') {
-		return $this->_request('Referers.getKeywordsFromSearchEngineId', array(
+		return $this->_request('Referrers.getKeywordsFromSearchEngineId', array(
 			'idSubtable' => $idSubtable,
 			'segment' => $segment,
 		));
@@ -1717,7 +2267,7 @@ class Piwik
 	 * @param string $expanded
 	 */
 	public function getCampaigns($segment = '', $expanded = '') {
-		return $this->_request('Referers.getCampaigns', array(
+		return $this->_request('Referrers.getCampaigns', array(
 			'segment' => $segment,
 			'expanded' => $expanded,
 		));
@@ -1730,20 +2280,20 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getKeywordsFromCampaignId($idSubtable, $segment = '') {
-		return $this->_request('Referers.getKeywordsFromCampaignId', array(
+		return $this->_request('Referrers.getKeywordsFromCampaignId', array(
 			'idSubtable' => $idSubtable,
 			'segment' => $segment,
 		));
 	}
 
 	/**
-	 * Get website refererals
+	 * Get website referrerals
 	 *
 	 * @param string $segment
 	 * @param string $expanded
 	 */
 	public function getWebsites($segment = '', $expanded = '') {
-		return $this->_request('Referers.getWebsites', array(
+		return $this->_request('Referrers.getWebsites', array(
 			'segment' => $segment,
 			'expanded' => $expanded,
 		));
@@ -1756,9 +2306,35 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getUrlsFromWebsiteId($idSubtable, $segment = '') {
-		return $this->_request('Referers.getUrlsFromWebsiteId', array(
+		return $this->_request('Referrers.getUrlsFromWebsiteId', array(
 			'idSubtable' => $idSubtable,
 			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get social referrerals
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 */
+	public function getSocials($segment = '', $expanded = '') {
+		return $this->_request('Referrers.getSocials', array(
+			'segment' => $segment,
+			'expanded' => $expanded,
+		));
+	}
+
+	/**
+	 * Get social referral urls
+	 *
+	 * @param int $idSubtable
+	 * @param string $segment
+	 */
+	public function getUrlsForSocial($segment = '', $idSubtable = '') {
+		return $this->_request('Referrers.getUrlsForSocial', array(
+			'segment' => $segment,
+			'idSubtable' => $idSubtable,
 		));
 	}
 
@@ -1768,7 +2344,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getNumberOfSearchEngines($segment = '') {
-		return $this->_request('Referers.getNumberOfDistinctSearchEngines', array(
+		return $this->_request('Referrers.getNumberOfDistinctSearchEngines', array(
 			'segment' => $segment,
 		));
 	}
@@ -1779,7 +2355,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getNumberOfKeywords($segment = '') {
-		return $this->_request('Referers.getNumberOfDistinctKeywords', array(
+		return $this->_request('Referrers.getNumberOfDistinctKeywords', array(
 			'segment' => $segment,
 		));
 	}
@@ -1790,7 +2366,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getNumberOfCampaigns($segment = '') {
-		return $this->_request('Referers.getNumberOfDistinctCampaigns', array(
+		return $this->_request('Referrers.getNumberOfDistinctCampaigns', array(
 			'segment' => $segment,
 		));
 	}
@@ -1801,7 +2377,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getNumberOfWebsites($segment = '') {
-		return $this->_request('Referers.getNumberOfDistinctWebsites', array(
+		return $this->_request('Referrers.getNumberOfDistinctWebsites', array(
 			'segment' => $segment,
 		));
 	}
@@ -1812,7 +2388,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getNumberOfWebsitesUrls($segment = '') {
-		return $this->_request('Referers.getNumberOfDistinctWebsitesUrls', array(
+		return $this->_request('Referrers.getNumberOfDistinctWebsitesUrls', array(
 			'segment' => $segment,
 		));
 	}
@@ -1834,6 +2410,199 @@ class Piwik
 	}
 
 	/**
+	 * MODULE: SCHEDULED REPORTS
+	 * Manage pdf reports
+	 */
+
+	/**
+	 * Add scheduled report
+	 *
+	 * @param string $description
+	 * @param string $period
+	 * @param string $hour
+	 * @param string $reportType
+	 * @param string $reportFormat
+	 * @param array $reports
+	 * @param string $parameters
+	 * @param integer $idSegment
+	 */
+	public function addReport($description, $period, $hour, $reportType, $reportFormat, $reports, $parameters,
+		$idSegment = '') {
+		return $this->_request('ScheduledReports.addReport', array(
+			'description' => $description,
+			'period' => $period,
+			'hour' => $hour,
+			'reportType' => $reportType,
+			'reportFormat' => $reportFormat,
+			'reports' => $reports,
+			'parameters' => $parameters,
+			'idSegment' => $idSegment,
+		));
+	}
+
+	/**
+	 * Updated scheduled report
+	 *
+	 * @param integer $idReport
+	 * @param string $description
+	 * @param string $period
+	 * @param string $hour
+	 * @param string $reportType
+	 * @param string $reportFormat
+	 * @param array $reports
+	 * @param string $parameters
+	 * @param integer $idSegment
+	 */
+	public function updateReport($idReport, $description, $period, $hour, $reportType, $reportFormat, $reports, $parameters,
+		$idSegment = '') {
+		return $this->_request('ScheduledReports.updateReport', array(
+			'idReport' => $idReport,
+			'description' => $description,
+			'period' => $period,
+			'hour' => $hour,
+			'reportType' => $reportType,
+			'reportFormat' => $reportFormat,
+			'reports' => $reports,
+			'parameters' => $parameters,
+			'idSegment' => $idSegment,
+		));
+	}
+
+	/**
+	 * Delete scheduled report
+	 *
+	 * @param integer $idReport
+	 */
+	public function deleteReport($idReport) {
+		return $this->_request('ScheduledReports.deleteReport', array(
+			'idReport' => $idReport,
+		));
+	}
+
+	/**
+	 * Get list of scheduled reports
+	 *
+	 * @param integer $idReport
+	 * @param integer $ifSuperUserReturnOnlySuperUserReports
+	 * @param integer $idSegment
+	 */
+	public function getReports($idReport = '', $ifSuperUserReturnOnlySuperUserReports = '', $idSegment = '') {
+		return $this->_request('ScheduledReports.getReports', array(
+			'idReport' => $idReport,
+			'ifSuperUserReturnOnlySuperUserReports' => $ifSuperUserReturnOnlySuperUserReports,
+			'idSegment' => $idSegment,
+		));
+	}
+
+	/**
+	 * Get list of scheduled reports
+	 *
+	 * @param integer $idReport
+	 * @param integer $language
+	 * @param integer $outputType
+	 * @param string $reportFormat
+	 * @param array $parameters
+	 */
+	public function generateReport($idReport, $language = '', $outputType = '', $reportFormat = '', $parameters = '') {
+		return $this->_request('ScheduledReports.generateReport', array(
+			'idReport' => $idReport,
+			'language' => $language,
+			'outputType' => $outputType,
+			'reportFormat' => $reportFormat,
+			'parameters' => $parameters,
+		));
+	}
+
+	/**
+	 * Send scheduled reports
+	 *
+	 * @param integer $idReport
+	 * @param integer $force
+	 */
+	public function sendReport($idReport, $force = '') {
+		return $this->_request('ScheduledReports.sendReport', array(
+			'idReport' => $idReport,
+			'force' => $force,
+		));
+	}
+
+	/**
+	 * MODULE: SEGMENT EDITOR
+	 */
+
+	/**
+	 * Check if current user can add new segments
+	 */
+	public function isUserCanAddNewSegment() {
+		return $this->_request('SegmentEditor.isUserCanAddNewSegment');
+	}
+
+	/**
+	 * Delete a segment
+	 *
+	 * @param integer $idSegment
+	 */
+	public function deleteSegment($idSegment) {
+		return $this->_request('SegmentEditor.delete', array(
+			'idSegment' => $idSegment,
+		));
+	}
+
+	/**
+	 * Updates a segment
+	 *
+	 * @param integer $idSegment
+	 * @param string $name
+	 * @param string $definition
+	 * @param integer $autoArchive
+	 * @param integer $enableAllUsers
+	 */
+	public function updateSegment($idSegment, $name, $definition, $autoArchive = '', $enableAllUsers = '') {
+		return $this->_request('SegmentEditor.update', array(
+			'idSegment' => $idSegment,
+			'name' => $name,
+			'definition' => $definition,
+			'autoArchive' => $autoArchive,
+			'enableAllUsers' => $enableAllUsers,
+		));
+	}
+
+	/**
+	 * Updates a segment
+	 *
+	 * @param string $name
+	 * @param string $definition
+	 * @param integer $autoArchive
+	 * @param integer $enableAllUsers
+	 */
+	public function addSegment($name, $definition, $autoArchive = '', $enableAllUsers = '') {
+		return $this->_request('SegmentEditor.add', array(
+			'name' => $name,
+			'definition' => $definition,
+			'autoArchive' => $autoArchive,
+			'enableAllUsers' => $enableAllUsers,
+		));
+	}
+
+	/**
+	 * Get a segment
+	 *
+	 * @param integer $idSegment
+	 */
+	public function getSegment($idSegment) {
+		return $this->_request('SegmentEditor.get', array(
+			'idSegment' => $idSegment,
+		));
+	}
+
+	/**
+	 * Get all segments
+	 */
+	public function getAllSegments() {
+		return $this->_request('SegmentEditor.getAll');
+	}
+
+	/**
 	 * MODULE: SITES MANAGER
 	 * Manage sites
 	 */
@@ -1842,10 +2611,48 @@ class Piwik
 	 * Get the JS tag of the current site
 	 *
 	 * @param string $piwikUrl
+	 * @param integer $mergeSubdomains
+	 * @param integer $groupPageTitlesByDomain
+	 * @param integer $mergeAliasUrls
+	 * @param integer $visitorCustomVariables
+	 * @param integer $pageCustomVariables
+	 * @param integer $customCampaignNameQueryParam
+	 * @param integer $customCampaignKeywordParam
+	 * @param integer $doNotTrack
+	 * @param integer $disableCookies
 	 */
-	public function getJavascriptTag($piwikUrl) {
+	public function getJavascriptTag($piwikUrl, $mergeSubdomains = '', $groupPageTitlesByDomain = '',
+		$mergeAliasUrls = '', $visitorCustomVariables = '', $pageCustomVariables = '',
+		$customCampaignNameQueryParam = '', $customCampaignKeywordParam = '', $doNotTrack = '', $disableCookies = '') {
 		return $this->_request('SitesManager.getJavascriptTag', array(
 			'piwikUrl' => $piwikUrl,
+			'mergeSubdomains' => $mergeSubdomains,
+			'groupPageTitlesByDomain' => $groupPageTitlesByDomain,
+			'mergeAliasUrls' => $mergeAliasUrls,
+			'visitorCustomVariables' => $visitorCustomVariables,
+			'pageCustomVariables' => $pageCustomVariables,
+			'customCampaignNameQueryParam' => $customCampaignNameQueryParam,
+			'customCampaignKeywordParam' => $customCampaignKeywordParam,
+			'doNotTrack' => $doNotTrack,
+			'disableCookies' => $disableCookies,
+		));
+	}
+
+	/**
+	 * Get image tracking code of the current site
+	 *
+	 * @param string $piwikUrl
+	 * @param integer $actionName
+	 * @param integer $idGoal
+	 * @param integer $revenue
+	 */
+	public function getImageTrackingCode($piwikUrl, $actionName = '', $idGoal = '',
+		$revenue = '') {
+		return $this->_request('SitesManager.getImageTrackingCode', array(
+			'piwikUrl' => $piwikUrl,
+			'actionName' => $actionName,
+			'idGoal' => $idGoal,
+			'revenue' => $revenue,
 		));
 	}
 
@@ -1978,8 +2785,13 @@ class Piwik
 	 * @param string $currency
 	 * @param string $group
 	 * @param string $startDate
+	 * @param string $excludedUserAgents
+	 * @param string $keepURLFragments
+	 * @param string $type
 	 */
-	public function addSite($siteName, $urls, $ecommerce = '', $siteSearch = '', $searchKeywordParameters = '', $searchCategoryParameters = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '') {
+	public function addSite($siteName, $urls, $ecommerce = '', $siteSearch = '', $searchKeywordParameters = '',
+		$searchCategoryParameters = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '',
+		$group = '', $startDate = '', $excludedUserAgents = '', $keepURLFragments = '', $type = '') {
 		return $this->_request('SitesManager.addSite', array(
 			'siteName' => $siteName,
 			'urls' => $urls,
@@ -1993,9 +2805,11 @@ class Piwik
 			'currency' => $currency,
 			'group' => $group,
 			'startDate' => $startDate,
+			'excludedUserAgents' => $excludedUserAgents,
+			'keepURLFragments' => $keepURLFragments,
+			'type' => $type,
 		));
 	}
-
 
 	/**
 	 * Delete current site
@@ -2005,12 +2819,23 @@ class Piwik
 	}
 
 	/**
-	 * Add alias urls to the current site
+	 * Add alias urls for the current site
 	 *
 	 * @param array $urls
 	 */
 	public function addSiteAliasUrls($urls) {
 		return $this->_request('SitesManager.addSiteAliasUrls', array(
+			'urls' => $urls,
+		));
+	}
+
+	/**
+	 * Set alias urls for the current site
+	 *
+	 * @param array $urls
+	 */
+	public function setSiteAliasUrls($urls) {
+		return $this->_request('SitesManager.setSiteAliasUrls', array(
 			'urls' => $urls,
 		));
 	}
@@ -2037,7 +2862,7 @@ class Piwik
 		));
 	}
 
-	/***
+	/**
 	 * Set global search parameters
 	 *
 	 * @param $searchKeywordParameters
@@ -2070,6 +2895,60 @@ class Piwik
 	 */
 	public function getExcludedParameters() {
 		return $this->_request('SitesManager.getExcludedQueryParametersGlobal');
+	}
+
+	/**
+	 * Get the global excluded user agents
+	 */
+	public function getExcludedUserAgentsGlobal() {
+		return $this->_request('SitesManager.getExcludedUserAgentsGlobal');
+	}
+
+	/**
+	 * Set the global excluded user agents
+	 *
+	 * @param array $excludedUserAgents
+	 */
+	public function setGlobalExcludedUserAgents($excludedUserAgents) {
+		return $this->_request('SitesManager.setGlobalExcludedUserAgents', array(
+			'excludedUserAgents' => $excludedUserAgents,
+		));
+	}
+
+	/**
+	 * Check if site specific user agent exclude is enabled
+	 */
+	public function isSiteSpecificUserAgentExcludeEnabled() {
+		return $this->_request('SitesManager.isSiteSpecificUserAgentExcludeEnabled');
+	}
+
+	/**
+	 * Set site specific user agent exclude
+	 *
+	 * @param integer $enabled
+	 */
+	public function setSiteSpecificUserAgentExcludeEnabled($enabled) {
+		return $this->_request('SitesManager.setSiteSpecificUserAgentExcludeEnabled', array(
+			'enabled' => $enabled,
+		));
+	}
+
+	/**
+	 * Check if the url fragments should be global
+	 */
+	public function getKeepURLFragmentsGlobal() {
+		return $this->_request('SitesManager.getKeepURLFragmentsGlobal');
+	}
+
+	/**
+	 * Set the url fragments global
+	 *
+	 * @param integer $enabled
+	 */
+	public function setKeepURLFragmentsGlobal($enabled) {
+		return $this->_request('SitesManager.setKeepURLFragmentsGlobal', array(
+			'enabled' => $enabled,
+		));
 	}
 
 	/**
@@ -2143,8 +3022,13 @@ class Piwik
 	 * @param string $currency
 	 * @param string $group
 	 * @param string $startDate
+	 * @param string $excludedUserAgents
+	 * @param string $keepURLFragments
+	 * @param string $type
 	 */
-	public function updateSite($siteName, $urls, $ecommerce = '', $siteSearch = '', $searchKeywordParameters = '', $searchCategoryParameters = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '') {
+	public function updateSite($siteName, $urls, $ecommerce = '', $siteSearch = '', $searchKeywordParameters = '',
+		$searchCategoryParameters = '', $excludeIps = '', $excludedQueryParameters = '', $timezone = '', $currency = '',
+		$group = '', $startDate = '', $excludedUserAgents = '', $keepURLFragments = '', $type = '') {
 		return $this->_request('SitesManager.updateSite', array(
 			'siteName' => $siteName,
 			'urls' => $urls,
@@ -2158,6 +3042,9 @@ class Piwik
 			'currency' => $currency,
 			'group' => $group,
 			'startDate' => $startDate,
+			'excludedUserAgents' => $excludedUserAgents,
+			'keepURLFragments' => $keepURLFragments,
+			'type' => $type,
 		));
 	}
 
@@ -2190,6 +3077,19 @@ class Piwik
 	}
 
 	/**
+	 * Rename group
+	 *
+	 * @param string $oldGroupName
+	 * @param string $newGroupName
+	 */
+	public function renameGroup($oldGroupName, $newGroupName) {
+		return $this->_request('SitesManager.renameGroup', array(
+			'oldGroupName' => $oldGroupName,
+			'newGroupName' => $newGroupName,
+		));
+	}
+
+	/**
 	 * Get all sites which matches the pattern
 	 *
 	 * @param string $pattern
@@ -2200,13 +3100,12 @@ class Piwik
 		));
 	}
 
-
 	/**
 	 * MODULE: TRANSITIONS
 	 * Get transitions for page URLs, titles and actions
 	 */
 
-	/***
+	/**
 	 * Get transitions for a page title
 	 *
 	 * @param $pageTitle
@@ -2222,7 +3121,7 @@ class Piwik
 		));
 	}
 
-	/***
+	/**
 	 * Get transitions for a page URL
 	 *
 	 * @param $pageUrl
@@ -2238,7 +3137,7 @@ class Piwik
 		));
 	}
 
-	/***
+	/**
 	 * Get transitions for a page URL
 	 *
 	 * @param $actionName
@@ -2319,6 +3218,19 @@ class Piwik
 	}
 
 	/**
+	 * Get location from ip
+	 *
+	 * @param string $ip
+	 * @param string $provider
+	 */
+	public function getLocationFromIP($ip, $provider = '') {
+		return $this->_request('UserCountry.getLocationFromIP', array(
+			'ip' => $ip,
+			'provider' => $provider,
+		));
+	}
+
+	/**
 	 * Get the number of disting countries
 	 *
 	 * @param string $segment
@@ -2357,91 +3269,34 @@ class Piwik
 	}
 
 	/**
-	 * Get operating system
-	 *
-	 * @param string $segment
-	 * @param bool $addShortLabel
-	 */
-	public function getOs($segment = '', $addShortLabel = '1') {
-		return $this->_request('UserSettings.getOS', array(
-			'segment' => $segment,
-			'addShortLabel' => $addShortLabel,
-		));
-	}
-
-	/**
-	 * Get operating system family
-	 *
-	 * @param string $segment
-	 */
-	public function getOSFamily($segment = '') {
-		return $this->_request('UserSettings.getOSFamily', array(
-			'segment' => $segment,
-		));
-	}
-
-	/**
-	 * Get Mobile vs Desktop
-	 *
-	 * @param string $segment
-	 */
-	public function getMobileVsDesktop($segment = '') {
-		return $this->_request('UserSettings.getMobileVsDesktop', array(
-			'segment' => $segment,
-		));
-	}
-
-	/**
-	 * Get browser version
-	 *
-	 * @param string $segment
-	 */
-	public function getBrowserVersion($segment = '') {
-		return $this->_request('UserSettings.getBrowserVersion', array(
-			'segment' => $segment,
-		));
-	}
-
-	/**
-	 * Get browser
-	 *
-	 * @param string $segment
-	 */
-	public function getBrowser($segment = '') {
-		return $this->_request('UserSettings.getBrowser', array(
-			'segment' => $segment,
-		));
-	}
-
-	/**
-	 * Get browser type
-	 *
-	 * @param string $segment
-	 */
-	public function getBrowserType($segment = '') {
-		return $this->_request('UserSettings.getBrowserType', array(
-			'segment' => $segment,
-		));
-	}
-
-	/**
-	 * Get wide screen information
-	 *
-	 * @param string $segment
-	 */
-	public function getWideScreen($segment = '') {
-		return $this->_request('UserSettings.getWideScreen', array(
-			'segment' => $segment,
-		));
-	}
-
-	/**
 	 * Get plugins
 	 *
 	 * @param string $segment
 	 */
 	public function getUserPlugin($segment = '') {
 		return $this->_request('UserSettings.getPlugin', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get language
+	 *
+	 * @param string $segment
+	 */
+	public function getUserLanguage($segment = '') {
+		return $this->_request('UserSettings.getLanguage', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get language code
+	 *
+	 * @param string $segment
+	 */
+	public function getUserLanguageCode($segment = '') {
+		return $this->_request('UserSettings.getLanguageCode', array(
 			'segment' => $segment,
 		));
 	}
@@ -2574,6 +3429,33 @@ class Piwik
 			'email' => $email,
 			'alias' => $alias,
 		));
+	}
+
+	/**
+	 * Set super user access
+	 *
+	 * @param string $userLogin Username
+	 * @param integer $hasSuperUserAccess
+	 */
+	public function setSuperUserAccess($userLogin, $hasSuperUserAccess) {
+		return $this->_request('UsersManager.setSuperUserAccess', array(
+			'userLogin' => $userLogin,
+			'hasSuperUserAccess' => $hasSuperUserAccess,
+		));
+	}
+
+	/**
+	 * Check if user has super user access
+	 */
+	public function hasSuperUserAccess() {
+		return $this->_request('UsersManager.hasSuperUserAccess');
+	}
+
+	/**
+	 * Get a list of users with super user access
+	 */
+	public function getUsersHavingSuperUserAccess() {
+		return $this->_request('UsersManager.getUsersHavingSuperUserAccess');
 	}
 
 	/**
@@ -2797,6 +3679,17 @@ class Piwik
 	 */
 	public function getUniqueVisitors($segment = '') {
 		return $this->_request('VisitsSummary.getUniqueVisitors', array(
+			'segment' => $segment,
+		));
+	}
+
+	/**
+	 * Get user visit summary
+	 *
+	 * @param string $segment
+	 */
+	public function getUserVisitors($segment = '') {
+		return $this->_request('VisitsSummary.getUsers', array(
 			'segment' => $segment,
 		));
 	}
