@@ -2340,7 +2340,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getResolution($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getResolution'), array(
+		return $this->_request('UserSettings.getResolution', array(
 			'segment' => $segment,
 		));
 	}
@@ -2351,7 +2351,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getConfiguration($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getConfiguration'), array(
+		return $this->_request('UserSettings.getConfiguration', array(
 			'segment' => $segment,
 		));
 	}
@@ -2363,7 +2363,7 @@ class Piwik
 	 * @param bool $addShortLabel
 	 */
 	public function getOs($segment = '', $addShortLabel = '1') {
-		return $this->_request($this->_parseUrl('UserSettings.getOS'), array(
+		return $this->_request('UserSettings.getOS', array(
 			'segment' => $segment,
 			'addShortLabel' => $addShortLabel,
 		));
@@ -2375,7 +2375,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getOSFamily($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getOSFamily'), array(
+		return $this->_request('UserSettings.getOSFamily', array(
 			'segment' => $segment,
 		));
 	}
@@ -2386,7 +2386,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getMobileVsDesktop($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getMobileVsDesktop '), array(
+		return $this->_request('UserSettings.getMobileVsDesktop', array(
 			'segment' => $segment,
 		));
 	}
@@ -2397,7 +2397,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getBrowserVersion($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getBrowserVersion'), array(
+		return $this->_request('UserSettings.getBrowserVersion', array(
 			'segment' => $segment,
 		));
 	}
@@ -2408,7 +2408,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getBrowser($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getBrowser'), array(
+		return $this->_request('UserSettings.getBrowser', array(
 			'segment' => $segment,
 		));
 	}
@@ -2419,7 +2419,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getBrowserType($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getBrowserType'), array(
+		return $this->_request('UserSettings.getBrowserType', array(
 			'segment' => $segment,
 		));
 	}
@@ -2430,7 +2430,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getWideScreen($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getWideScreen'), array(
+		return $this->_request('UserSettings.getWideScreen', array(
 			'segment' => $segment,
 		));
 	}
@@ -2441,7 +2441,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getUserPlugin($segment = '') {
-		return $this->_request($this->_parseUrl('UserSettings.getPlugin'), array(
+		return $this->_request('UserSettings.getPlugin', array(
 			'segment' => $segment,
 		));
 	}
@@ -2459,7 +2459,7 @@ class Piwik
 	 * @param string $preferenceValue
 	 */
 	public function setUserPreference($userLogin, $preferenceName, $preferenceValue) {
-		return $this->_request($this->_parseUrl('UsersManager.setUserPreference'), array(
+		return $this->_request('UsersManager.setUserPreference', array(
 			'userLogin' => $userLogin,
 			'preferenceName' => $preferenceName,
 			'preferenceValue' => $preferenceValue,
@@ -2473,7 +2473,7 @@ class Piwik
 	 * @param string $preferenceName
 	 */
 	public function getUserPreference($userLogin, $preferenceName) {
-		return $this->_request($this->_parseUrl('UsersManager.getUserPreference'), array(
+		return $this->_request('UsersManager.getUserPreference', array(
 			'userLogin' => $userLogin,
 			'preferenceName' => $preferenceName,
 		));
@@ -2485,7 +2485,7 @@ class Piwik
 	 * @param array $userLogins Array with Usernames
 	 */
 	public function getUsers($userLogins = '') {
-		return $this->_request($this->_parseUrl('UsersManager.getUsers'), array(
+		return $this->_request('UsersManager.getUsers', array(
 			'userLogins' => $userLogins,
 		));
 	}
@@ -2494,7 +2494,7 @@ class Piwik
 	 * Get all user logins
 	 */
 	public function getUsersLogin() {
-		return $this->_request($this->_parseUrl('UsersManager.getUsersLogin'));
+		return $this->_request('UsersManager.getUsersLogin');
 	}
 
 	/**
@@ -2503,7 +2503,7 @@ class Piwik
 	 * @param string $access
 	 */
 	public function getUsersSitesFromAccess($access) {
-		return $this->_request($this->_parseUrl('UsersManager.getUsersSitesFromAccess'), array(
+		return $this->_request('UsersManager.getUsersSitesFromAccess', array(
 			'access' => $access,
 		));
 	}
@@ -2512,7 +2512,7 @@ class Piwik
 	 * Get all users with access level from the current site
 	 */
 	public function getUsersAccess() {
-		return $this->_request($this->_parseUrl('UsersManager.getUsersAccessFromSite'));
+		return $this->_request('UsersManager.getUsersAccessFromSite');
 	}
 
 	/**
@@ -2521,7 +2521,7 @@ class Piwik
 	 * @param string $access
 	 */
 	public function getUsersWithSiteAccess($access) {
-		return $this->_request($this->_parseUrl('UsersManager.getUsersWithSiteAccess'), array(
+		return $this->_request('UsersManager.getUsersWithSiteAccess', array(
 			'access' => $access,
 		));
 	}
@@ -2532,7 +2532,7 @@ class Piwik
 	 * @param string $userLogin Username
 	 */
 	public function getSitesAccessFromUser($userLogin) {
-		return $this->_request($this->_parseUrl('UsersManager.getSitesAccessFromUser'), array(
+		return $this->_request('UsersManager.getSitesAccessFromUser', array(
 			'userLogin' => $userLogin,
 		));
 	}
@@ -2543,7 +2543,7 @@ class Piwik
 	 * @param string $userLogin Username
 	 */
 	public function getUser($userLogin) {
-		return $this->_request($this->_parseUrl('UsersManager.getUser'), array(
+		return $this->_request('UsersManager.getUser', array(
 			'userLogin' => $userLogin,
 		));
 	}
@@ -2554,7 +2554,7 @@ class Piwik
 	 * @param string $userEmail
 	 */
 	public function getUserByEmail($userEmail) {
-		return $this->_request($this->_parseUrl('UsersManager.getUserByEmail'), array(
+		return $this->_request('UsersManager.getUserByEmail', array(
 			'userEmail' => $userEmail,
 		));
 	}
@@ -2568,7 +2568,7 @@ class Piwik
 	 * @param string $alias
 	 */
 	public function addUser($userLogin, $password, $email, $alias = '') {
-		return $this->_request($this->_parseUrl('UsersManager.addUser'), array(
+		return $this->_request('UsersManager.addUser', array(
 			'userLogin' => $userLogin,
 			'password' => $password,
 			'email' => $email,
@@ -2585,7 +2585,7 @@ class Piwik
 	 * @param string $alias
 	 */
 	public function updateUser($userLogin, $password = '', $email = '', $alias = '') {
-		return $this->_request($this->_parseUrl('UsersManager.updateUser'), array(
+		return $this->_request('UsersManager.updateUser', array(
 			'userLogin' => $userLogin,
 			'password' => $password,
 			'email' => $email,
@@ -2599,7 +2599,7 @@ class Piwik
 	 * @param string $userLogin Username
 	 */
 	public function deleteUser($userLogin) {
-		return $this->_request($this->_parseUrl('UsersManager.deleteUser'), array(
+		return $this->_request('UsersManager.deleteUser', array(
 			'userLogin' => $userLogin,
 		));
 	}
@@ -2610,7 +2610,7 @@ class Piwik
 	 * @param string $userLogin
 	 */
 	public function userExists($userLogin) {
-		return $this->_request($this->_parseUrl('UsersManager.userExists'), array(
+		return $this->_request('UsersManager.userExists', array(
 			'userLogin' => $userLogin,
 		));
 	}
@@ -2621,7 +2621,7 @@ class Piwik
 	 * @param string $userEmail
 	 */
 	public function userEmailExists($userEmail) {
-		return $this->_request($this->_parseUrl('UsersManager.userEmailExists'), array(
+		return $this->_request('UsersManager.userEmailExists', array(
 			'userEmail' => $userEmail,
 		));
 	}
@@ -2634,7 +2634,7 @@ class Piwik
 	 * @param array $idSites
 	 */
 	public function setUserAccess($userLogin, $access, $idSites) {
-		return $this->_request($this->_parseUrl('UsersManager.setUserAccess'), array(
+		return $this->_request('UsersManager.setUserAccess', array(
 			'userLogin' => $userLogin,
 			'access' => $access,
 			'idSites' => $idSites,
@@ -2648,7 +2648,7 @@ class Piwik
 	 * @param string $md5Password Password in clear text
 	 */
 	public function getTokenAuth($userLogin, $md5Password) {
-		return $this->_request($this->_parseUrl('UsersManager.getTokenAuth'), array(
+		return $this->_request('UsersManager.getTokenAuth', array(
 			'userLogin' => $userLogin,
 			'md5Password' => md5($md5Password),
 		));
