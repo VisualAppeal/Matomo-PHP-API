@@ -40,7 +40,7 @@ class Piwik
 	private $_limit = '';
 
 	private $_errors = array();
-	
+
 	public $verifySsl = true;
 
 	/**
@@ -306,7 +306,7 @@ class Piwik
 		curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
 		if (!$this->verifySsl)
 			curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
-		
+
 		$buffer = curl_exec($handle);
 		curl_close($handle);
 
