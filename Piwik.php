@@ -1002,7 +1002,7 @@ class Piwik
 	 * @param integer $lastN
 	 * @param string $getAnnotationText
 	 */
-	public function getAnnotationCountForDates($lastN) {
+	public function getAnnotationCountForDates($lastN, $getAnnotationText) {
 		return $this->_request('Annotations.getAnnotationCountForDates', array(
 			'lastN' => $lastN,
 			'getAnnotationText' => $getAnnotationText
