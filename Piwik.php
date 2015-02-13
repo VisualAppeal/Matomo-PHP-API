@@ -252,7 +252,7 @@ class Piwik
 		$this->_rangeEnd = $rangeEnd;
 
 		if (is_null($rangeEnd)) {
-      $this->_rangeEnd = self::DATE_TODAY;
+			$this->_rangeEnd = self::DATE_TODAY;
 		}
 
 		return $this;
