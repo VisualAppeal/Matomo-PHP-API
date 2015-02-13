@@ -361,7 +361,7 @@ class Piwik
 			$params[$key] = urlencode($value);
 		}
 
-		if ($this->_period != self::PERIOD_RANGE) {
+		if ($this->_rangeEnd == '') {
 			$params = $params + array(
 				'date' => $this->_date,
 			);
