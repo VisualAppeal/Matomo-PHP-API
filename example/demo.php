@@ -7,10 +7,12 @@
 	<body>
 <?php
 
-require('Piwik.php');
+require(__DIR__ . '/vendor/autoload.php');
 require('config.php');
 
-$piwik = new \VisualAppeal\Piwik(SITE_URL, TOKEN, SITE_ID, Piwik::FORMAT_JSON);
+use VisualAppeal\Piwik;
+
+$piwik = new Piwik(SITE_URL, TOKEN, SITE_ID, Piwik::FORMAT_JSON);
 $piwik->setLanguage('en');
 
 // $piwik->verifySsl = false;
