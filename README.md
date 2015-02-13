@@ -13,6 +13,10 @@ This library can be installed via composer: `"visualappeal/piwik-php-api": "1.1.
 
 ## Changelog
 
+### 1.1.0 (2015/02/13)
+
+* added PSR-4 autoloading
+
 ### 1.0.1 (2015/02/13)
 
 * bug fixes
@@ -27,7 +31,7 @@ This library can be installed via composer: `"visualappeal/piwik-php-api": "1.1.
 
 	require(dirname(__FILE__) . '/vendor/autoload.php');
 
-	$piwik = new \Piwik('http://stats.example.org', 'my_access_token', 'siteId');
+	$piwik = new \VisualAppeal\Piwik('http://stats.example.org', 'my_access_token', 'siteId');
 
 There are some basic parameters (period, date, range) which you can define at the beginning. They do not change until you reset them with
 
@@ -117,7 +121,7 @@ Get all the unique visitors from yesterday:
 
 	require(dirname(__FILE__) . '/vendor/autoload.php');
 
-	$piwik = new \Piwik('http://stats.example.org', 'my_access_token', 1, Piwik::FORMAT_JSON);
+	$piwik = new \VisualAppeal\Piwik('http://stats.example.org', 'my_access_token', 1, Piwik::FORMAT_JSON);
 
 	$piwik->setPeriod(Piwik::PERIOD_DAY);
 	$piwik->setDate(Piwik::DATE_YESTERDAY);

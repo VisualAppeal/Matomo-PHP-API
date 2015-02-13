@@ -1,4 +1,4 @@
-<?php
+<?php namespace VisualAppeal;
 
 /**
  * Repository: https://github.com/VisualAppeal/Piwik-PHP-API
