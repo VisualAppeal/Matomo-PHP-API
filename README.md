@@ -10,6 +10,16 @@ A PHP wrapper class for [Piwik](http://piwik.org/)
 
 This library can be installed via composer: `"visualappeal/piwik-php-api": "dev-master"`
 
+## Changelog
+
+### 1.0.1 (2015/02/13)
+
+* bug fixes
+
+### 1.0.0 (2014/12/13)
+
+* compatibility to piwik 2.10.0
+
 ## Usage
 
 ### Create an instance of piwik
