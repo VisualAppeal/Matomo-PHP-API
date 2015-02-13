@@ -1,14 +1,15 @@
-## Readme
+## Piwiki PHP API
 
-A PHP wrapper class for [Piwik](http://piwik.org/)
+A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Requirements
 
-* cUrl
+* PHP >= 5.3
+* cUrl (php-curl)
 
 ## Install
 
-This library can be installed via composer: `"visualappeal/piwik-php-api": "dev-master"`
+This library can be installed via composer: `"visualappeal/piwik-php-api": "1.1.*"`
 
 ## Changelog
 
@@ -121,4 +122,4 @@ Get all the unique visitors from yesterday:
 	$piwik->setPeriod(Piwik::PERIOD_DAY);
 	$piwik->setDate(Piwik::DATE_YESTERDAY);
 
-	echo "Unique visitors yesterday: ".$piwik->getUniqueVisitors();
+	echo 'Unique visitors yesterday: ' . $piwik->getUniqueVisitors();
