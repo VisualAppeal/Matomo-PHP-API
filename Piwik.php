@@ -60,7 +60,7 @@ class Piwik
 		$this->_token = $token;
 		$this->_siteId = $siteId;
 		$this->_format = $format;
-		$this->_period = self::PERIOD_DAY;
+		$this->_period = $period;
 		$this->_rangeStart = $rangeStart;
 		$this->_rangeEnd = $rangeEnd;
 
