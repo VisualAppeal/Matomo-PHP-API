@@ -13,6 +13,11 @@ This library can be installed via composer: `"visualappeal/piwik-php-api": "1.1.
 
 ## Changelog
 
+### 1.1.1 (2015/02/18)
+
+* Get separate data entries for a date range without the range period parameter [#14](https://github.com/VisualAppeal/Piwik-PHP-API/issues/14)
+* Compatible to Piwik 2.11
+
 ### 1.1.0 (2015/02/13)
 
 * added PSR-4 autoloading

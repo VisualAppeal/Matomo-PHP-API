@@ -3242,8 +3242,8 @@ class Piwik
 	}
 
 	/**
-	 * MODULE: USER SETTINGS
-	 * Get the user settings
+	 * MODULE: USER Resultion
+	 * Get screen resolutions
 	 */
 
 	/**
@@ -3252,7 +3252,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getResolution($segment = '') {
-		return $this->_request('UserSettings.getResolution', array(
+		return $this->_request('Resolution.getResolution', array(
 			'segment' => $segment,
 		));
 	}
@@ -3263,10 +3263,15 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getConfiguration($segment = '') {
-		return $this->_request('UserSettings.getConfiguration', array(
+		return $this->_request('Resolution.getConfiguration', array(
 			'segment' => $segment,
 		));
 	}
+
+	/**
+	 * MODULE: DEVICE PLUGINS
+	 * Get device plugins
+	 */
 
 	/**
 	 * Get plugins
@@ -3274,10 +3279,15 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getUserPlugin($segment = '') {
-		return $this->_request('UserSettings.getPlugin', array(
+		return $this->_request('DevicePlugins.getPlugin', array(
 			'segment' => $segment,
 		));
 	}
+
+	/**
+	 * MODULE: USER LANGUAGE
+	 * Get the user language
+	 */
 
 	/**
 	 * Get language
@@ -3285,7 +3295,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getUserLanguage($segment = '') {
-		return $this->_request('UserSettings.getLanguage', array(
+		return $this->_request('UserLanguage.getLanguage', array(
 			'segment' => $segment,
 		));
 	}
@@ -3296,7 +3306,7 @@ class Piwik
 	 * @param string $segment
 	 */
 	public function getUserLanguageCode($segment = '') {
-		return $this->_request('UserSettings.getLanguageCode', array(
+		return $this->_request('UserLanguage.getLanguageCode', array(
 			'segment' => $segment,
 		));
 	}
