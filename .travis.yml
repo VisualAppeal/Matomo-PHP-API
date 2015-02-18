@@ -7,7 +7,7 @@ php:
   - hhvm
 
 install:
-	- composer self-update
-	- composer update
+  - composer self-update
+  - composer update
 
 script: phpunit tests
