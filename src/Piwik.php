@@ -193,12 +193,14 @@ class Piwik
 	/**
 	 * Set date
 	 *
-	 * @param string $date
+	 * @param string $date Format Y-m-d or class constant:
 	 *		DATE_TODAY
 	 *		DATE_YESTERDAY
 	 */
 	public function setDate($date) {
 		$this->_date = $date;
+		$this->_rangeStart = null;
+		$this->_rangeEnd = null;
 
 		return $this;
 	}
@@ -299,6 +301,9 @@ class Piwik
 	 */
 	private function _request($method, $params = array()) {
 		$url = $this->_parseUrl($method, $params);
+		if ($url === false)
+			return false;
+
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
@@ -361,14 +366,17 @@ class Piwik
 			$params[$key] = urlencode($value);
 		}
 
-		if (empty($this->_date)) {
+		if (!empty($this->_rangeStart) && !empty($this->_rangeEnd)) {
 			$params = $params + array(
 				'date' => $this->_rangeStart . ',' . $this->_rangeEnd,
 			);
-		} else {
+		} elseif (!empty($this->_date)) {
 			$params = $params + array(
 				'date' => $this->_date,
 			);
+		} else {
+			$this->_addError('Specify a date or a date range!');
+			return false;
 		}
 
 		$url = $this->_site;
