@@ -1,5 +1,7 @@
 ## Piwiki PHP API
 
+[![Build Status](https://travis-ci.org/VisualAppeal/Piwik-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Piwik-PHP-API)
+
 A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Requirements
