@@ -1,10 +1,12 @@
 ## Piwiki PHP API
 
+[![Build Status](https://travis-ci.org/VisualAppeal/Piwik-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Piwik-PHP-API)
+
 A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Requirements
 
-* PHP >= 5.3
+* PHP >= 5.4
 * cUrl (php-curl)
 
 ## Install
@@ -13,22 +15,28 @@ This library can be installed via composer: `"visualappeal/piwik-php-api": "1.1.
 
 ## Changelog
 
+### 1.1.2 (2015/03/22)
+
+* Fixed: Errors were not appended to error array
+* Changed: Requires PHP 5.4 ([5.3 is not supported anymore](http://php.net/archive/2014.php#id2014-08-14-1))
+* Added: Unit tests
+
 ### 1.1.1 (2015/02/18)
 
-* Get separate data entries for a date range without the range period parameter [#14](https://github.com/VisualAppeal/Piwik-PHP-API/issues/14)
-* Compatible to Piwik 2.11
+* Added: Get separate data entries for a date range without the range period parameter [#14](https://github.com/VisualAppeal/Piwik-PHP-API/issues/14)
+* Added: Compatible to Piwik 2.11
 
 ### 1.1.0 (2015/02/13)
 
-* added PSR-4 autoloading
+* Changed: Support for PSR-4 autoloading
 
 ### 1.0.1 (2015/02/13)
 
-* bug fixes
+* Fixed: Multiple bugs
 
 ### 1.0.0 (2014/12/13)
 
-* compatibility to piwik 2.10.0
+* Added: Compatibility to piwik 2.10.0
 
 ## Usage
 
