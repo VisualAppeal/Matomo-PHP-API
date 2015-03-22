@@ -155,4 +155,24 @@ class PiwikTest extends PHPUnit_Framework_TestCase
 		$this->assertFalse($result);
 		$this->assertEquals(1, count($this->_piwik->getErrors()));
 	}
+
+	/**
+	 * Test that multiple errors were added.
+	 */
+	public function testMultipleErrors()
+	{
+		// Test with no access => error 1
+		$this->_piwik->setToken('403');
+		$result = $this->_piwik->getVisitsSummary();
+
+		$this->assertFalse($result);
+		$this->assertEquals(1, count($this->_piwik->getErrors()));
+
+		// Test with wrong url => error 2
+		$this->_piwik->setSite('http://example.com/404');
+		$result = $this->_piwik->getVisitsSummary();
+
+		$this->assertFalse($result);
+		$this->assertEquals(2, count($this->_piwik->getErrors()));
+	}
 }

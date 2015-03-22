@@ -295,6 +295,10 @@ class Piwik
 	}
 
 	/**
+	 * Requests to Piwik api
+	 */
+
+	/**
 	 * Make API request
 	 *
 	 * @param string $method
@@ -435,19 +439,23 @@ class Piwik
 	}
 
 	/**
+	 * Error methods
+	 */
+
+	/**
 	 * Add error
 	 *
 	 * @param string $msg Error message
 	 */
-	private function _addError($msg = '') {
-		$this->_errors = $this->_errors + array($msg);
+	protected function _addError($msg = '') {
+		array_push($this->_errors, $msg);
 	}
 
 	/**
 	 * Check for errors
 	 */
 	public function hasError() {
-		return (count($this->_errors));
+		return (count($this->_errors) > 0);
 	}
 
 	/**
