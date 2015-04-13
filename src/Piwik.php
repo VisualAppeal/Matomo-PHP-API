@@ -2303,6 +2303,122 @@ class Piwik
 	}
 
 	/**
+	 * Get name
+	 * from advanced campaign reporting
+	 *
+	 * @param string $segment
+	 * @param string $expanded
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingName($segment = '', $expanded = '') {
+		return $this->_request('AdvancedCampaignReporting.getName', array(
+			'segment' => $segment,
+			'expanded' => $expanded
+		));
+	}
+
+	/**
+	 * Get keyword content from name id
+	 * from advanced campaign reporting
+	 *
+	 * @param string $segment
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingKeywordContentFromNameId($segment = '') {
+		return $this->_request('AdvancedCampaignReporting.getKeywordContentFromNameId', array(
+			'segment' => $segment
+		));
+	}
+
+	/**
+	 * Get keyword
+	 * from advanced campaign reporting
+	 *
+	 * @param string $segment
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingKeyword($segment = '') {
+		return $this->_request('AdvancedCampaignReporting.getKeyword', array(
+			'segment' => $segment
+		));
+	}
+
+	/**
+	 * Get source	 *
+	 * from advanced campaign reporting
+	 *
+	 * @param string $segment
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingSource ($segment = '') {
+		return $this->_request('AdvancedCampaignReporting.getSource', array(
+			'segment' => $segment
+		));
+	}
+
+	/**
+	 * Get medium
+	 * from advanced campaign reporting
+	 *
+	 * @param string $segment
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingMedium($segment = '') {
+		return $this->_request('AdvancedCampaignReporting.getMedium', array(
+			'segment' => $segment
+		));
+	}
+
+	/**
+	 * Get content
+	 * from advanced campaign reporting
+	 *
+	 * @param string $segment
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingContent ($segment = '') {
+		return $this->_request('AdvancedCampaignReporting.getContent', array(
+			'segment' => $segment
+		));
+	}
+
+	/**
+	 * Get source and medium
+	 * from advanced campaign reporting
+	 *
+	 * @param string $segment
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingSourceMedium($segment = '') {
+		return $this->_request('AdvancedCampaignReporting.getSourceMedium', array(
+			'segment' => $segment
+		));
+	}
+
+	/**
+	 * Get name from source and medium by ID
+	 * from advanced campaign reporting
+	 *
+	 * @param $idSubtable
+	 * @param string $segment
+	 *
+	 * @return bool|obj|void
+	 */
+	public function getAdvancedCampaignReportingNameFromSourceMediumId($idSubtable, $segment = '') {
+		return $this->_request('AdvancedCampaignReporting.getNameFromSourceMediumId', array(
+			'idSubtable' => $idSubtable,
+			'segment' => $segment
+		));
+	}
+
+	/**
 	 * Get website referrerals
 	 *
 	 * @param string $segment
