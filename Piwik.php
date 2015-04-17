@@ -247,6 +247,7 @@ class Piwik
 	 * @param string $rangeEnd e.g. 2012-02-12. Leave this parameter empty to request all data from $rangeStart until now
 	 */
 	public function setRange($rangeStart, $rangeEnd = null) {
+		$this->_period = self::PERIOD_RANGE;
 		$this->_date = '';
 		$this->_rangeStart = $rangeStart;
 		$this->_rangeEnd = $rangeEnd;
