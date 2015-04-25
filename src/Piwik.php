@@ -1199,10 +1199,11 @@ class Piwik
 	 * @param string $segment
 	 * @param string $expanded
 	 */
-	public function getCustomVariables($segment = '', $expanded = '') {
+	public function getCustomVariables($segment = '', $expanded = '', $flat = '') {
 		return $this->_request('CustomVariables.getCustomVariables', array(
 			'segment' => $segment,
 			'expanded' => $expanded,
+			'flat' => $flat,
 		));
 	}
 
