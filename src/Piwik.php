@@ -2040,11 +2040,11 @@ class Piwik
 	 * @param string $minTimestamp
 	 * @param array $optional
 	 */
-	public function getLastVisitsDetails($segment = '', $maxIdVisit = '', $minTimestamp = '', $optional = []) {
+	public function getLastVisitsDetails($segment = '', $minTimestamp = '', $doNotFetchActions = '', $optional = []) {
 		return $this->_request('Live.getLastVisitsDetails', [
 			'segment' => $segment,
-			'maxIdVisit' => $maxIdVisit,
 			'minTimestamp' => $minTimestamp,
+			'doNotFetchActions' => $doNotFetchActions,
 		], $optional);
 	}
 
