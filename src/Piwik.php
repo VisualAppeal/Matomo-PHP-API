@@ -669,7 +669,7 @@ class Piwik
 			'idGoal' => $idGoal,
 			'legendAppendMetric ' => $legendAppendMetric,
 			'labelUseAbsoluteUrl  ' => $labelUseAbsoluteUrl,
-		]);
+		], $optional);
 	}
 
 	/**
@@ -708,7 +708,7 @@ class Piwik
 	public function getSuggestedValuesForSegment($segmentName, $optional = []) {
 		return $this->_request('API.getSuggestedValuesForSegment', [
 			'segmentName' => $segmentName,
-		]);
+		], $optional);
 	}
 
 	/**
@@ -825,7 +825,7 @@ class Piwik
 	public function getEntryPageTitles($segment = '', $optional = []) {
 		return $this->_request('Actions.getEntryPageTitles', [
 			'segment' => $segment,
-		]);
+		], $optional);
 	}
 
 	/**
@@ -994,7 +994,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function deleteAllAnnotations($optional = []) {
-		return $this->_request('Annotations.deleteAll');
+		return $this->_request('Annotations.deleteAll', [], $optional);
 	}
 
 	/**
@@ -1248,7 +1248,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getDashboards($optional = []) {
-		return $this->_request('Dashboard.getDashboards');
+		return $this->_request('Dashboard.getDashboards', [], $optional);
 	}
 
 	/**
@@ -1492,7 +1492,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExamplePiwikVersion($optional = []) {
-		return $this->_request('ExampleAPI.getPiwikVersion');
+		return $this->_request('ExampleAPI.getPiwikVersion', [], $optional);
 	}
 
 	/**
@@ -1501,7 +1501,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExampleAnswerToLife($optional = []) {
-		return $this->_request('ExampleAPI.getAnswerToLife');
+		return $this->_request('ExampleAPI.getAnswerToLife', [], $optional);
 	}
 
 	/**
@@ -1510,7 +1510,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExampleObject($optional = []) {
-		return $this->_request('ExampleAPI.getObject');
+		return $this->_request('ExampleAPI.getObject', [], $optional);
 	}
 
 	/**
@@ -1533,7 +1533,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExampleNull($optional = []) {
-		return $this->_request('ExampleAPI.getNull');
+		return $this->_request('ExampleAPI.getNull', [], $optional);
 	}
 
 	/**
@@ -1542,7 +1542,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExampleDescriptionArray($optional = []) {
-		return $this->_request('ExampleAPI.getDescriptionArray');
+		return $this->_request('ExampleAPI.getDescriptionArray', [], $optional);
 	}
 
 	/**
@@ -1551,7 +1551,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExampleCompetitionDatatable($optional = []) {
-		return $this->_request('ExampleAPI.getCompetitionDatatable');
+		return $this->_request('ExampleAPI.getCompetitionDatatable',[], $optional);
 	}
 
 	/**
@@ -1561,7 +1561,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExampleMoreInformationAnswerToLife($optional = []) {
-		return $this->_request('ExampleAPI.getMoreInformationAnswerToLife');
+		return $this->_request('ExampleAPI.getMoreInformationAnswerToLife', [], $optional);
 	}
 
 	/**
@@ -1570,7 +1570,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getExampleMultiArray($optional = []) {
-		return $this->_request('ExampleAPI.getMultiArray');
+		return $this->_request('ExampleAPI.getMultiArray', [], $optional);
 	}
 
 	/**
@@ -1632,7 +1632,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getGoals($optional = []) {
-		return $this->_request('Goals.getGoals');
+		return $this->_request('Goals.getGoals', [], $optional);
 	}
 
 	/**
@@ -1849,7 +1849,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function canGenerateInsights($optional = []) {
-		return $this->_request('Insights.canGenerateInsights');
+		return $this->_request('Insights.canGenerateInsights', [], $optional);
 	}
 
 	/**
@@ -1952,7 +1952,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getAvailableLanguages($optional = []) {
-		return $this->_request('LanguagesManager.getAvailableLanguages');
+		return $this->_request('LanguagesManager.getAvailableLanguages', [], $optional);
 	}
 
 	/**
@@ -1961,7 +1961,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getAvailableLanguagesInfo($optional = []) {
-		return $this->_request('LanguagesManager.getAvailableLanguagesInfo');
+		return $this->_request('LanguagesManager.getAvailableLanguagesInfo', [], $optional);
 	}
 
 	/**
@@ -1970,7 +1970,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getAvailableLanguageNames($optional = []) {
-		return $this->_request('LanguagesManager.getAvailableLanguageNames');
+		return $this->_request('LanguagesManager.getAvailableLanguageNames', [], $optional);
 	}
 
 	/**
@@ -2087,7 +2087,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function areSMSAPICredentialProvided($optional = []) {
-		return $this->_request('MobileMessaging.areSMSAPICredentialProvided');
+		return $this->_request('MobileMessaging.areSMSAPICredentialProvided', [], $optional);
 	}
 
 	/**
@@ -2096,7 +2096,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getSMSProvider($optional = []) {
-		return $this->_request('MobileMessaging.getSMSProvider');
+		return $this->_request('MobileMessaging.getSMSProvider', [], $optional);
 	}
 
 	/**
@@ -2131,7 +2131,7 @@ class Piwik
 	 * @return mixed
 	 */
 	public function getCreditLeft($optional = []) {
-		return $this->_request('MobileMessaging.getCreditLeft');
+		return $this->_request('MobileMessaging.getCreditLeft', [], $optional);
 	}
 
 	/**
@@ -2166,7 +2166,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function deleteSMSAPICredential($optional = []) {
-		return $this->_request('MobileMessaging.deleteSMSAPICredential');
+		return $this->_request('MobileMessaging.deleteSMSAPICredential', [], $optional);
 	}
 
 	/**
@@ -2187,7 +2187,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getDelegatedManagement($optional = []) {
-		return $this->_request('MobileMessaging.getDelegatedManagement');
+		return $this->_request('MobileMessaging.getDelegatedManagement', [], $optional);
 	}
 
 
@@ -2234,7 +2234,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getOverlayTranslations($optional = []) {
-		return $this->_request('Overlay.getTranslations');
+		return $this->_request('Overlay.getTranslations', [], $optional);
 	}
 
 	/**
@@ -2243,7 +2243,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getOverlayExcludedQueryParameters($optional = []) {
-		return $this->_request('Overlay.getExcludedQueryParameters');
+		return $this->_request('Overlay.getExcludedQueryParameters', [], $optional);
 	}
 
 	/**
@@ -2251,8 +2251,10 @@ class Piwik
 	 *
 	 * @param array $optional
 	 */
-	public function getOverlayFollowingPages($optional = []) {
-		return $this->_request('Overlay.getFollowingPages');
+	public function getOverlayFollowingPages($segment = '', $optional = []) {
+		return $this->_request('Overlay.getFollowingPages',[
+			'segment' => $segment,
+		], $optional);
 	}
 
 	/**
@@ -3214,7 +3216,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function isSiteSpecificUserAgentExcludeEnabled($optional = []) {
-		return $this->_request('SitesManager.isSiteSpecificUserAgentExcludeEnabled');
+		return $this->_request('SitesManager.isSiteSpecificUserAgentExcludeEnabled', [], $optional);
 	}
 
 	/**
@@ -3235,7 +3237,7 @@ class Piwik
 	 * @param array $optional
 	 */
 	public function getKeepURLFragmentsGlobal($optional = []) {
-		return $this->_request('SitesManager.getKeepURLFragmentsGlobal');
+		return $this->_request('SitesManager.getKeepURLFragmentsGlobal', [], $optional);
 	}
 
 	/**
