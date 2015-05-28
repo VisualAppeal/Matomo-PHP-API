@@ -36,6 +36,7 @@ class Piwik
 	private $_date = '';
 	private $_rangeStart = 'yesterday';
 	private $_rangeEnd = null;
+	private $_isJsonDecodeAssoc = false;
 
 	private $_limit = '';
 
@@ -284,6 +285,26 @@ class Piwik
 	}
 
 	/**
+	 * Sets the json_decode format
+	 *
+	 * @param boolean $isJsonDecodeAssoc false decode as Object, true for decode as Associate array
+	 */
+	public function setIsJsonDecodeAssoc($isJsonDecodeAssoc)
+	{
+		$this->_isJsonDecodeAssoc = $isJsonDecodeAssoc;
+	}
+
+	/**
+	 * Return if JSON decode an associate array
+	 *
+	 * @return boolean
+	 */
+	public function isIsJsonDecodeAssoc()
+	{
+		return $this->_isJsonDecodeAssoc;
+	}
+
+	/**
 	 * Reset all default variables
 	 */
 	public function reset() {
@@ -434,7 +455,7 @@ class Piwik
 	private function _parseRequest($request) {
 		switch ($this->_format) {
 			case self::FORMAT_JSON:
-				return json_decode($request);
+				return json_decode($request, $this->_isJsonDecodeAssoc);
 				break;
 			default:
 				return $request;
