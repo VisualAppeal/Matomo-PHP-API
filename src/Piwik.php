@@ -43,6 +43,7 @@ class Piwik
 	private $_errors = array();
 
 	public $verifySsl = true;
+	public $redirects = 3;
 
 	/**
 	 * Create new instance
@@ -340,14 +341,10 @@ class Piwik
 		$handle = curl_init();
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
-		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-		if(!ini_get('open_basedir'))
-			curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
 		if (!$this->verifySsl)
 			curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
 
-		$buffer = curl_exec($handle);
+		$buffer = $this->curl_redirect_exec($handle, $this->redirects);;
 		curl_close($handle);
 
 		if (!empty($buffer))
@@ -356,6 +353,40 @@ class Piwik
 			$request = false;
 
 		return $this->_finishRequest($request, $method, $params + $optional);
+	}
+
+	/**
+	 * Fallback for "CURLOPT_FOLLOWLOCATION"
+	 * if "safe_mode" is on or "open_basedir" is set
+	 *
+	 * @param $curlHandler
+	 * @param $redirects
+	 * @param bool $curlopt_header
+	 * @return mixed
+	 */
+	private function curl_redirect_exec($curlHandler, &$redirects, $curlopt_header = false) {
+		curl_setopt($curlHandler, CURLOPT_HEADER, true);
+		curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
+		$data = curl_exec($curlHandler);
+		$http_code = curl_getinfo($curlHandler, CURLINFO_HTTP_CODE);
+		if ($http_code == 301 || $http_code == 302) {
+			list($header) = explode("\r\n\r\n", $data, 2);
+			$matches = array();
+			preg_match('/(Location:|URI:)(.*?)\n/', $header, $matches);
+			$url = trim(array_pop($matches));
+			$url_parsed = parse_url($url);
+			if (isset($url_parsed)) {
+				curl_setopt($curlHandler, CURLOPT_URL, $url);
+				$redirects++;
+				return $this->curl_redirect_exec($curlHandler, $redirects);
+			}
+		}
+		if ($curlopt_header)
+			return $data;
+		else {
+			list(,$body) = explode("\r\n\r\n", $data, 2);
+			return $body;
+		}
 	}
 
 	/**
