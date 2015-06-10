@@ -341,6 +341,8 @@ class Piwik
 		curl_setopt($handle, CURLOPT_URL, $url);
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+		if(!ini_get('open_basedir'))
+			curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
 		if (!$this->verifySsl)
 			curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
