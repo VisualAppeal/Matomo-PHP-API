@@ -17,7 +17,7 @@ This library can be installed via composer: `"visualappeal/piwik-php-api": "1.1.
 
 ### 1.2.0 (2015/05/03)
 
-* Changed: Removed optional parameters for the methods and added optional parameters array. Some methods signatures changed, so please pay check your methods before upgrading.
+* Changed: Removed optional parameters for the methods and added optional parameters array. Some methods signatures changed, so please check your methods before upgrading.
 
 For example `getUrlsForSocial($segment = '', $idSubtable = '')` is now `getUrlsForSocial($segment = '', $optional = [])`. So instead of calling `$piwik->getUrlsForSocial('browserCode==FF;country==DE', 4)` you have to call `$piwik->getUrlsForSocial('browserCode==FF;country==DE', ['idSubtable' => 4])`.
 
