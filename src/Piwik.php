@@ -3399,7 +3399,7 @@ class Piwik
 	public function updateSite($siteName, $urls, $ecommerce = '', $siteSearch = '',
 		$searchKeywordParameters = '', $searchCategoryParameters = '', $excludeIps = '',
 		$excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '',
-		$excludedUserAgents = '', $keepURLFragments = '', $type = '', $optional = [])
+		$excludedUserAgents = '', $keepURLFragments = '', $type = '', $settings = '', $optional = [])
 	{
 		return $this->_request('SitesManager.updateSite', [
 			'siteName' => $siteName,
@@ -3417,6 +3417,7 @@ class Piwik
 			'excludedUserAgents' => $excludedUserAgents,
 			'keepURLFragments' => $keepURLFragments,
 			'type' => $type,
+			'settings' => $settings,
 		], $optional);
 	}
 
