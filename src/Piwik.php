@@ -43,7 +43,6 @@ class Piwik
   private $_errors = array();
 
   public $verifySsl = true;
-  public $redirects = 3;
 
   /**
    * Create new instance
@@ -333,7 +332,7 @@ class Piwik
    *
    * @param string $method
    */
-  private function _request($method, $params = [], $optional = []) {
+  private function _request($method, $params = array(), $optional = array()) {
     $url = $this->_parseUrl($method, $params + $optional);
     if ($url === false)
       return false;
@@ -344,7 +343,7 @@ class Piwik
     if (!$this->verifySsl)
       curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
 
-    $buffer = $this->curl_redirect_exec($handle, $this->redirects);;
+    $buffer = $this->curl_redirect_exec($handle);
     curl_close($handle);
 
     if (!empty($buffer))
@@ -360,14 +359,14 @@ class Piwik
    * if "safe_mode" is on or "open_basedir" is set
    *
    * @param $curlHandler
-   * @param $redirects
-   * @param bool $curlopt_header
-   * @return mixed
+   * @return string|false false on error
    */
-  private function curl_redirect_exec($curlHandler, &$redirects, $curlopt_header = false) {
+  private function curl_redirect_exec($curlHandler) {
     curl_setopt($curlHandler, CURLOPT_HEADER, true);
     curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
     $data = curl_exec($curlHandler);
+
+    // follow the redirect (301 || 302)
     $http_code = curl_getinfo($curlHandler, CURLINFO_HTTP_CODE);
     if ($http_code == 301 || $http_code == 302) {
       list($header) = explode("\r\n\r\n", $data, 2);
@@ -377,22 +376,18 @@ class Piwik
       $url_parsed = parse_url($url);
       if (isset($url_parsed)) {
         curl_setopt($curlHandler, CURLOPT_URL, $url);
-        $redirects++;
-        return $this->curl_redirect_exec($curlHandler, $redirects);
+        return $this->curl_redirect_exec($curlHandler);
       }
     }
-    if ($curlopt_header)
-      return $data;
-    else {
-      list(,$body) = explode("\r\n\r\n", $data, 2);
-      return $body;
-    }
+
+    list(,$body) = explode("\r\n\r\n", $data, 2);
+    return $body;
   }
 
   /**
    * Validate request and return the values
    *
-   * @param obj $request
+   * @param $request
    * @param string $method
    * @param array $params
    */
@@ -406,7 +401,7 @@ class Piwik
         return $request;
       }
     } else {
-      $request = $this->_addError($valid . ' (' . $this->_parseUrl($method, $params) . ')');
+      $this->_addError($valid . ' (' . $this->_parseUrl($method, $params) . ')');
       return false;
     }
   }
@@ -416,8 +411,10 @@ class Piwik
    *
    * @param string $method The request method
    * @param array $params Request params
+   *
+   * @return bool|string
    */
-  private function _parseUrl($method, array $params = []) {
+  private function _parseUrl($method, array $params = array()) {
     $params = array(
       'module' => 'API',
       'method' => $method,
@@ -468,7 +465,7 @@ class Piwik
   /**
    * Validate the request result
    *
-   * @param obj $request
+   * @param $request
    */
   private function _validRequest($request) {
     if (($request !== false) and (!is_null($request))) {
@@ -488,7 +485,7 @@ class Piwik
   /**
    * Parse request result
    *
-   * @param obj $request
+   * @param $request
    */
   private function _parseRequest($request) {
     switch ($this->_format) {
@@ -537,8 +534,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getPiwikVersion($optional = []) {
-    return $this->_request('API.getPiwikVersion', [], $optional);
+  public function getPiwikVersion($optional = array()) {
+    return $this->_request('API.getPiwikVersion', array(), $optional);
   }
 
   /**
@@ -546,8 +543,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getIpFromHeader($optional = []) {
-    return $this->_request('API.getIpFromHeader', [], $optional);
+  public function getIpFromHeader($optional = array()) {
+    return $this->_request('API.getIpFromHeader', array(), $optional);
   }
 
   /**
@@ -555,8 +552,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSettings($optional = []) {
-    return $this->_request('API.getSettings', [], $optional);
+  public function getSettings($optional = array()) {
+    return $this->_request('API.getSettings', array(), $optional);
   }
 
   /**
@@ -564,8 +561,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDefaultMetricTranslations($optional = []) {
-    return $this->_request('API.getDefaultMetricTranslations', [], $optional);
+  public function getDefaultMetricTranslations($optional = array()) {
+    return $this->_request('API.getDefaultMetricTranslations', array(), $optional);
   }
 
   /**
@@ -573,8 +570,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDefaultMetrics($optional = []) {
-    return $this->_request('API.getDefaultMetrics', [], $optional);
+  public function getDefaultMetrics($optional = array()) {
+    return $this->_request('API.getDefaultMetrics', array(), $optional);
   }
 
   /**
@@ -582,8 +579,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDefaultProcessedMetrics($optional = []) {
-    return $this->_request('API.getDefaultProcessedMetrics', [], $optional);
+  public function getDefaultProcessedMetrics($optional = array()) {
+    return $this->_request('API.getDefaultProcessedMetrics', array(), $optional);
   }
 
   /**
@@ -591,8 +588,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDefaultMetricsDocumentation($optional = []) {
-    return $this->_request('API.getDefaultMetricsDocumentation', [], $optional);
+  public function getDefaultMetricsDocumentation($optional = array()) {
+    return $this->_request('API.getDefaultMetricsDocumentation', array(), $optional);
   }
 
   /**
@@ -601,10 +598,10 @@ class Piwik
    * @param array $sites Array with the ID's of the sites
    * @param array $optional
    */
-  public function getSegmentsMetadata($sites = [], $optional = []) {
-    return $this->_request('API.getSegmentsMetadata', [
+  public function getSegmentsMetadata($sites = array(), $optional = array()) {
+    return $this->_request('API.getSegmentsMetadata', array(
       'idSites' => $sites
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -613,10 +610,10 @@ class Piwik
    * @param boolean $pathOnly Return the url (false) or the absolute path (true)
    * @param array $optional
    */
-  public function getLogoUrl($pathOnly = false, $optional = []) {
-    return $this->_request('API.getLogoUrl', [
+  public function getLogoUrl($pathOnly = false, $optional = array()) {
+    return $this->_request('API.getLogoUrl', array(
       'pathOnly' => $pathOnly
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -625,10 +622,10 @@ class Piwik
    * @param boolean $pathOnly Return the url (false) or the absolute path (true)
    * @param array $optional
    */
-  public function getHeaderLogoUrl($pathOnly = false, $optional = []) {
-    return $this->_request('API.getHeaderLogoUrl', [
+  public function getHeaderLogoUrl($pathOnly = false, $optional = array()) {
+    return $this->_request('API.getHeaderLogoUrl', array(
       'pathOnly' => $pathOnly
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -639,12 +636,12 @@ class Piwik
    * @param array $apiParameters Parameters
    * @param array $optional
    */
-  public function getMetadata($apiModule, $apiAction, $apiParameters = [], $optional = []) {
-    return $this->_request('API.getMetadata', [
+  public function getMetadata($apiModule, $apiAction, $apiParameters = array(), $optional = array()) {
+    return $this->_request('API.getMetadata', array(
       'apiModule' => $apiModule,
       'apiAction' => $apiAction,
       'apiParameters' => $apiParameters,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -656,13 +653,13 @@ class Piwik
    * @param array $optional
    */
   public function getReportMetadata(array $idSites, $hideMetricsDoc = '', $showSubtableReports = '',
-    $optional = [])
+    $optional = array())
   {
-    return $this->_request('API.getReportMetadata', [
+    return $this->_request('API.getReportMetadata', array(
       'idSites' => $idSites,
       'hideMetricsDoc' => $hideMetricsDoc,
       'showSubtableReports' => $showSubtableReports,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -677,10 +674,10 @@ class Piwik
    * @param string $hideMetricsDoc
    * @param array $optional
    */
-  public function getProcessedReport($apiModule, $apiAction, $segment = '', $apiParameters = [],
-    $idGoal = '', $showTimer = '1', $hideMetricsDoc = '', $optional = [])
+  public function getProcessedReport($apiModule, $apiAction, $segment = '', $apiParameters = array(),
+    $idGoal = '', $showTimer = '1', $hideMetricsDoc = '', $optional = array())
   {
-    return $this->_request('API.getProcessedReport', [
+    return $this->_request('API.getProcessedReport', array(
       'apiModule' => $apiModule,
       'apiAction' => $apiAction,
       'segment' => $segment,
@@ -688,7 +685,7 @@ class Piwik
       'idGoal' => $idGoal,
       'showTimer' => $showTimer,
       'hideMetricsDoc' => $hideMetricsDoc,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -698,11 +695,11 @@ class Piwik
    * @param string $columns
    * @param array $optional
    */
-  public function getApi($segment = '', $columns = '', $optional = []) {
-    return $this->_request('API.get', [
+  public function getApi($segment = '', $columns = '', $optional = array()) {
+    return $this->_request('API.get', array(
       'segment' => $segment,
       'columns' => $columns,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -718,9 +715,9 @@ class Piwik
    * @param array $optional
    */
   public function getRowEvolution($apiModule, $apiAction, $segment = '', $column = '', $idGoal = '',
-    $legendAppendMetric = '1', $labelUseAbsoluteUrl = '1', $optional = [])
+    $legendAppendMetric = '1', $labelUseAbsoluteUrl = '1', $optional = array())
   {
-    return $this->_request('API.getRowEvolution', [
+    return $this->_request('API.getRowEvolution', array(
       'apiModule' => $apiModule,
       'apiAction' => $apiAction,
       'segment' => $segment,
@@ -728,7 +725,7 @@ class Piwik
       'idGoal' => $idGoal,
       'legendAppendMetric ' => $legendAppendMetric,
       'labelUseAbsoluteUrl  ' => $labelUseAbsoluteUrl,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -736,8 +733,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getLastDate($optional = []) {
-    return $this->_request('API.getLastDate', [], $optional);
+  public function getLastDate($optional = array()) {
+    return $this->_request('API.getLastDate', array(), $optional);
   }
 
   /**
@@ -748,7 +745,7 @@ class Piwik
    * @param array $methods
    * @param array $optional
    */
-  public function getBulkRequest($methods = [], $optional = []) {
+  public function getBulkRequest($methods = array(), $optional = array()) {
     $urls = array();
 
     foreach ($methods as $key => $method){
@@ -764,10 +761,10 @@ class Piwik
    * @param string $segmentName
    * @param array $optional
    */
-  public function getSuggestedValuesForSegment($segmentName, $optional = []) {
-    return $this->_request('API.getSuggestedValuesForSegment', [
+  public function getSuggestedValuesForSegment($segmentName, $optional = array()) {
+    return $this->_request('API.getSuggestedValuesForSegment', array(
       'segmentName' => $segmentName,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -782,11 +779,11 @@ class Piwik
    * @param string $columns
    * @param array $optional
    */
-  public function getAction($segment = '', $columns = '', $optional = []) {
-    return $this->_request('Actions.get', [
+  public function getAction($segment = '', $columns = '', $optional = array()) {
+    return $this->_request('Actions.get', array(
       'segment' => $segment,
       'columns' => $columns,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -795,10 +792,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getPageUrls($segment = '', $optional = []) {
-    return $this->_request('Actions.getPageUrls', [
+  public function getPageUrls($segment = '', $optional = array()) {
+    return $this->_request('Actions.getPageUrls', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -807,10 +804,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getPageUrlsFollowingSiteSearch($segment = '', $optional = []) {
-    return $this->_request('Actions.getPageUrlsFollowingSiteSearch', [
+  public function getPageUrlsFollowingSiteSearch($segment = '', $optional = array()) {
+    return $this->_request('Actions.getPageUrlsFollowingSiteSearch', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -819,10 +816,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getPageTitlesFollowingSiteSearch($segment = '', $optional = []) {
-    return $this->_request('Actions.getPageTitlesFollowingSiteSearch', [
+  public function getPageTitlesFollowingSiteSearch($segment = '', $optional = array()) {
+    return $this->_request('Actions.getPageTitlesFollowingSiteSearch', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -831,10 +828,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getEntryPageUrls($segment = '', $optional = []) {
-    return $this->_request('Actions.getEntryPageUrls', [
+  public function getEntryPageUrls($segment = '', $optional = array()) {
+    return $this->_request('Actions.getEntryPageUrls', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -843,10 +840,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getExitPageUrls($segment = '', $optional = []) {
-    return $this->_request('Actions.getExitPageUrls', [
+  public function getExitPageUrls($segment = '', $optional = array()) {
+    return $this->_request('Actions.getExitPageUrls', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -856,11 +853,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getPageUrl($pageUrl, $segment = '', $optional = []) {
-    return $this->_request('Actions.getPageUrl', [
+  public function getPageUrl($pageUrl, $segment = '', $optional = array()) {
+    return $this->_request('Actions.getPageUrl', array(
       'pageUrl' => $pageUrl,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -869,10 +866,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getPageTitles($segment = '', $optional = []) {
-    return $this->_request('Actions.getPageTitles', [
+  public function getPageTitles($segment = '', $optional = array()) {
+    return $this->_request('Actions.getPageTitles', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -881,10 +878,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getEntryPageTitles($segment = '', $optional = []) {
-    return $this->_request('Actions.getEntryPageTitles', [
+  public function getEntryPageTitles($segment = '', $optional = array()) {
+    return $this->_request('Actions.getEntryPageTitles', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -893,10 +890,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getExitPageTitles($segment = '', $optional = []) {
-    return $this->_request('Actions.getExitPageTitles', [
+  public function getExitPageTitles($segment = '', $optional = array()) {
+    return $this->_request('Actions.getExitPageTitles', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -906,11 +903,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getPageTitle($pageName, $segment = '', $optional = []) {
-    return $this->_request('Actions.getPageTitle', [
+  public function getPageTitle($pageName, $segment = '', $optional = array()) {
+    return $this->_request('Actions.getPageTitle', array(
       'pageName' => $pageName,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -919,10 +916,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getDownloads($segment = '', $optional = []) {
-    return $this->_request('Actions.getDownloads', [
+  public function getDownloads($segment = '', $optional = array()) {
+    return $this->_request('Actions.getDownloads', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -932,11 +929,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getDownload($downloadUrl, $segment = '', $optional = []) {
-    return $this->_request('Actions.getDownload', [
+  public function getDownload($downloadUrl, $segment = '', $optional = array()) {
+    return $this->_request('Actions.getDownload', array(
       'downloadUrl' => $downloadUrl,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -945,10 +942,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getOutlinks($segment = '', $optional = []) {
-    return $this->_request('Actions.getOutlinks', [
+  public function getOutlinks($segment = '', $optional = array()) {
+    return $this->_request('Actions.getOutlinks', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -958,11 +955,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getOutlink($outlinkUrl, $segment = '', $optional = []) {
-    return $this->_request('Actions.getOutlink', [
+  public function getOutlink($outlinkUrl, $segment = '', $optional = array()) {
+    return $this->_request('Actions.getOutlink', array(
       'outlinkUrl' => $outlinkUrl,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -971,10 +968,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSiteSearchKeywords($segment = '', $optional = []) {
-    return $this->_request('Actions.getSiteSearchKeywords', [
+  public function getSiteSearchKeywords($segment = '', $optional = array()) {
+    return $this->_request('Actions.getSiteSearchKeywords', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -983,10 +980,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSiteSearchNoResultKeywords($segment = '', $optional = []) {
-    return $this->_request('Actions.getSiteSearchNoResultKeywords', [
+  public function getSiteSearchNoResultKeywords($segment = '', $optional = array()) {
+    return $this->_request('Actions.getSiteSearchNoResultKeywords', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -995,10 +992,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSiteSearchCategories($segment = '', $optional = []) {
-    return $this->_request('Actions.getSiteSearchCategories', [
+  public function getSiteSearchCategories($segment = '', $optional = array()) {
+    return $this->_request('Actions.getSiteSearchCategories', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1012,11 +1009,11 @@ class Piwik
    * @param int $starred
    * @param array $optional
    */
-  public function addAnnotation($note, $starred = 0, $optional = []) {
-    return $this->_request('Annotations.add', [
+  public function addAnnotation($note, $starred = 0, $optional = array()) {
+    return $this->_request('Annotations.add', array(
       'note' => $note,
       'starred' => $starred,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1027,12 +1024,12 @@ class Piwik
    * @param int $starred
    * @param array $optional
    */
-  public function saveAnnotation($idNote, $note = '', $starred = '', $optional = []) {
-    return $this->_request('Annotations.save', [
+  public function saveAnnotation($idNote, $note = '', $starred = '', $optional = array()) {
+    return $this->_request('Annotations.save', array(
       'idNote' => $idNote,
       'note' => $note,
       'starred' => $starred,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1041,10 +1038,10 @@ class Piwik
    * @param int $idNote
    * @param array $optional
    */
-  public function deleteAnnotation($idNote, $optional = []) {
-    return $this->_request('Annotations.delete', [
+  public function deleteAnnotation($idNote, $optional = array()) {
+    return $this->_request('Annotations.delete', array(
       'idNote' => $idNote,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1052,8 +1049,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function deleteAllAnnotations($optional = []) {
-    return $this->_request('Annotations.deleteAll', [], $optional);
+  public function deleteAllAnnotations($optional = array()) {
+    return $this->_request('Annotations.deleteAll', array(), $optional);
   }
 
   /**
@@ -1062,10 +1059,10 @@ class Piwik
    * @param int $idNote
    * @param array $optional
    */
-  public function getAnnotation($idNote, $optional = []) {
-    return $this->_request('Annotations.get', [
+  public function getAnnotation($idNote, $optional = array()) {
+    return $this->_request('Annotations.get', array(
       'idNote' => $idNote,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1074,10 +1071,10 @@ class Piwik
    * @param int $lastN
    * @param array $optional
    */
-  public function getAllAnnotation($lastN = '', $optional = []) {
-    return $this->_request('Annotations.getAll', [
+  public function getAllAnnotation($lastN = '', $optional = array()) {
+    return $this->_request('Annotations.getAll', array(
       'lastN' => $lastN,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1087,11 +1084,11 @@ class Piwik
    * @param string $getAnnotationText
    * @param array $optional
    */
-  public function getAnnotationCountForDates($lastN, $getAnnotationText, $optional = []) {
-    return $this->_request('Annotations.getAnnotationCountForDates', [
+  public function getAnnotationCountForDates($lastN, $getAnnotationText, $optional = array()) {
+    return $this->_request('Annotations.getAnnotationCountForDates', array(
       'lastN' => $lastN,
       'getAnnotationText' => $getAnnotationText
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1104,10 +1101,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getContentNames($segment = '', $optional = []) {
-    return $this->_request('Contents.getContentNames', [
+  public function getContentNames($segment = '', $optional = array()) {
+    return $this->_request('Contents.getContentNames', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1116,10 +1113,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getContentPieces($segment = '', $optional = []) {
-    return $this->_request('Contents.getContentPieces', [
+  public function getContentPieces($segment = '', $optional = array()) {
+    return $this->_request('Contents.getContentPieces', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1132,24 +1129,24 @@ class Piwik
    * @param int $idAlert
    * @param array $optional
    */
-  public function getAlert($idAlert, $optional = []) {
-    return $this->_request('CustomAlerts.getAlert', [
+  public function getAlert($idAlert, $optional = array()) {
+    return $this->_request('CustomAlerts.getAlert', array(
       'idAlert' => $idAlert,
-    ], $optional);
+    ), $optional);
   }
 
   /**
    * Get values for alerts in the past
    *
    * @param int $idAlert
-   * @param unknown $subPeriodN
+   * @param mixed $subPeriodN
    * @param array $optional
    */
-  public function getValuesForAlertInPast($idAlert, $subPeriodN, $optional = []) {
-    return $this->_request('CustomAlerts.getValuesForAlertInPast', [
+  public function getValuesForAlertInPast($idAlert, $subPeriodN, $optional = array()) {
+    return $this->_request('CustomAlerts.getValuesForAlertInPast', array(
       'idAlert' => $idAlert,
       'subPeriodN' => $subPeriodN,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1159,11 +1156,11 @@ class Piwik
    * @param int $ifSuperUserReturnAllAlerts
    * @param array $optional
    */
-  public function getAlerts($idSites, $ifSuperUserReturnAllAlerts = '', $optional = []) {
-    return $this->_request('CustomAlerts.getAlerts', [
+  public function getAlerts($idSites, $ifSuperUserReturnAllAlerts = '', $optional = array()) {
+    return $this->_request('CustomAlerts.getAlerts', array(
       'idSites' => $idSites,
       'ifSuperUserReturnAllAlerts' => $ifSuperUserReturnAllAlerts,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1172,22 +1169,22 @@ class Piwik
    * @param string $name
    * @param array $idSites Array of site IDs
    * @param int $emailMe
-   * @param unknown $additionalEmails
-   * @param unknown $phoneNumbers
-   * @param unknown $metric
-   * @param unknown $metricCondition
-   * @param unknown $metricValue
-   * @param unknown $comparedTo
-   * @param unknown $reportUniqueId
-   * @param unknown $reportCondition
-   * @param unknown $reportValue
+   * @param mixed $additionalEmails
+   * @param mixed $phoneNumbers
+   * @param mixed $metric
+   * @param mixed $metricCondition
+   * @param mixed $metricValue
+   * @param mixed $comparedTo
+   * @param mixed $reportUniqueId
+   * @param mixed $reportCondition
+   * @param mixed $reportValue
    * @param array $optional
    */
   public function addAlert($name, $idSites, $emailMe, $additionalEmails, $phoneNumbers, $metric,
     $metricCondition, $metricValue, $comparedTo, $reportUniqueId, $reportCondition = '',
-    $reportValue = '', $optional = [])
+    $reportValue = '', $optional = array())
   {
-    return $this->_request('CustomAlerts.addAlert', [
+    return $this->_request('CustomAlerts.addAlert', array(
       'name' => $name,
       'idSites' => $idSites,
       'emailMe' => $emailMe,
@@ -1200,7 +1197,7 @@ class Piwik
       'reportUniqueId' => $reportUniqueId,
       'reportCondition' => $reportCondition,
       'reportValue' => $reportValue,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1210,22 +1207,22 @@ class Piwik
    * @param string $name
    * @param array $idSites Array of site IDs
    * @param int $emailMe
-   * @param unknown $additionalEmails
-   * @param unknown $phoneNumbers
-   * @param unknown $metric
-   * @param unknown $metricCondition
-   * @param unknown $metricValue
-   * @param unknown $comparedTo
-   * @param unknown $reportUniqueId
-   * @param unknown $reportCondition
-   * @param unknown $reportValue
+   * @param mixed $additionalEmails
+   * @param mixed $phoneNumbers
+   * @param mixed $metric
+   * @param mixed $metricCondition
+   * @param mixed $metricValue
+   * @param mixed $comparedTo
+   * @param mixed $reportUniqueId
+   * @param mixed $reportCondition
+   * @param mixed $reportValue
    * @param array $optional
    */
   public function editAlert($idAlert, $name, $idSites, $emailMe, $additionalEmails, $phoneNumbers,
     $metric, $metricCondition, $metricValue, $comparedTo, $reportUniqueId, $reportCondition = '',
-    $reportValue = '', $optional = [])
+    $reportValue = '', $optional = array())
   {
-    return $this->_request('CustomAlerts.editAlert', [
+    return $this->_request('CustomAlerts.editAlert', array(
       'idAlert' => $idAlert,
       'name' => $name,
       'idSites' => $idSites,
@@ -1239,7 +1236,7 @@ class Piwik
       'reportUniqueId' => $reportUniqueId,
       'reportCondition' => $reportCondition,
       'reportValue' => $reportValue,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1248,10 +1245,10 @@ class Piwik
    * @param int $idAlert
    * @param array $optional
    */
-  public function deleteAlert($idAlert, $optional = []) {
-    return $this->_request('CustomAlerts.deleteAlert', [
+  public function deleteAlert($idAlert, $optional = array()) {
+    return $this->_request('CustomAlerts.deleteAlert', array(
       'idAlert' => $idAlert,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1260,10 +1257,10 @@ class Piwik
    * @param array $idSites
    * @param array $optional
    */
-  public function getTriggeredAlerts($idSites, $optional = []) {
-    return $this->_request('CustomAlerts.getTriggeredAlerts', [
+  public function getTriggeredAlerts($idSites, $optional = array()) {
+    return $this->_request('CustomAlerts.getTriggeredAlerts', array(
       'idSites' => $idSites,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1277,10 +1274,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCustomVariables($segment = '', $optional = []) {
-    return $this->_request('CustomVariables.getCustomVariables', [
+  public function getCustomVariables($segment = '', $optional = array()) {
+    return $this->_request('CustomVariables.getCustomVariables', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1290,11 +1287,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCustomVariable($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('CustomVariables.getCustomVariablesValuesFromNameId', [
+  public function getCustomVariable($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('CustomVariables.getCustomVariablesValuesFromNameId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1306,8 +1303,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDashboards($optional = []) {
-    return $this->_request('Dashboard.getDashboards', [], $optional);
+  public function getDashboards($optional = array()) {
+    return $this->_request('Dashboard.getDashboards', array(), $optional);
   }
 
   /**
@@ -1320,10 +1317,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getDeviceType($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getType', [
+  public function getDeviceType($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getType', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1332,10 +1329,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getDeviceBrand($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getBrand', [
+  public function getDeviceBrand($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getBrand', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1344,10 +1341,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getDeviceModel($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getModel', [
+  public function getDeviceModel($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getModel', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1356,10 +1353,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getOSFamilies($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getOsFamilies', [
+  public function getOSFamilies($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getOsFamilies', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1368,10 +1365,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getOsVersions($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getOsVersions', [
+  public function getOsVersions($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getOsVersions', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1380,10 +1377,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getBrowsers($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getBrowsers', [
+  public function getBrowsers($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getBrowsers', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1392,10 +1389,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getBrowserVersions($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getBrowserVersions', [
+  public function getBrowserVersions($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getBrowserVersions', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1404,10 +1401,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getBrowserEngines($segment = '', $optional = []) {
-    return $this->_request('DevicesDetection.getBrowserEngines', [
+  public function getBrowserEngines($segment = '', $optional = array()) {
+    return $this->_request('DevicesDetection.getBrowserEngines', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1421,11 +1418,11 @@ class Piwik
    * @param string $secondaryDimension ('eventAction' or 'eventName')
    * @param array $optional
    */
-  public function getEventCategory($segment = '', $secondaryDimension = '', $optional = []) {
-    return $this->_request('Events.getCategory', [
+  public function getEventCategory($segment = '', $secondaryDimension = '', $optional = array()) {
+    return $this->_request('Events.getCategory', array(
       'segment' => $segment,
       'secondaryDimension' => $secondaryDimension,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1435,11 +1432,11 @@ class Piwik
    * @param string $secondaryDimension ('eventName' or 'eventCategory')
    * @param array $optional
    */
-  public function getEventAction($segment = '', $secondaryDimension = '', $optional = []) {
-    return $this->_request('Events.getAction', [
+  public function getEventAction($segment = '', $secondaryDimension = '', $optional = array()) {
+    return $this->_request('Events.getAction', array(
       'segment' => $segment,
       'secondaryDimension' => $secondaryDimension,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1449,11 +1446,11 @@ class Piwik
    * @param string $secondaryDimension ('eventAction' or 'eventCategory')
    * @param array $optional
    */
-  public function getEventName($segment = '', $secondaryDimension = '', $optional = []) {
-    return $this->_request('Events.getName', [
+  public function getEventName($segment = '', $secondaryDimension = '', $optional = array()) {
+    return $this->_request('Events.getName', array(
       'segment' => $segment,
       'secondaryDimension' => $secondaryDimension,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1463,11 +1460,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getActionFromCategoryId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Events.getActionFromCategoryId', [
+  public function getActionFromCategoryId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Events.getActionFromCategoryId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1477,11 +1474,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNameFromCategoryId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Events.getNameFromCategoryId', [
+  public function getNameFromCategoryId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Events.getNameFromCategoryId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1491,11 +1488,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCategoryFromActionId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Events.getCategoryFromActionId', [
+  public function getCategoryFromActionId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Events.getCategoryFromActionId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1505,11 +1502,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNameFromActionId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Events.getNameFromActionId', [
+  public function getNameFromActionId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Events.getNameFromActionId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1519,11 +1516,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getActionFromNameId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Events.getActionFromNameId', [
+  public function getActionFromNameId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Events.getActionFromNameId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1533,11 +1530,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCategoryFromNameId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Events.getCategoryFromNameId', [
+  public function getCategoryFromNameId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Events.getCategoryFromNameId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1550,8 +1547,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExamplePiwikVersion($optional = []) {
-    return $this->_request('ExampleAPI.getPiwikVersion', [], $optional);
+  public function getExamplePiwikVersion($optional = array()) {
+    return $this->_request('ExampleAPI.getPiwikVersion', array(), $optional);
   }
 
   /**
@@ -1559,8 +1556,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExampleAnswerToLife($optional = []) {
-    return $this->_request('ExampleAPI.getAnswerToLife', [], $optional);
+  public function getExampleAnswerToLife($optional = array()) {
+    return $this->_request('ExampleAPI.getAnswerToLife', array(), $optional);
   }
 
   /**
@@ -1568,8 +1565,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExampleObject($optional = []) {
-    return $this->_request('ExampleAPI.getObject', [], $optional);
+  public function getExampleObject($optional = array()) {
+    return $this->_request('ExampleAPI.getObject', array(), $optional);
   }
 
   /**
@@ -1579,11 +1576,11 @@ class Piwik
    * @param int $b
    * @param array $optional
    */
-  public function getExampleSum($a = '0', $b = '0', $optional = []) {
-    return $this->_request('ExampleAPI.getSum', [
+  public function getExampleSum($a = '0', $b = '0', $optional = array()) {
+    return $this->_request('ExampleAPI.getSum', array(
       'a' => $a,
       'b' => $b,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1591,8 +1588,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExampleNull($optional = []) {
-    return $this->_request('ExampleAPI.getNull', [], $optional);
+  public function getExampleNull($optional = array()) {
+    return $this->_request('ExampleAPI.getNull', array(), $optional);
   }
 
   /**
@@ -1600,8 +1597,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExampleDescriptionArray($optional = []) {
-    return $this->_request('ExampleAPI.getDescriptionArray', [], $optional);
+  public function getExampleDescriptionArray($optional = array()) {
+    return $this->_request('ExampleAPI.getDescriptionArray', array(), $optional);
   }
 
   /**
@@ -1609,8 +1606,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExampleCompetitionDatatable($optional = []) {
-    return $this->_request('ExampleAPI.getCompetitionDatatable',[], $optional);
+  public function getExampleCompetitionDatatable($optional = array()) {
+    return $this->_request('ExampleAPI.getCompetitionDatatable',array(), $optional);
   }
 
   /**
@@ -1619,8 +1616,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExampleMoreInformationAnswerToLife($optional = []) {
-    return $this->_request('ExampleAPI.getMoreInformationAnswerToLife', [], $optional);
+  public function getExampleMoreInformationAnswerToLife($optional = array()) {
+    return $this->_request('ExampleAPI.getMoreInformationAnswerToLife', array(), $optional);
   }
 
   /**
@@ -1628,8 +1625,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExampleMultiArray($optional = []) {
-    return $this->_request('ExampleAPI.getMultiArray', [], $optional);
+  public function getExampleMultiArray($optional = array()) {
+    return $this->_request('ExampleAPI.getMultiArray', array(), $optional);
   }
 
   /**
@@ -1642,10 +1639,10 @@ class Piwik
    * @param int $truth
    * @param array $optional
    */
-  public function getExamplePluginAnswerToLife($truth = 1, $optional = []) {
-    return $this->_request('ExamplePlugin.getAnswerToLife', [
+  public function getExamplePluginAnswerToLife($truth = 1, $optional = array()) {
+    return $this->_request('ExamplePlugin.getAnswerToLife', array(
       'truth' => $truth,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1654,10 +1651,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getExamplePluginReport($segment = '', $optional = []) {
-    return $this->_request('ExamplePlugin.getExampleReport', [
+  public function getExamplePluginReport($segment = '', $optional = array()) {
+    return $this->_request('ExamplePlugin.getExampleReport', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1668,16 +1665,16 @@ class Piwik
    * Get a multidimensional array
    *
    * @param string $featureName
-   * @param unknown $like
+   * @param mixed $like
    * @param string $message
    * @param array $optional
    */
-  public function sendFeedbackForFeature($featureName, $like, $message = '', $optional = []) {
-    return $this->_request('Feedback.sendFeedbackForFeature', [
+  public function sendFeedbackForFeature($featureName, $like, $message = '', $optional = array()) {
+    return $this->_request('Feedback.sendFeedbackForFeature', array(
       'featureName' => $featureName,
       'like' => $like,
       'message' => $message,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1690,8 +1687,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getGoals($optional = []) {
-    return $this->_request('Goals.getGoals', [], $optional);
+  public function getGoals($optional = array()) {
+    return $this->_request('Goals.getGoals', array(), $optional);
   }
 
   /**
@@ -1707,9 +1704,9 @@ class Piwik
    * @param array $optional
    */
   public function addGoal($name, $matchAttribute, $pattern, $patternType, $caseSensitive = '',
-    $revenue = '', $allowMultipleConversionsPerVisit = '', $optional = [])
+    $revenue = '', $allowMultipleConversionsPerVisit = '', $optional = array())
   {
-    return $this->_request('Goals.addGoal', [
+    return $this->_request('Goals.addGoal', array(
       'name' => $name,
       'matchAttribute' => $matchAttribute,
       'pattern' => $pattern,
@@ -1717,7 +1714,7 @@ class Piwik
       'caseSensitive' => $caseSensitive,
       'revenue' => $revenue,
       'allowMultipleConversionsPerVisit' => $allowMultipleConversionsPerVisit,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1734,9 +1731,9 @@ class Piwik
    * @param array $optional
    */
   public function updateGoal($idGoal, $name, $matchAttribute, $pattern, $patternType, $caseSensitive = '',
-    $revenue = '', $allowMultipleConversionsPerVisit = '', $optional = [])
+    $revenue = '', $allowMultipleConversionsPerVisit = '', $optional = array())
   {
-    return $this->_request('Goals.updateGoal', [
+    return $this->_request('Goals.updateGoal', array(
       'idGoal' => $idGoal,
       'name' => $name,
       'matchAttribute' => $matchAttribute,
@@ -1745,7 +1742,7 @@ class Piwik
       'caseSensitive' => $caseSensitive,
       'revenue' => $revenue,
       'allowMultipleConversionsPerVisit' => $allowMultipleConversionsPerVisit,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1754,46 +1751,46 @@ class Piwik
    * @param int $idGoal
    * @param array $optional
    */
-  public function deleteGoal($idGoal, $optional = []) {
-    return $this->_request('Goals.deleteGoal', [
+  public function deleteGoal($idGoal, $optional = array()) {
+    return $this->_request('Goals.deleteGoal', array(
       'idGoal' => $idGoal,
-    ], $optional);
+    ), $optional);
   }
 
   /**
    * Get the SKU of the items
    *
-   * @param boolean abandonedCarts
+   * @param boolean $abandonedCarts
    * @param array $optional
    */
-  public function getItemsSku($abandonedCarts, $optional = []) {
-    return $this->_request('Goals.getItemsSku', [
+  public function getItemsSku($abandonedCarts, $optional = array()) {
+    return $this->_request('Goals.getItemsSku', array(
       'abandonedCarts' => $abandonedCarts,
-    ], $optional);
+    ), $optional);
   }
 
   /**
    * Get the name of the items
    *
-   * @param boolean abandonedCarts
+   * @param boolean $abandonedCarts
    * @param array $optional
    */
-  public function getItemsName($abandonedCarts, $optional = []) {
-    return $this->_request('Goals.getItemsName', [
+  public function getItemsName($abandonedCarts, $optional = array()) {
+    return $this->_request('Goals.getItemsName', array(
       'abandonedCarts' => $abandonedCarts,
-    ], $optional);
+    ), $optional);
   }
 
   /**
    * Get the categories of the items
    *
-   * @param boolean abandonedCarts
+   * @param boolean $abandonedCarts
    * @param array $optional
    */
-  public function getItemsCategory($abandonedCarts, $optional = []) {
-    return $this->_request('Goals.getItemsCategory', [
+  public function getItemsCategory($abandonedCarts, $optional = array()) {
+    return $this->_request('Goals.getItemsCategory', array(
       'abandonedCarts' => $abandonedCarts,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1804,12 +1801,12 @@ class Piwik
    * @param array $columns
    * @param array $optional
    */
-  public function getGoal($segment = '', $idGoal = '', $columns = [], $optional = []) {
-    return $this->_request('Goals.get', [
+  public function getGoal($segment = '', $idGoal = '', $columns = array(), $optional = array()) {
+    return $this->_request('Goals.get', array(
       'segment' => $segment,
       'idGoal' => $idGoal,
       'columns' => $columns,
-    ], $optional);
+    ), $optional);
   }
 
 
@@ -1820,11 +1817,11 @@ class Piwik
    * @param int $idGoal
    * @param array $optional
    */
-  public function getDaysToConversion($segment = '', $idGoal = '', $optional = []) {
-    return $this->_request('Goals.getDaysToConversion', [
+  public function getDaysToConversion($segment = '', $idGoal = '', $optional = array()) {
+    return $this->_request('Goals.getDaysToConversion', array(
       'segment' => $segment,
       'idGoal' => $idGoal,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1834,11 +1831,11 @@ class Piwik
    * @param int $idGoal
    * @param array $optional
    */
-  public function getVisitsUntilConversion($segment = '', $idGoal = '', $optional = []) {
-    return $this->_request('Goals.getVisitsUntilConversion', [
+  public function getVisitsUntilConversion($segment = '', $idGoal = '', $optional = array()) {
+    return $this->_request('Goals.getVisitsUntilConversion', array(
       'segment' => $segment,
       'idGoal' => $idGoal,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1877,9 +1874,9 @@ class Piwik
    */
   public function getImageGraph($apiModule, $apiAction, $graphType = '', $outputType = '0',
     $columns = '', $labels = '', $showLegend = '1', $width = '', $height = '', $fontSize = '9',
-    $legendFontSize = '', $aliasedGraph = '1', $idGoal = '', $colors = array(), $optional = [])
+    $legendFontSize = '', $aliasedGraph = '1', $idGoal = '', $colors = array(), $optional = array())
   {
-    return $this->_request('ImageGraph.get', [
+    return $this->_request('ImageGraph.get', array(
       'apiModule' => $apiModule,
       'apiAction' => $apiAction,
       'graphType' => $graphType,
@@ -1894,7 +1891,7 @@ class Piwik
       'aliasedGraph' => $aliasedGraph,
       'idGoal ' => $idGoal,
       'colors' => $colors,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1907,8 +1904,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function canGenerateInsights($optional = []) {
-    return $this->_request('Insights.canGenerateInsights', [], $optional);
+  public function canGenerateInsights($optional = array()) {
+    return $this->_request('Insights.canGenerateInsights', array(), $optional);
   }
 
   /**
@@ -1917,10 +1914,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getInsightsOverview($segment, $optional = []) {
-    return $this->_request('Insights.getInsightsOverview', [
+  public function getInsightsOverview($segment, $optional = array()) {
+    return $this->_request('Insights.getInsightsOverview', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1929,10 +1926,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getMoversAndShakersOverview($segment, $optional = []) {
-    return $this->_request('Insights.getMoversAndShakersOverview', [
+  public function getMoversAndShakersOverview($segment, $optional = array()) {
+    return $this->_request('Insights.getMoversAndShakersOverview', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1946,15 +1943,15 @@ class Piwik
    * @param array $optional
    */
   public function getMoversAndShakers($reportUniqueId, $segment, $comparedToXPeriods = '1',
-    $limitIncreaser = '4', $limitDecreaser = '4', $optional = [])
+    $limitIncreaser = '4', $limitDecreaser = '4', $optional = array())
   {
-    return $this->_request('Insights.getMoversAndShakers', [
+    return $this->_request('Insights.getMoversAndShakers', array(
       'reportUniqueId' => $reportUniqueId,
       'segment' => $segment,
       'comparedToXPeriods' => $comparedToXPeriods,
       'limitIncreaser' => $limitIncreaser,
       'limitDecreaser' => $limitDecreaser,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1965,17 +1962,17 @@ class Piwik
    * @param int $limitIncreaser
    * @param int $limitDecreaser
    * @param string $filterBy
-   * @param int minImpactPercent (0-100)
-   * @param int minGrowthPercent (0-100)
+   * @param int $minImpactPercent (0-100)
+   * @param int $minGrowthPercent (0-100)
    * @param int $comparedToXPeriods
    * @param string $orderBy
    * @param array $optional
    */
   public function getInsights($reportUniqueId, $segment, $limitIncreaser = '5', $limitDecreaser = '5',
     $filterBy = '', $minImpactPercent = '2', $minGrowthPercent = '20', $comparedToXPeriods = '1',
-    $orderBy = 'absolute', $optional = [])
+    $orderBy = 'absolute', $optional = array())
   {
-    return $this->_request('Insights.getInsights', [
+    return $this->_request('Insights.getInsights', array(
       'reportUniqueId' => $reportUniqueId,
       'segment' => $segment,
       'limitIncreaser' => $limitIncreaser,
@@ -1985,7 +1982,7 @@ class Piwik
       'minGrowthPercent' => $minGrowthPercent,
       'comparedToXPeriods' => $comparedToXPeriods,
       'orderBy' => $orderBy,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -1999,10 +1996,10 @@ class Piwik
    * @param string $languageCode
    * @param array $optional
    */
-  public function getLanguageAvailable($languageCode, $optional = []) {
-    return $this->_request('LanguagesManager.isLanguageAvailable', [
+  public function getLanguageAvailable($languageCode, $optional = array()) {
+    return $this->_request('LanguagesManager.isLanguageAvailable', array(
       'languageCode' => $languageCode,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2010,8 +2007,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getAvailableLanguages($optional = []) {
-    return $this->_request('LanguagesManager.getAvailableLanguages', [], $optional);
+  public function getAvailableLanguages($optional = array()) {
+    return $this->_request('LanguagesManager.getAvailableLanguages', array(), $optional);
   }
 
   /**
@@ -2019,8 +2016,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getAvailableLanguagesInfo($optional = []) {
-    return $this->_request('LanguagesManager.getAvailableLanguagesInfo', [], $optional);
+  public function getAvailableLanguagesInfo($optional = array()) {
+    return $this->_request('LanguagesManager.getAvailableLanguagesInfo', array(), $optional);
   }
 
   /**
@@ -2028,8 +2025,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getAvailableLanguageNames($optional = []) {
-    return $this->_request('LanguagesManager.getAvailableLanguageNames', [], $optional);
+  public function getAvailableLanguageNames($optional = array()) {
+    return $this->_request('LanguagesManager.getAvailableLanguageNames', array(), $optional);
   }
 
   /**
@@ -2038,10 +2035,10 @@ class Piwik
    * @param string $languageCode
    * @param array $optional
    */
-  public function getTranslations($languageCode, $optional = []) {
-    return $this->_request('LanguagesManager.getTranslationsForLanguage', [
+  public function getTranslations($languageCode, $optional = array()) {
+    return $this->_request('LanguagesManager.getTranslationsForLanguage', array(
       'languageCode' => $languageCode,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2050,10 +2047,10 @@ class Piwik
    * @param string $login
    * @param array $optional
    */
-  public function getLanguageForUser($login, $optional = []) {
-    return $this->_request('LanguagesManager.getLanguageForUser', [
+  public function getLanguageForUser($login, $optional = array()) {
+    return $this->_request('LanguagesManager.getLanguageForUser', array(
       'login' => $login,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2063,11 +2060,11 @@ class Piwik
    * @param string $languageCode
    * @param array $optional
    */
-  public function setLanguageForUser($login, $languageCode, $optional = []) {
-    return $this->_request('LanguagesManager.setLanguageForUser', [
+  public function setLanguageForUser($login, $languageCode, $optional = array()) {
+    return $this->_request('LanguagesManager.setLanguageForUser', array(
       'login' => $login,
       'languageCode' => $languageCode,
-    ], $optional);
+    ), $optional);
   }
 
 
@@ -2083,11 +2080,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCounters($lastMinutes = 60, $segment = '', $optional = []) {
-    return $this->_request('Live.getCounters', [
+  public function getCounters($lastMinutes = 60, $segment = '', $optional = array()) {
+    return $this->_request('Live.getCounters', array(
       'lastMinutes' => $lastMinutes,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2099,12 +2096,12 @@ class Piwik
    * @param string $minTimestamp
    * @param array $optional
    */
-  public function getLastVisitsDetails($segment = '', $minTimestamp = '', $doNotFetchActions = '', $optional = []) {
-    return $this->_request('Live.getLastVisitsDetails', [
+  public function getLastVisitsDetails($segment = '', $minTimestamp = '', $doNotFetchActions = '', $optional = array()) {
+    return $this->_request('Live.getLastVisitsDetails', array(
       'segment' => $segment,
       'minTimestamp' => $minTimestamp,
       'doNotFetchActions' => $doNotFetchActions,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2114,11 +2111,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getVisitorProfile($visitorId = '', $segment = '', $optional = []) {
-    return $this->_request('Live.getVisitorProfile', [
+  public function getVisitorProfile($visitorId = '', $segment = '', $optional = array()) {
+    return $this->_request('Live.getVisitorProfile', array(
       'visitorId' => $visitorId,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2127,10 +2124,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getMostRecentVisitorId($segment = '', $optional = []) {
-    return $this->_request('Live.getMostRecentVisitorId', [
+  public function getMostRecentVisitorId($segment = '', $optional = array()) {
+    return $this->_request('Live.getMostRecentVisitorId', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2145,8 +2142,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function areSMSAPICredentialProvided($optional = []) {
-    return $this->_request('MobileMessaging.areSMSAPICredentialProvided', [], $optional);
+  public function areSMSAPICredentialProvided($optional = array()) {
+    return $this->_request('MobileMessaging.areSMSAPICredentialProvided', array(), $optional);
   }
 
   /**
@@ -2154,8 +2151,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSMSProvider($optional = []) {
-    return $this->_request('MobileMessaging.getSMSProvider', [], $optional);
+  public function getSMSProvider($optional = array()) {
+    return $this->_request('MobileMessaging.getSMSProvider', array(), $optional);
   }
 
   /**
@@ -2165,11 +2162,11 @@ class Piwik
    * @param string $apiKey
    * @param array $optional
    */
-  public function setSMSAPICredential($provider, $apiKey, $optional = []) {
-    return $this->_request('MobileMessaging.setSMSAPICredential', [
+  public function setSMSAPICredential($provider, $apiKey, $optional = array()) {
+    return $this->_request('MobileMessaging.setSMSAPICredential', array(
       'provider' => $provider,
       'apiKey' => $apiKey,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2178,10 +2175,10 @@ class Piwik
    * @param string $phoneNumber
    * @param array $optional
    */
-  public function addPhoneNumber($phoneNumber, $optional = []) {
-    return $this->_request('MobileMessaging.addPhoneNumber', [
+  public function addPhoneNumber($phoneNumber, $optional = array()) {
+    return $this->_request('MobileMessaging.addPhoneNumber', array(
       'phoneNumber' => $phoneNumber,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2189,8 +2186,8 @@ class Piwik
    *
    * @return mixed
    */
-  public function getCreditLeft($optional = []) {
-    return $this->_request('MobileMessaging.getCreditLeft', [], $optional);
+  public function getCreditLeft($optional = array()) {
+    return $this->_request('MobileMessaging.getCreditLeft', array(), $optional);
   }
 
   /**
@@ -2199,10 +2196,10 @@ class Piwik
    * @param string $phoneNumber
    * @param array $optional
    */
-  public function removePhoneNumber($phoneNumber, $optional = []) {
-    return $this->_request('MobileMessaging.removePhoneNumber', [
+  public function removePhoneNumber($phoneNumber, $optional = array()) {
+    return $this->_request('MobileMessaging.removePhoneNumber', array(
       'phoneNumber' => $phoneNumber,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2212,11 +2209,11 @@ class Piwik
    * @param string $verificationCode
    * @param array $optional
    */
-  public function validatePhoneNumber($phoneNumber, $verificationCode, $optional = []) {
-    return $this->_request('MobileMessaging.validatePhoneNumber', [
+  public function validatePhoneNumber($phoneNumber, $verificationCode, $optional = array()) {
+    return $this->_request('MobileMessaging.validatePhoneNumber', array(
       'phoneNumber' => $phoneNumber,
       'verificationCode' => $verificationCode,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2224,8 +2221,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function deleteSMSAPICredential($optional = []) {
-    return $this->_request('MobileMessaging.deleteSMSAPICredential', [], $optional);
+  public function deleteSMSAPICredential($optional = array()) {
+    return $this->_request('MobileMessaging.deleteSMSAPICredential', array(), $optional);
   }
 
   /**
@@ -2234,10 +2231,10 @@ class Piwik
    * @param $delegatedManagement
    * @param array $optional
    */
-  public function setDelegatedManagement($delegatedManagement, $optional = []) {
-    return $this->_request('MobileMessaging.setDelegatedManagement', [
+  public function setDelegatedManagement($delegatedManagement, $optional = array()) {
+    return $this->_request('MobileMessaging.setDelegatedManagement', array(
       'delegatedManagement' => $delegatedManagement,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2245,8 +2242,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDelegatedManagement($optional = []) {
-    return $this->_request('MobileMessaging.getDelegatedManagement', [], $optional);
+  public function getDelegatedManagement($optional = array()) {
+    return $this->_request('MobileMessaging.getDelegatedManagement', array(), $optional);
   }
 
 
@@ -2262,11 +2259,11 @@ class Piwik
    * @param string $enhanced
    * @param array $optional
    */
-  public function getMultiSites($segment = '', $enhanced = '', $optional = []) {
-    return $this->_request('MultiSites.getAll', [
+  public function getMultiSites($segment = '', $enhanced = '', $optional = array()) {
+    return $this->_request('MultiSites.getAll', array(
       'segment' => $segment,
       'enhanced' => $enhanced,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2276,11 +2273,11 @@ class Piwik
    * @param string $enhanced
    * @param array $optional
    */
-  public function getOne($segment = '', $enhanced = '', $optional = []) {
-    return $this->_request('MultiSites.getOne', [
+  public function getOne($segment = '', $enhanced = '', $optional = array()) {
+    return $this->_request('MultiSites.getOne', array(
       'segment' => $segment,
       'enhanced' => $enhanced,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2292,8 +2289,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getOverlayTranslations($optional = []) {
-    return $this->_request('Overlay.getTranslations', [], $optional);
+  public function getOverlayTranslations($optional = array()) {
+    return $this->_request('Overlay.getTranslations', array(), $optional);
   }
 
   /**
@@ -2301,8 +2298,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getOverlayExcludedQueryParameters($optional = []) {
-    return $this->_request('Overlay.getExcludedQueryParameters', [], $optional);
+  public function getOverlayExcludedQueryParameters($optional = array()) {
+    return $this->_request('Overlay.getExcludedQueryParameters', array(), $optional);
   }
 
   /**
@@ -2310,10 +2307,10 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getOverlayFollowingPages($segment = '', $optional = []) {
-    return $this->_request('Overlay.getFollowingPages',[
+  public function getOverlayFollowingPages($segment = '', $optional = array()) {
+    return $this->_request('Overlay.getFollowingPages', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2327,10 +2324,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getProvider($segment = '', $optional = []) {
-    return $this->_request('Provider.getProvider', [
+  public function getProvider($segment = '', $optional = array()) {
+    return $this->_request('Provider.getProvider', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2345,11 +2342,11 @@ class Piwik
    * @param string $typeReferrer
    * @param array $optional
    */
-  public function getReferrerType($segment = '', $typeReferrer = '', $optional = []) {
-    return $this->_request('Referrers.getReferrerType', [
+  public function getReferrerType($segment = '', $typeReferrer = '', $optional = array()) {
+    return $this->_request('Referrers.getReferrerType', array(
       'segment' => $segment,
       'typeReferrer' => $typeReferrer,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2358,10 +2355,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAllReferrers($segment = '', $optional = []) {
-    return $this->_request('Referrers.getAll', [
+  public function getAllReferrers($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getAll', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2370,10 +2367,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getKeywords($segment = '', $optional = []) {
-    return $this->_request('Referrers.getKeywords', [
+  public function getKeywords($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getKeywords', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2382,10 +2379,10 @@ class Piwik
    * @param string $url
    * @param array $optional
    */
-  public function getKeywordsForPageUrl($url, $optional = []) {
-    return $this->_request('Referrers.getKeywordsForPageUrl', [
+  public function getKeywordsForPageUrl($url, $optional = array()) {
+    return $this->_request('Referrers.getKeywordsForPageUrl', array(
       'url' => $url,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2394,10 +2391,10 @@ class Piwik
    * @param string $title
    * @param array $optional
    */
-  public function getKeywordsForPageTitle($title, $optional = []) {
-    return $this->_request('Referrers.getKeywordsForPageTitle', [
+  public function getKeywordsForPageTitle($title, $optional = array()) {
+    return $this->_request('Referrers.getKeywordsForPageTitle', array(
       'title' => $title,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2406,11 +2403,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSearchEnginesFromKeywordId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Referrers.getSearchEnginesFromKeywordId', [
+  public function getSearchEnginesFromKeywordId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Referrers.getSearchEnginesFromKeywordId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2419,10 +2416,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSearchEngines($segment = '', $optional = []) {
-    return $this->_request('Referrers.getSearchEngines', [
+  public function getSearchEngines($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getSearchEngines', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2431,11 +2428,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getKeywordsFromSearchEngineId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Referrers.getKeywordsFromSearchEngineId', [
+  public function getKeywordsFromSearchEngineId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Referrers.getKeywordsFromSearchEngineId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2444,10 +2441,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCampaigns($segment = '', $optional = []) {
-    return $this->_request('Referrers.getCampaigns', [
+  public function getCampaigns($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getCampaigns', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2456,11 +2453,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getKeywordsFromCampaignId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Referrers.getKeywordsFromCampaignId', [
+  public function getKeywordsFromCampaignId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Referrers.getKeywordsFromCampaignId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2470,10 +2467,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingName($segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getName', [
+  public function getAdvancedCampaignReportingName($segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getName', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2483,10 +2480,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingKeywordContentFromNameId($segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getKeywordContentFromNameId', [
+  public function getAdvancedCampaignReportingKeywordContentFromNameId($segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getKeywordContentFromNameId', array(
       'segment' => $segment
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2496,10 +2493,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingKeyword($segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getKeyword', [
+  public function getAdvancedCampaignReportingKeyword($segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getKeyword', array(
       'segment' => $segment
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2509,10 +2506,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingSource ($segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getSource', [
+  public function getAdvancedCampaignReportingSource ($segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getSource', array(
       'segment' => $segment
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2522,10 +2519,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingMedium($segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getMedium', [
+  public function getAdvancedCampaignReportingMedium($segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getMedium', array(
       'segment' => $segment
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2535,10 +2532,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingContent ($segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getContent', [
+  public function getAdvancedCampaignReportingContent ($segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getContent', array(
       'segment' => $segment
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2548,10 +2545,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingSourceMedium($segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getSourceMedium', [
+  public function getAdvancedCampaignReportingSourceMedium($segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getSourceMedium', array(
       'segment' => $segment
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2562,11 +2559,11 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getAdvancedCampaignReportingNameFromSourceMediumId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('AdvancedCampaignReporting.getNameFromSourceMediumId', [
+  public function getAdvancedCampaignReportingNameFromSourceMediumId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('AdvancedCampaignReporting.getNameFromSourceMediumId', array(
       'idSubtable' => $idSubtable,
       'segment' => $segment
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2575,10 +2572,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getWebsites($segment = '', $optional = []) {
-    return $this->_request('Referrers.getWebsites', [
+  public function getWebsites($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getWebsites', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2588,10 +2585,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getUrlsFromWebsiteId($idSubtable, $segment = '', $optional = []) {
-    return $this->_request('Referrers.getUrlsFromWebsiteId', [
+  public function getUrlsFromWebsiteId($idSubtable, $segment = '', $optional = array()) {
+    return $this->_request('Referrers.getUrlsFromWebsiteId', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2600,10 +2597,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSocials($segment = '', $optional = []) {
-    return $this->_request('Referrers.getSocials', [
+  public function getSocials($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getSocials', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2612,10 +2609,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getUrlsForSocial($segment = '', $optional = []) {
-    return $this->_request('Referrers.getUrlsForSocial', [
+  public function getUrlsForSocial($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getUrlsForSocial', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2624,10 +2621,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfSearchEngines($segment = '', $optional = []) {
-    return $this->_request('Referrers.getNumberOfDistinctSearchEngines', [
+  public function getNumberOfSearchEngines($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getNumberOfDistinctSearchEngines', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2636,10 +2633,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfKeywords($segment = '', $optional = []) {
-    return $this->_request('Referrers.getNumberOfDistinctKeywords', [
+  public function getNumberOfKeywords($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getNumberOfDistinctKeywords', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2648,10 +2645,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfCampaigns($segment = '', $optional = []) {
-    return $this->_request('Referrers.getNumberOfDistinctCampaigns', [
+  public function getNumberOfCampaigns($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getNumberOfDistinctCampaigns', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2660,10 +2657,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfWebsites($segment = '', $optional = []) {
-    return $this->_request('Referrers.getNumberOfDistinctWebsites', [
+  public function getNumberOfWebsites($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getNumberOfDistinctWebsites', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2672,10 +2669,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfWebsitesUrls($segment = '', $optional = []) {
-    return $this->_request('Referrers.getNumberOfDistinctWebsitesUrls', [
+  public function getNumberOfWebsitesUrls($segment = '', $optional = array()) {
+    return $this->_request('Referrers.getNumberOfDistinctWebsitesUrls', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2689,10 +2686,10 @@ class Piwik
    * @param string $url
    * @param array $optional
    */
-  public function getSeoRank($url, $optional = []) {
-    return $this->_request('SEO.getRank', [
+  public function getSeoRank($url, $optional = array()) {
+    return $this->_request('SEO.getRank', array(
       'url' => $url,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2714,9 +2711,9 @@ class Piwik
    * @param array $optional
    */
   public function addReport($description, $period, $hour, $reportType, $reportFormat, $reports,
-    $parameters, $idSegment = '', $optional = [])
+    $parameters, $idSegment = '', $optional = array())
   {
-    return $this->_request('ScheduledReports.addReport', [
+    return $this->_request('ScheduledReports.addReport', array(
       'description' => $description,
       'period' => $period,
       'hour' => $hour,
@@ -2725,7 +2722,7 @@ class Piwik
       'reports' => $reports,
       'parameters' => $parameters,
       'idSegment' => $idSegment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2743,9 +2740,9 @@ class Piwik
    * @param array $optional
    */
   public function updateReport($idReport, $description, $period, $hour, $reportType, $reportFormat,
-    $reports, $parameters, $idSegment = '', $optional = [])
+    $reports, $parameters, $idSegment = '', $optional = array())
   {
-    return $this->_request('ScheduledReports.updateReport', [
+    return $this->_request('ScheduledReports.updateReport', array(
       'idReport' => $idReport,
       'description' => $description,
       'period' => $period,
@@ -2755,7 +2752,7 @@ class Piwik
       'reports' => $reports,
       'parameters' => $parameters,
       'idSegment' => $idSegment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2764,10 +2761,10 @@ class Piwik
    * @param int $idReport
    * @param array $optional
    */
-  public function deleteReport($idReport, $optional = []) {
-    return $this->_request('ScheduledReports.deleteReport', [
+  public function deleteReport($idReport, $optional = array()) {
+    return $this->_request('ScheduledReports.deleteReport', array(
       'idReport' => $idReport,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2779,13 +2776,13 @@ class Piwik
    * @param array $optional
    */
   public function getReports($idReport = '', $ifSuperUserReturnOnlySuperUserReports = '',
-    $idSegment = '', $optional = [])
+    $idSegment = '', $optional = array())
   {
-    return $this->_request('ScheduledReports.getReports', [
+    return $this->_request('ScheduledReports.getReports', array(
       'idReport' => $idReport,
       'ifSuperUserReturnOnlySuperUserReports' => $ifSuperUserReturnOnlySuperUserReports,
       'idSegment' => $idSegment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2799,15 +2796,15 @@ class Piwik
    * @param array $optional
    */
   public function generateReport($idReport, $language = '', $outputType = '', $reportFormat = '',
-    $parameters = '', $optional = [])
+    $parameters = '', $optional = array())
   {
-    return $this->_request('ScheduledReports.generateReport', [
+    return $this->_request('ScheduledReports.generateReport', array(
       'idReport' => $idReport,
       'language' => $language,
       'outputType' => $outputType,
       'reportFormat' => $reportFormat,
       'parameters' => $parameters,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2817,11 +2814,11 @@ class Piwik
    * @param int $force
    * @param array $optional
    */
-  public function sendReport($idReport, $force = '', $optional = []) {
-    return $this->_request('ScheduledReports.sendReport', [
+  public function sendReport($idReport, $force = '', $optional = array()) {
+    return $this->_request('ScheduledReports.sendReport', array(
       'idReport' => $idReport,
       'force' => $force,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2833,8 +2830,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function isUserCanAddNewSegment($optional = []) {
-    return $this->_request('SegmentEditor.isUserCanAddNewSegment', [], $optional);
+  public function isUserCanAddNewSegment($optional = array()) {
+    return $this->_request('SegmentEditor.isUserCanAddNewSegment', array(), $optional);
   }
 
   /**
@@ -2843,10 +2840,10 @@ class Piwik
    * @param int $idSegment
    * @param array $optional
    */
-  public function deleteSegment($idSegment, $optional = []) {
-    return $this->_request('SegmentEditor.delete', [
+  public function deleteSegment($idSegment, $optional = array()) {
+    return $this->_request('SegmentEditor.delete', array(
       'idSegment' => $idSegment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2860,15 +2857,15 @@ class Piwik
    * @param array $optional
    */
   public function updateSegment($idSegment, $name, $definition, $autoArchive = '',
-    $enableAllUsers = '', $optional = [])
+    $enableAllUsers = '', $optional = array())
   {
-    return $this->_request('SegmentEditor.update', [
+    return $this->_request('SegmentEditor.update', array(
       'idSegment' => $idSegment,
       'name' => $name,
       'definition' => $definition,
       'autoArchive' => $autoArchive,
       'enableAllUsers' => $enableAllUsers,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2880,13 +2877,13 @@ class Piwik
    * @param int $enableAllUsers
    * @param array $optional
    */
-  public function addSegment($name, $definition, $autoArchive = '', $enableAllUsers = '', $optional = []) {
-    return $this->_request('SegmentEditor.add', [
+  public function addSegment($name, $definition, $autoArchive = '', $enableAllUsers = '', $optional = array()) {
+    return $this->_request('SegmentEditor.add', array(
       'name' => $name,
       'definition' => $definition,
       'autoArchive' => $autoArchive,
       'enableAllUsers' => $enableAllUsers,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2895,10 +2892,10 @@ class Piwik
    * @param int $idSegment
    * @param array $optional
    */
-  public function getSegment($idSegment, $optional = []) {
-    return $this->_request('SegmentEditor.get', [
+  public function getSegment($idSegment, $optional = array()) {
+    return $this->_request('SegmentEditor.get', array(
       'idSegment' => $idSegment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2906,8 +2903,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getAllSegments($optional = []) {
-    return $this->_request('SegmentEditor.getAll', [], $optional);
+  public function getAllSegments($optional = array()) {
+    return $this->_request('SegmentEditor.getAll', array(), $optional);
   }
 
   /**
@@ -2933,9 +2930,9 @@ class Piwik
   public function getJavascriptTag($piwikUrl, $mergeSubdomains = '', $groupPageTitlesByDomain = '',
     $mergeAliasUrls = '', $visitorCustomVariables = '', $pageCustomVariables = '',
     $customCampaignNameQueryParam = '', $customCampaignKeywordParam = '', $doNotTrack = '',
-    $disableCookies = '', $optional = [])
+    $disableCookies = '', $optional = array())
   {
-    return $this->_request('SitesManager.getJavascriptTag', [
+    return $this->_request('SitesManager.getJavascriptTag', array(
       'piwikUrl' => $piwikUrl,
       'mergeSubdomains' => $mergeSubdomains,
       'groupPageTitlesByDomain' => $groupPageTitlesByDomain,
@@ -2946,7 +2943,7 @@ class Piwik
       'customCampaignKeywordParam' => $customCampaignKeywordParam,
       'doNotTrack' => $doNotTrack,
       'disableCookies' => $disableCookies,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2959,13 +2956,13 @@ class Piwik
    * @param array $optional
    */
   public function getImageTrackingCode($piwikUrl, $actionName = '', $idGoal = '',
-    $revenue = '', $optional = []) {
-    return $this->_request('SitesManager.getImageTrackingCode', [
+    $revenue = '', $optional = array()) {
+    return $this->_request('SitesManager.getImageTrackingCode', array(
       'piwikUrl' => $piwikUrl,
       'actionName' => $actionName,
       'idGoal' => $idGoal,
       'revenue' => $revenue,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2974,10 +2971,10 @@ class Piwik
    * @param string $group
    * @param array $optional
    */
-  public function getSitesFromGroup($group, $optional = []) {
-    return $this->_request('SitesManager.getSitesFromGroup', [
+  public function getSitesFromGroup($group, $optional = array()) {
+    return $this->_request('SitesManager.getSitesFromGroup', array(
       'group' => $group,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -2985,8 +2982,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSitesGroups($optional = []) {
-    return $this->_request('SitesManager.getSitesGroups', [], $optional);
+  public function getSitesGroups($optional = array()) {
+    return $this->_request('SitesManager.getSitesGroups', array(), $optional);
   }
 
   /**
@@ -2994,8 +2991,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSiteInformation($optional = []) {
-    return $this->_request('SitesManager.getSiteFromId', [], $optional);
+  public function getSiteInformation($optional = array()) {
+    return $this->_request('SitesManager.getSiteFromId', array(), $optional);
   }
 
   /**
@@ -3003,8 +3000,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSiteUrls($optional = []) {
-    return $this->_request('SitesManager.getSiteUrlsFromId', [], $optional);
+  public function getSiteUrls($optional = array()) {
+    return $this->_request('SitesManager.getSiteUrlsFromId', array(), $optional);
   }
 
   /**
@@ -3012,8 +3009,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getAllSites($optional = []) {
-    return $this->_request('SitesManager.getAllSites', [], $optional);
+  public function getAllSites($optional = array()) {
+    return $this->_request('SitesManager.getAllSites', array(), $optional);
   }
 
   /**
@@ -3021,8 +3018,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getAllSitesId($optional = []) {
-    return $this->_request('SitesManager.getAllSitesId', [], $optional);
+  public function getAllSitesId($optional = array()) {
+    return $this->_request('SitesManager.getAllSitesId', array(), $optional);
   }
 
   /**
@@ -3031,10 +3028,10 @@ class Piwik
    * @param string $timestamp
    * @param array $optional
    */
-  public function getSitesIdWithVisits($timestamp, $optional = []) {
-    return $this->_request('SitesManager.getSitesIdWithVisits', [
+  public function getSitesIdWithVisits($timestamp, $optional = array()) {
+    return $this->_request('SitesManager.getSitesIdWithVisits', array(
       'timestamp' => $timestamp,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3042,8 +3039,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSitesWithAdminAccess($optional = []) {
-    return $this->_request('SitesManager.getSitesWithAdminAccess', [], $optional);
+  public function getSitesWithAdminAccess($optional = array()) {
+    return $this->_request('SitesManager.getSitesWithAdminAccess', array(), $optional);
   }
 
   /**
@@ -3051,8 +3048,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSitesWithViewAccess($optional = []) {
-    return $this->_request('SitesManager.getSitesWithViewAccess', [], $optional);
+  public function getSitesWithViewAccess($optional = array()) {
+    return $this->_request('SitesManager.getSitesWithViewAccess', array(), $optional);
   }
 
   /**
@@ -3061,10 +3058,10 @@ class Piwik
    * @param int $limit
    * @param array $optional
    */
-  public function getSitesWithAtLeastViewAccess($limit = '', $optional = []) {
-    return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', [
+  public function getSitesWithAtLeastViewAccess($limit = '', $optional = array()) {
+    return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', array(
       'limit' => $limit,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3072,8 +3069,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSitesIdWithAdminAccess($optional = []) {
-    return $this->_request('SitesManager.getSitesIdWithAdminAccess', [], $optional);
+  public function getSitesIdWithAdminAccess($optional = array()) {
+    return $this->_request('SitesManager.getSitesIdWithAdminAccess', array(), $optional);
   }
 
   /**
@@ -3081,8 +3078,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSitesIdWithViewAccess($optional = []) {
-    return $this->_request('SitesManager.getSitesIdWithViewAccess', [], $optional);
+  public function getSitesIdWithViewAccess($optional = array()) {
+    return $this->_request('SitesManager.getSitesIdWithViewAccess', array(), $optional);
   }
 
   /**
@@ -3090,8 +3087,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSitesIdWithAtLeastViewAccess($optional = []) {
-    return $this->_request('SitesManager.getSitesIdWithAtLeastViewAccess', [], $optional);
+  public function getSitesIdWithAtLeastViewAccess($optional = array()) {
+    return $this->_request('SitesManager.getSitesIdWithAtLeastViewAccess', array(), $optional);
   }
 
   /**
@@ -3100,10 +3097,10 @@ class Piwik
    * @param string $url
    * @param array $optional
    */
-  public function getSitesIdFromSiteUrl($url, $optional = []) {
-    return $this->_request('SitesManager.getSitesIdFromSiteUrl', [
+  public function getSitesIdFromSiteUrl($url, $optional = array()) {
+    return $this->_request('SitesManager.getSitesIdFromSiteUrl', array(
       'url' => $url,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3129,9 +3126,9 @@ class Piwik
   public function addSite($siteName, $urls, $ecommerce = '', $siteSearch = '',
     $searchKeywordParameters = '', $searchCategoryParameters = '', $excludeIps = '',
     $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '',
-    $excludedUserAgents = '', $keepURLFragments = '', $type = '', $optional = [])
+    $excludedUserAgents = '', $keepURLFragments = '', $type = '', $optional = array())
   {
-    return $this->_request('SitesManager.addSite', [
+    return $this->_request('SitesManager.addSite', array(
       'siteName' => $siteName,
       'urls' => $urls,
       'ecommerce' => $ecommerce,
@@ -3147,7 +3144,7 @@ class Piwik
       'excludedUserAgents' => $excludedUserAgents,
       'keepURLFragments' => $keepURLFragments,
       'type' => $type,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3155,8 +3152,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function deleteSite($optional = []) {
-    return $this->_request('SitesManager.deleteSite', [], $optional);
+  public function deleteSite($optional = array()) {
+    return $this->_request('SitesManager.deleteSite', array(), $optional);
   }
 
   /**
@@ -3165,10 +3162,10 @@ class Piwik
    * @param array $urls
    * @param array $optional
    */
-  public function addSiteAliasUrls($urls, $optional = []) {
-    return $this->_request('SitesManager.addSiteAliasUrls', [
+  public function addSiteAliasUrls($urls, $optional = array()) {
+    return $this->_request('SitesManager.addSiteAliasUrls', array(
       'urls' => $urls,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3177,10 +3174,10 @@ class Piwik
    * @param array $urls
    * @param array $optional
    */
-  public function setSiteAliasUrls($urls, $optional = []) {
-    return $this->_request('SitesManager.setSiteAliasUrls', [
+  public function setSiteAliasUrls($urls, $optional = array()) {
+    return $this->_request('SitesManager.setSiteAliasUrls', array(
       'urls' => $urls,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3189,10 +3186,10 @@ class Piwik
    * @param string $ipRange
    * @param array $optional
    */
-  public function getIpsForRange($ipRange, $optional = []) {
-    return $this->_request('SitesManager.getIpsForRange', [
+  public function getIpsForRange($ipRange, $optional = array()) {
+    return $this->_request('SitesManager.getIpsForRange', array(
       'ipRange' => $ipRange,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3201,10 +3198,10 @@ class Piwik
    * @param array $excludedIps
    * @param array $optional
    */
-  public function setExcludedIps($excludedIps, $optional = []) {
-    return $this->_request('SitesManager.setGlobalExcludedIps', [
+  public function setExcludedIps($excludedIps, $optional = array()) {
+    return $this->_request('SitesManager.setGlobalExcludedIps', array(
       'excludedIps' => $excludedIps,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3214,11 +3211,11 @@ class Piwik
    * @param $searchCategoryParameters
    * @param array $optional
    */
-  public function setGlobalSearchParameters($searchKeywordParameters, $searchCategoryParameters, $optional = []) {
-    return $this->_request('SitesManager.setGlobalSearchParameters ', [
+  public function setGlobalSearchParameters($searchKeywordParameters, $searchCategoryParameters, $optional = array()) {
+    return $this->_request('SitesManager.setGlobalSearchParameters ', array(
       'searchKeywordParameters' => $searchKeywordParameters,
       'searchCategoryParameters' => $searchCategoryParameters,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3226,8 +3223,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSearchKeywordParametersGlobal($optional = []) {
-    return $this->_request('SitesManager.getSearchKeywordParametersGlobal', [], $optional);
+  public function getSearchKeywordParametersGlobal($optional = array()) {
+    return $this->_request('SitesManager.getSearchKeywordParametersGlobal', array(), $optional);
   }
 
   /**
@@ -3235,8 +3232,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getSearchCategoryParametersGlobal($optional = []) {
-    return $this->_request('SitesManager.getSearchCategoryParametersGlobal', [], $optional);
+  public function getSearchCategoryParametersGlobal($optional = array()) {
+    return $this->_request('SitesManager.getSearchCategoryParametersGlobal', array(), $optional);
   }
 
   /**
@@ -3244,8 +3241,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExcludedParameters($optional = []) {
-    return $this->_request('SitesManager.getExcludedQueryParametersGlobal', [], $optional);
+  public function getExcludedParameters($optional = array()) {
+    return $this->_request('SitesManager.getExcludedQueryParametersGlobal', array(), $optional);
   }
 
   /**
@@ -3253,8 +3250,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExcludedUserAgentsGlobal($optional = []) {
-    return $this->_request('SitesManager.getExcludedUserAgentsGlobal', [], $optional);
+  public function getExcludedUserAgentsGlobal($optional = array()) {
+    return $this->_request('SitesManager.getExcludedUserAgentsGlobal', array(), $optional);
   }
 
   /**
@@ -3263,10 +3260,10 @@ class Piwik
    * @param array $excludedUserAgents
    * @param array $optional
    */
-  public function setGlobalExcludedUserAgents($excludedUserAgents, $optional = []) {
-    return $this->_request('SitesManager.setGlobalExcludedUserAgents', [
+  public function setGlobalExcludedUserAgents($excludedUserAgents, $optional = array()) {
+    return $this->_request('SitesManager.setGlobalExcludedUserAgents', array(
       'excludedUserAgents' => $excludedUserAgents,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3274,8 +3271,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function isSiteSpecificUserAgentExcludeEnabled($optional = []) {
-    return $this->_request('SitesManager.isSiteSpecificUserAgentExcludeEnabled', [], $optional);
+  public function isSiteSpecificUserAgentExcludeEnabled($optional = array()) {
+    return $this->_request('SitesManager.isSiteSpecificUserAgentExcludeEnabled', array(), $optional);
   }
 
   /**
@@ -3284,10 +3281,10 @@ class Piwik
    * @param int $enabled
    * @param array $optional
    */
-  public function setSiteSpecificUserAgentExcludeEnabled($enabled, $optional = []) {
-    return $this->_request('SitesManager.setSiteSpecificUserAgentExcludeEnabled', [
+  public function setSiteSpecificUserAgentExcludeEnabled($enabled, $optional = array()) {
+    return $this->_request('SitesManager.setSiteSpecificUserAgentExcludeEnabled', array(
       'enabled' => $enabled,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3295,8 +3292,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getKeepURLFragmentsGlobal($optional = []) {
-    return $this->_request('SitesManager.getKeepURLFragmentsGlobal', [], $optional);
+  public function getKeepURLFragmentsGlobal($optional = array()) {
+    return $this->_request('SitesManager.getKeepURLFragmentsGlobal', array(), $optional);
   }
 
   /**
@@ -3305,10 +3302,10 @@ class Piwik
    * @param int $enabled
    * @param array $optional
    */
-  public function setKeepURLFragmentsGlobal($enabled, $optional = []) {
-    return $this->_request('SitesManager.setKeepURLFragmentsGlobal', [
+  public function setKeepURLFragmentsGlobal($enabled, $optional = array()) {
+    return $this->_request('SitesManager.setKeepURLFragmentsGlobal', array(
       'enabled' => $enabled,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3317,10 +3314,10 @@ class Piwik
    * @param array $excludedQueryParameters
    * @param array $optional
    */
-  public function setExcludedParameters($excludedQueryParameters, $optional = []) {
-    return $this->_request('SitesManager.setGlobalExcludedQueryParameters', [
+  public function setExcludedParameters($excludedQueryParameters, $optional = array()) {
+    return $this->_request('SitesManager.setGlobalExcludedQueryParameters', array(
       'excludedQueryParameters' => $excludedQueryParameters,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3328,8 +3325,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getExcludedIps($optional = []) {
-    return $this->_request('SitesManager.getExcludedIpsGlobal', [], $optional);
+  public function getExcludedIps($optional = array()) {
+    return $this->_request('SitesManager.getExcludedIpsGlobal', array(), $optional);
   }
 
 
@@ -3338,8 +3335,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDefaultCurrency($optional = []) {
-    return $this->_request('SitesManager.getDefaultCurrency', [], $optional);
+  public function getDefaultCurrency($optional = array()) {
+    return $this->_request('SitesManager.getDefaultCurrency', array(), $optional);
   }
 
   /**
@@ -3348,10 +3345,10 @@ class Piwik
    * @param string $defaultCurrency
    * @param array $optional
    */
-  public function setDefaultCurrency($defaultCurrency, $optional = []) {
-    return $this->_request('SitesManager.setDefaultCurrency', [
+  public function setDefaultCurrency($defaultCurrency, $optional = array()) {
+    return $this->_request('SitesManager.setDefaultCurrency', array(
       'defaultCurrency' => $defaultCurrency,
-    ], $optional);
+    ), $optional);
   }
 
 
@@ -3360,8 +3357,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getDefaultTimezone($optional = []) {
-    return $this->_request('SitesManager.getDefaultTimezone', [], $optional);
+  public function getDefaultTimezone($optional = array()) {
+    return $this->_request('SitesManager.getDefaultTimezone', array(), $optional);
   }
 
   /**
@@ -3370,10 +3367,10 @@ class Piwik
    * @param string $defaultTimezone
    * @param array $optional
    */
-  public function setDefaultTimezone($defaultTimezone, $optional = []) {
-    return $this->_request('SitesManager.setDefaultTimezone', [
+  public function setDefaultTimezone($defaultTimezone, $optional = array()) {
+    return $this->_request('SitesManager.setDefaultTimezone', array(
       'defaultTimezone' => $defaultTimezone,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3399,9 +3396,9 @@ class Piwik
   public function updateSite($siteName, $urls, $ecommerce = '', $siteSearch = '',
     $searchKeywordParameters = '', $searchCategoryParameters = '', $excludeIps = '',
     $excludedQueryParameters = '', $timezone = '', $currency = '', $group = '', $startDate = '',
-    $excludedUserAgents = '', $keepURLFragments = '', $type = '', $settings = '', $optional = [])
+    $excludedUserAgents = '', $keepURLFragments = '', $type = '', $settings = '', $optional = array())
   {
-    return $this->_request('SitesManager.updateSite', [
+    return $this->_request('SitesManager.updateSite', array(
       'siteName' => $siteName,
       'urls' => $urls,
       'ecommerce' => $ecommerce,
@@ -3418,7 +3415,7 @@ class Piwik
       'keepURLFragments' => $keepURLFragments,
       'type' => $type,
       'settings' => $settings,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3426,8 +3423,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getCurrencyList($optional = []) {
-    return $this->_request('SitesManager.getCurrencyList', [], $optional);
+  public function getCurrencyList($optional = array()) {
+    return $this->_request('SitesManager.getCurrencyList', array(), $optional);
   }
 
   /**
@@ -3435,8 +3432,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getCurrencySymbols($optional = []) {
-    return $this->_request('SitesManager.getCurrencySymbols', [], $optional);
+  public function getCurrencySymbols($optional = array()) {
+    return $this->_request('SitesManager.getCurrencySymbols', array(), $optional);
   }
 
   /**
@@ -3444,8 +3441,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getTimezonesList($optional = []) {
-    return $this->_request('SitesManager.getTimezonesList', [], $optional);
+  public function getTimezonesList($optional = array()) {
+    return $this->_request('SitesManager.getTimezonesList', array(), $optional);
   }
 
   /**
@@ -3453,8 +3450,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getUniqueSiteTimezones($optional = []) {
-    return $this->_request('SitesManager.getUniqueSiteTimezones', [], $optional);
+  public function getUniqueSiteTimezones($optional = array()) {
+    return $this->_request('SitesManager.getUniqueSiteTimezones', array(), $optional);
   }
 
   /**
@@ -3464,11 +3461,11 @@ class Piwik
    * @param string $newGroupName
    * @param array $optional
    */
-  public function renameGroup($oldGroupName, $newGroupName, $optional = []) {
-    return $this->_request('SitesManager.renameGroup', [
+  public function renameGroup($oldGroupName, $newGroupName, $optional = array()) {
+    return $this->_request('SitesManager.renameGroup', array(
       'oldGroupName' => $oldGroupName,
       'newGroupName' => $newGroupName,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3477,10 +3474,10 @@ class Piwik
    * @param string $pattern
    * @param array $optional
    */
-  public function getPatternMatchSites($pattern, $optional = []) {
-    return $this->_request('SitesManager.getPatternMatchSites', [
+  public function getPatternMatchSites($pattern, $optional = array()) {
+    return $this->_request('SitesManager.getPatternMatchSites', array(
       'pattern' => $pattern,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3496,12 +3493,12 @@ class Piwik
    * @param string $limitBeforeGrouping
    * @param array $optional
    */
-  public function getTransitionsForPageTitle($pageTitle, $segment = '', $limitBeforeGrouping = '', $optional = []) {
-    return $this->_request('Transitions.getTransitionsForPageTitle', [
+  public function getTransitionsForPageTitle($pageTitle, $segment = '', $limitBeforeGrouping = '', $optional = array()) {
+    return $this->_request('Transitions.getTransitionsForPageTitle', array(
       'pageTitle' => $pageTitle,
       'segment' => $segment,
       'limitBeforeGrouping' => $limitBeforeGrouping,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3512,12 +3509,12 @@ class Piwik
    * @param string $limitBeforeGrouping
    * @param array $optional
    */
-  public function getTransitionsForPageUrl($pageUrl, $segment = '', $limitBeforeGrouping = '', $optional = []) {
-    return $this->_request('Transitions.getTransitionsForPageTitle', [
+  public function getTransitionsForPageUrl($pageUrl, $segment = '', $limitBeforeGrouping = '', $optional = array()) {
+    return $this->_request('Transitions.getTransitionsForPageTitle', array(
       'pageUrl' => $pageUrl,
       'segment' => $segment,
       'limitBeforeGrouping' => $limitBeforeGrouping,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3532,16 +3529,16 @@ class Piwik
    * @param array $optional
    */
   public function getTransitionsForAction($actionName, $actionType, $segment = '',
-    $limitBeforeGrouping = '', $parts = 'all', $returnNormalizedUrls = '', $optional = [])
+    $limitBeforeGrouping = '', $parts = 'all', $returnNormalizedUrls = '', $optional = array())
   {
-    return $this->_request('Transitions.getTransitionsForAction', [
+    return $this->_request('Transitions.getTransitionsForAction', array(
       'actionName' => $actionName,
       'actionType' => $actionType,
       'segment' => $segment,
       'limitBeforeGrouping' => $limitBeforeGrouping,
       'parts' => $parts,
       'returnNormalizedUrls' => $returnNormalizedUrls,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3549,8 +3546,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getTransitionsTranslations($optional = []) {
-    return $this->_request('Transitions.getTranslations', [], $optional);
+  public function getTransitionsTranslations($optional = array()) {
+    return $this->_request('Transitions.getTranslations', array(), $optional);
   }
 
   /**
@@ -3564,10 +3561,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCountry($segment = '', $optional = []) {
-    return $this->_request('UserCountry.getCountry', [
+  public function getCountry($segment = '', $optional = array()) {
+    return $this->_request('UserCountry.getCountry', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3576,10 +3573,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getContinent($segment = '', $optional = []) {
-    return $this->_request('UserCountry.getContinent', [
+  public function getContinent($segment = '', $optional = array()) {
+    return $this->_request('UserCountry.getContinent', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3588,10 +3585,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getRegion($segment = '', $optional = []) {
-    return $this->_request('UserCountry.getRegion', [
+  public function getRegion($segment = '', $optional = array()) {
+    return $this->_request('UserCountry.getRegion', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3600,10 +3597,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCity($segment = '', $optional = []) {
-    return $this->_request('UserCountry.getCity', [
+  public function getCity($segment = '', $optional = array()) {
+    return $this->_request('UserCountry.getCity', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3613,11 +3610,11 @@ class Piwik
    * @param string $provider
    * @param array $optional
    */
-  public function getLocationFromIP($ip, $provider = '', $optional = []) {
-    return $this->_request('UserCountry.getLocationFromIP', [
+  public function getLocationFromIP($ip, $provider = '', $optional = array()) {
+    return $this->_request('UserCountry.getLocationFromIP', array(
       'ip' => $ip,
       'provider' => $provider,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3626,10 +3623,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getCountryNumber($segment = '', $optional = []) {
-    return $this->_request('UserCountry.getNumberOfDistinctCountries', [
+  public function getCountryNumber($segment = '', $optional = array()) {
+    return $this->_request('UserCountry.getNumberOfDistinctCountries', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3643,10 +3640,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getResolution($segment = '', $optional = []) {
-    return $this->_request('Resolution.getResolution', [
+  public function getResolution($segment = '', $optional = array()) {
+    return $this->_request('Resolution.getResolution', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3655,10 +3652,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getConfiguration($segment = '', $optional = []) {
-    return $this->_request('Resolution.getConfiguration', [
+  public function getConfiguration($segment = '', $optional = array()) {
+    return $this->_request('Resolution.getConfiguration', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3672,10 +3669,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getUserPlugin($segment = '', $optional = []) {
-    return $this->_request('DevicePlugins.getPlugin', [
+  public function getUserPlugin($segment = '', $optional = array()) {
+    return $this->_request('DevicePlugins.getPlugin', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3689,10 +3686,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getUserLanguage($segment = '', $optional = []) {
-    return $this->_request('UserLanguage.getLanguage', [
+  public function getUserLanguage($segment = '', $optional = array()) {
+    return $this->_request('UserLanguage.getLanguage', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3701,10 +3698,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getUserLanguageCode($segment = '', $optional = []) {
-    return $this->_request('UserLanguage.getLanguageCode', [
+  public function getUserLanguageCode($segment = '', $optional = array()) {
+    return $this->_request('UserLanguage.getLanguageCode', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3720,12 +3717,12 @@ class Piwik
    * @param string $preferenceValue
    * @param array $optional
    */
-  public function setUserPreference($userLogin, $preferenceName, $preferenceValue, $optional = []) {
-    return $this->_request('UsersManager.setUserPreference', [
+  public function setUserPreference($userLogin, $preferenceName, $preferenceValue, $optional = array()) {
+    return $this->_request('UsersManager.setUserPreference', array(
       'userLogin' => $userLogin,
       'preferenceName' => $preferenceName,
       'preferenceValue' => $preferenceValue,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3735,11 +3732,11 @@ class Piwik
    * @param string $preferenceName
    * @param array $optional
    */
-  public function getUserPreference($userLogin, $preferenceName, $optional = []) {
-    return $this->_request('UsersManager.getUserPreference', [
+  public function getUserPreference($userLogin, $preferenceName, $optional = array()) {
+    return $this->_request('UsersManager.getUserPreference', array(
       'userLogin' => $userLogin,
       'preferenceName' => $preferenceName,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3748,10 +3745,10 @@ class Piwik
    * @param array $userLogins Array with Usernames
    * @param array $optional
    */
-  public function getUsers($userLogins = '', $optional = []) {
-    return $this->_request('UsersManager.getUsers', [
+  public function getUsers($userLogins = '', $optional = array()) {
+    return $this->_request('UsersManager.getUsers', array(
       'userLogins' => $userLogins,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3759,8 +3756,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getUsersLogin($optional = []) {
-    return $this->_request('UsersManager.getUsersLogin', [], $optional);
+  public function getUsersLogin($optional = array()) {
+    return $this->_request('UsersManager.getUsersLogin', array(), $optional);
   }
 
   /**
@@ -3769,10 +3766,10 @@ class Piwik
    * @param string $access
    * @param array $optional
    */
-  public function getUsersSitesFromAccess($access, $optional = []) {
-    return $this->_request('UsersManager.getUsersSitesFromAccess', [
+  public function getUsersSitesFromAccess($access, $optional = array()) {
+    return $this->_request('UsersManager.getUsersSitesFromAccess', array(
       'access' => $access,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3780,8 +3777,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getUsersAccess($optional = []) {
-    return $this->_request('UsersManager.getUsersAccessFromSite', [], $optional);
+  public function getUsersAccess($optional = array()) {
+    return $this->_request('UsersManager.getUsersAccessFromSite', array(), $optional);
   }
 
   /**
@@ -3790,10 +3787,10 @@ class Piwik
    * @param string $access
    * @param array $optional
    */
-  public function getUsersWithSiteAccess($access, $optional = []) {
-    return $this->_request('UsersManager.getUsersWithSiteAccess', [
+  public function getUsersWithSiteAccess($access, $optional = array()) {
+    return $this->_request('UsersManager.getUsersWithSiteAccess', array(
       'access' => $access,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3802,10 +3799,10 @@ class Piwik
    * @param string $userLogin Username
    * @param array $optional
    */
-  public function getSitesAccessFromUser($userLogin, $optional = []) {
-    return $this->_request('UsersManager.getSitesAccessFromUser', [
+  public function getSitesAccessFromUser($userLogin, $optional = array()) {
+    return $this->_request('UsersManager.getSitesAccessFromUser', array(
       'userLogin' => $userLogin,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3814,10 +3811,10 @@ class Piwik
    * @param string $userLogin Username
    * @param array $optional
    */
-  public function getUser($userLogin, $optional = []) {
-    return $this->_request('UsersManager.getUser', [
+  public function getUser($userLogin, $optional = array()) {
+    return $this->_request('UsersManager.getUser', array(
       'userLogin' => $userLogin,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3826,10 +3823,10 @@ class Piwik
    * @param string $userEmail
    * @param array $optional
    */
-  public function getUserByEmail($userEmail, $optional = []) {
-    return $this->_request('UsersManager.getUserByEmail', [
+  public function getUserByEmail($userEmail, $optional = array()) {
+    return $this->_request('UsersManager.getUserByEmail', array(
       'userEmail' => $userEmail,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3841,13 +3838,13 @@ class Piwik
    * @param string $alias
    * @param array $optional
    */
-  public function addUser($userLogin, $password, $email, $alias = '', $optional = []) {
-    return $this->_request('UsersManager.addUser', [
+  public function addUser($userLogin, $password, $email, $alias = '', $optional = array()) {
+    return $this->_request('UsersManager.addUser', array(
       'userLogin' => $userLogin,
       'password' => $password,
       'email' => $email,
       'alias' => $alias,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3857,11 +3854,11 @@ class Piwik
    * @param int $hasSuperUserAccess
    * @param array $optional
    */
-  public function setSuperUserAccess($userLogin, $hasSuperUserAccess, $optional = []) {
-    return $this->_request('UsersManager.setSuperUserAccess', [
+  public function setSuperUserAccess($userLogin, $hasSuperUserAccess, $optional = array()) {
+    return $this->_request('UsersManager.setSuperUserAccess', array(
       'userLogin' => $userLogin,
       'hasSuperUserAccess' => $hasSuperUserAccess,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3869,8 +3866,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function hasSuperUserAccess($optional = []) {
-    return $this->_request('UsersManager.hasSuperUserAccess', [], $optional);
+  public function hasSuperUserAccess($optional = array()) {
+    return $this->_request('UsersManager.hasSuperUserAccess', array(), $optional);
   }
 
   /**
@@ -3878,8 +3875,8 @@ class Piwik
    *
    * @param array $optional
    */
-  public function getUsersHavingSuperUserAccess($optional = []) {
-    return $this->_request('UsersManager.getUsersHavingSuperUserAccess', [], $optional);
+  public function getUsersHavingSuperUserAccess($optional = array()) {
+    return $this->_request('UsersManager.getUsersHavingSuperUserAccess', array(), $optional);
   }
 
   /**
@@ -3891,13 +3888,13 @@ class Piwik
    * @param string $alias
    * @param array $optional
    */
-  public function updateUser($userLogin, $password = '', $email = '', $alias = '', $optional = []) {
-    return $this->_request('UsersManager.updateUser', [
+  public function updateUser($userLogin, $password = '', $email = '', $alias = '', $optional = array()) {
+    return $this->_request('UsersManager.updateUser', array(
       'userLogin' => $userLogin,
       'password' => $password,
       'email' => $email,
       'alias' => $alias,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3906,10 +3903,10 @@ class Piwik
    * @param string $userLogin Username
    * @param array $optional
    */
-  public function deleteUser($userLogin, $optional = []) {
-    return $this->_request('UsersManager.deleteUser', [
+  public function deleteUser($userLogin, $optional = array()) {
+    return $this->_request('UsersManager.deleteUser', array(
       'userLogin' => $userLogin,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3918,10 +3915,10 @@ class Piwik
    * @param string $userLogin
    * @param array $optional
    */
-  public function userExists($userLogin, $optional = []) {
-    return $this->_request('UsersManager.userExists', [
+  public function userExists($userLogin, $optional = array()) {
+    return $this->_request('UsersManager.userExists', array(
       'userLogin' => $userLogin,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3930,10 +3927,10 @@ class Piwik
    * @param string $userEmail
    * @param array $optional
    */
-  public function userEmailExists($userEmail, $optional = []) {
-    return $this->_request('UsersManager.userEmailExists', [
+  public function userEmailExists($userEmail, $optional = array()) {
+    return $this->_request('UsersManager.userEmailExists', array(
       'userEmail' => $userEmail,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3944,12 +3941,12 @@ class Piwik
    * @param array $idSites
    * @param array $optional
    */
-  public function setUserAccess($userLogin, $access, $idSites, $optional = []) {
-    return $this->_request('UsersManager.setUserAccess', [
+  public function setUserAccess($userLogin, $access, $idSites, $optional = array()) {
+    return $this->_request('UsersManager.setUserAccess', array(
       'userLogin' => $userLogin,
       'access' => $access,
       'idSites' => $idSites,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3959,11 +3956,11 @@ class Piwik
    * @param string $md5Password Password in clear text
    * @param array $optional
    */
-  public function getTokenAuth($userLogin, $md5Password, $optional = []) {
-    return $this->_request('UsersManager.getTokenAuth', [
+  public function getTokenAuth($userLogin, $md5Password, $optional = array()) {
+    return $this->_request('UsersManager.getTokenAuth', array(
       'userLogin' => $userLogin,
       'md5Password' => md5($md5Password),
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3978,11 +3975,11 @@ class Piwik
    * @param string $columns
    * @param array $optional
    */
-  public function getVisitFrequency($segment = '', $columns = '', $optional = []) {
-    return $this->_request('VisitFrequency.get', [
+  public function getVisitFrequency($segment = '', $columns = '', $optional = array()) {
+    return $this->_request('VisitFrequency.get', array(
       'segment' => $segment,
       'columns' => $columns,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -3996,10 +3993,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getVisitLocalTime($segment = '', $optional = []) {
-    return $this->_request('VisitTime.getVisitInformationPerLocalTime', [
+  public function getVisitLocalTime($segment = '', $optional = array()) {
+    return $this->_request('VisitTime.getVisitInformationPerLocalTime', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4009,11 +4006,11 @@ class Piwik
    * @param boolean $hideFutureHoursWhenToday Hide the future hours when the report is created for today
    * @param array $optional
    */
-  public function getVisitServerTime($segment = '', $hideFutureHoursWhenToday = '', $optional = []) {
-    return $this->_request('VisitTime.getVisitInformationPerServerTime', [
+  public function getVisitServerTime($segment = '', $hideFutureHoursWhenToday = '', $optional = array()) {
+    return $this->_request('VisitTime.getVisitInformationPerServerTime', array(
       'segment' => $segment,
       'hideFutureHoursWhenToday' => $hideFutureHoursWhenToday,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4022,10 +4019,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getByDayOfWeek($segment = '', $optional = []) {
-    return $this->_request('VisitTime.getByDayOfWeek', [
+  public function getByDayOfWeek($segment = '', $optional = array()) {
+    return $this->_request('VisitTime.getByDayOfWeek', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4039,10 +4036,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfVisitsPerDuration($segment = '', $optional = []) {
-    return $this->_request('VisitorInterest.getNumberOfVisitsPerVisitDuration', [
+  public function getNumberOfVisitsPerDuration($segment = '', $optional = array()) {
+    return $this->_request('VisitorInterest.getNumberOfVisitsPerVisitDuration', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4051,10 +4048,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfVisitsPerPage($segment = '', $optional = []) {
-    return $this->_request('VisitorInterest.getNumberOfVisitsPerPage', [
+  public function getNumberOfVisitsPerPage($segment = '', $optional = array()) {
+    return $this->_request('VisitorInterest.getNumberOfVisitsPerPage', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4063,10 +4060,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfVisitsByDaySinceLast($segment = '', $optional = []) {
-    return $this->_request('VisitorInterest.getNumberOfVisitsByDaysSinceLast', [
+  public function getNumberOfVisitsByDaySinceLast($segment = '', $optional = array()) {
+    return $this->_request('VisitorInterest.getNumberOfVisitsByDaysSinceLast', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4075,10 +4072,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getNumberOfVisitsByCount($segment = '', $optional = []) {
-    return $this->_request('VisitorInterest.getNumberOfVisitsByVisitCount', [
+  public function getNumberOfVisitsByCount($segment = '', $optional = array()) {
+    return $this->_request('VisitorInterest.getNumberOfVisitsByVisitCount', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4093,11 +4090,11 @@ class Piwik
    * @param string $columns
    * @param array $optional
    */
-  public function getVisitsSummary($segment = '', $columns = '', $optional = []) {
-    return $this->_request('VisitsSummary.get', [
+  public function getVisitsSummary($segment = '', $columns = '', $optional = array()) {
+    return $this->_request('VisitsSummary.get', array(
       'segment' => $segment,
       'columns' => $columns,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4106,10 +4103,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getVisits($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getVisits', [
+  public function getVisits($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getVisits', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4118,10 +4115,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getUniqueVisitors($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getUniqueVisitors', [
+  public function getUniqueVisitors($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getUniqueVisitors', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4130,10 +4127,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getUserVisitors($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getUsers', [
+  public function getUserVisitors($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getUsers', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4142,10 +4139,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getActions($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getActions', [
+  public function getActions($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getActions', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4154,10 +4151,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getMaxActions($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getMaxActions', [
+  public function getMaxActions($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getMaxActions', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4166,10 +4163,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getBounceCount($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getBounceCount', [
+  public function getBounceCount($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getBounceCount', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4178,10 +4175,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getVisitsConverted($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getVisitsConverted', [
+  public function getVisitsConverted($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getVisitsConverted', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4190,10 +4187,10 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSumVisitsLength($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getSumVisitsLength', [
+  public function getSumVisitsLength($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getSumVisitsLength', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 
   /**
@@ -4202,9 +4199,9 @@ class Piwik
    * @param string $segment
    * @param array $optional
    */
-  public function getSumVisitsLengthPretty($segment = '', $optional = []) {
-    return $this->_request('VisitsSummary.getSumVisitsLengthPretty', [
+  public function getSumVisitsLengthPretty($segment = '', $optional = array()) {
+    return $this->_request('VisitsSummary.getSumVisitsLengthPretty', array(
       'segment' => $segment,
-    ], $optional);
+    ), $optional);
   }
 }
