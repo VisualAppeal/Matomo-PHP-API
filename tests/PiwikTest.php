@@ -2,7 +2,7 @@
 
 require(__DIR__ . '/../src/Piwik.php');
 
-use \VisualAppeal\Piwik;
+use VisualAppeal\Piwik;
 
 class PiwikTest extends PHPUnit_Framework_TestCase
 {
@@ -18,17 +18,6 @@ class PiwikTest extends PHPUnit_Framework_TestCase
    * @var \VisualAppeal\Piwik
    */
   private $_piwik = null;
-
-  protected function setUp()
-  {
-    $this->_piwik = new Piwik(self::TEST_SITE_URL, self::TEST_TOKEN, self::TEST_SITE_ID);
-  }
-
-  protected function tearDown()
-  {
-    unset($this->_piwik);
-    $this->_piwik = null;
-  }
 
   /**
    * Test creation of class instance.
@@ -83,7 +72,7 @@ class PiwikTest extends PHPUnit_Framework_TestCase
    * Test the result of multiple dates.
    *
    * @depends testDayPeriod
-   * @link https://github.com/VisualAppeal/Piwik-PHP-API/issues/14
+   * @link    https://github.com/VisualAppeal/Piwik-PHP-API/issues/14
    */
   public function testMultipleDates()
   {
@@ -92,7 +81,7 @@ class PiwikTest extends PHPUnit_Framework_TestCase
     $result = $this->_piwik->getVisitsSummary();
 
     $this->assertInternalType('object', $result);
-    $this->assertEquals(7, count((array) $result));
+    $this->assertEquals(7, count((array)$result));
     $this->assertEquals('', implode(',', $this->_piwik->getErrors()));
   }
 
@@ -193,12 +182,26 @@ class PiwikTest extends PHPUnit_Framework_TestCase
   {
     $this->_piwik->setDate('2011-01-11');
     $this->_piwik->setPeriod(Piwik::PERIOD_WEEK);
-    $result = $this->_piwik->getWebsites('', [
-      'flat' => 1,
-    ]);
+    $result = $this->_piwik->getWebsites(
+        '',
+        array(
+            'flat' => 1,
+        )
+    );
 
     $this->assertInternalType('array', $result);
     $this->assertEquals('', implode(',', $this->_piwik->getErrors()));
     $this->assertEquals(388, $result[0]->nb_visits);
+  }
+
+  protected function setUp()
+  {
+    $this->_piwik = new Piwik(self::TEST_SITE_URL, self::TEST_TOKEN, self::TEST_SITE_ID);
+  }
+
+  protected function tearDown()
+  {
+    unset($this->_piwik);
+    $this->_piwik = null;
   }
 }
