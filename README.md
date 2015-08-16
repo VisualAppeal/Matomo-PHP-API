@@ -6,7 +6,7 @@ A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Requirements
 
-* PHP >= 5.4
+* PHP >= 5.3
 * cUrl (php-curl)
 
 ## Install
