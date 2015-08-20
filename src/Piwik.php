@@ -110,7 +110,7 @@ class Piwik
    * @param string $rangeStart
    * @param string $rangeEnd
    */
-  function __construct($site, $token, $siteId, $format = self::FORMAT_JSON, $period = self::PERIOD_DAY, $date = self::DATE_YESTERDAY, $rangeStart = '', $rangeEnd = null)
+  public function __construct($site, $token, $siteId, $format = self::FORMAT_JSON, $period = self::PERIOD_DAY, $date = self::DATE_YESTERDAY, $rangeStart = '', $rangeEnd = null)
   {
     $this->_site = $site;
     $this->_token = $token;
