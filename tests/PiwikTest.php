@@ -1,6 +1,6 @@
 <?php
 
-require(__DIR__ . '/../src/Piwik.php');
+require __DIR__ . '/../src/Piwik.php';
 
 use VisualAppeal\Piwik;
 

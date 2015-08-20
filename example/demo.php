@@ -7,8 +7,8 @@
   <body>
 <?php
 
-require(__DIR__ . '/vendor/autoload.php');
-require('config.php');
+require __DIR__ . '/vendor/autoload.php';
+require 'config.php';
 
 use VisualAppeal\Piwik;
 
