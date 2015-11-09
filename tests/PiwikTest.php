@@ -201,4 +201,16 @@ class PiwikTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('', implode(',', $this->_piwik->getErrors()));
 		$this->assertEquals(388, $result[0]->nb_visits);
 	}
+
+	/**
+	 * Test if the response contains custom variables
+	 */
+	public function testCustomVariables()
+	{
+		$this->_piwik->setDate('2011-11-08');
+		$this->_piwik->setPeriod(Piwik::PERIOD_WEEK);
+		$result = $this->_piwik->getCustomVariables();
+
+		$this->assertEquals(1, count($result));
+	}
 }
