@@ -735,6 +735,8 @@ class Piwik
 	 * Unknown
 	 *
 	 * @param array $optional
+	 *
+	 * @deprecated 2.15.0 https://developer.piwik.org/changelog#piwik-2150
 	 */
 	public function getLastDate($optional = []) {
 		return $this->_request('API.getLastDate', [], $optional);
@@ -3030,6 +3032,8 @@ class Piwik
 	 *
 	 * @param string $timestamp
 	 * @param array $optional
+	 *
+	 * @deprecated 2.15.0 https://developer.piwik.org/changelog#piwik-2150
 	 */
 	public function getSitesIdWithVisits($timestamp, $optional = []) {
 		return $this->_request('SitesManager.getSitesIdWithVisits', [

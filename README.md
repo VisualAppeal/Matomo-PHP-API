@@ -15,6 +15,10 @@ This library can be installed via composer: `"visualappeal/piwik-php-api": "1.2.
 
 ## Changelog
 
+### 1.2.1 (2015/11/09)
+
+* Added: Compatible to Piwik 2.15.1
+
 ### 1.2.0 (2015/05/03)
 
 * Changed: Removed optional parameters for the methods and added optional parameters array. Some methods signatures changed, so please check your methods before upgrading.
