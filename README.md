@@ -11,7 +11,7 @@ A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Install
 
-This library can be installed via composer: `"visualappeal/piwik-php-api": "1.1.*"`
+This library can be installed via composer: `"visualappeal/piwik-php-api": "1.2.*"`
 
 ## Changelog
 
