@@ -646,6 +646,8 @@ class Piwik
 	 *
 	 * @param string $segment
 	 * @param string $columns
+	 *
+	 * @deprecated 2.15.0 https://developer.piwik.org/changelog#piwik-2150
 	 */
 	public function getLastDate() {
 		return $this->_request('API.getLastDate');
@@ -2722,6 +2724,8 @@ class Piwik
 	 * Get all sites with the visit count since $timestamp
 	 *
 	 * @param string $timestamp
+	 *
+	 * @deprecated 2.15.0 https://developer.piwik.org/changelog#piwik-2150
 	 */
 	public function getSitesIdWithVisits($timestamp) {
 		return $this->_request('SitesManager.getSitesIdWithVisits', array(
