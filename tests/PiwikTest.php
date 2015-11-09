@@ -6,7 +6,7 @@ use \VisualAppeal\Piwik;
 
 class PiwikTest extends PHPUnit_Framework_TestCase
 {
-	const TEST_SITE_URL = 'http://demo.piwik.org/';
+	const TEST_SITE_URL = 'https://demo.piwik.org/';
 
 	const TEST_SITE_ID = 7;
 
