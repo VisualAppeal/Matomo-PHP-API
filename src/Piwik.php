@@ -44,8 +44,12 @@ class Piwik
 
 	private $_errors = array();
 
-	public $verifySsl = true;
-	public $redirects = 3;
+	public $verifySsl = false;
+
+  public $maxRedirects = 5;
+
+  // WARNING: not used anymore
+	public $redirects = 0;
 
 	/**
 	 * Create new instance
@@ -340,7 +344,12 @@ class Piwik
 		if ($url === false)
 			return false;
 
-    $buffer = Request::get($url)->send();
+    $req = Request::get($url);
+    $req->strict_ssl = $this->verifySsl;
+    $req->max_redirects = $this->maxRedirects;
+    $req->setConnectionTimeout(5);
+
+    $buffer = $req->send();
 
 		if (!empty($buffer))
 			$request = $this->_parseRequest($buffer);
