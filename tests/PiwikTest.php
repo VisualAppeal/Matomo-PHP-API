@@ -10,7 +10,7 @@ class PiwikTest extends PHPUnit_Framework_TestCase
 
 	const TEST_SITE_ID = 7;
 
-	const TEST_TOKEN = '';
+	const TEST_TOKEN = 'anonymous';
 
 	/**
 	 * Piwik api instance.

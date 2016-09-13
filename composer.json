@@ -1,10 +1,10 @@
 {
-	"name" : "visualappeal/piwik-php-api",
+	"name": "visualappeal/piwik-php-api",
 	"description": "API wrapper for piwik",
 	"license": "Apache-2.0",
-	"require" : {
-		"php" : ">=5.4.0",
-		"ext-curl": "*"
+	"require": {
+		"php": ">=5.4.0",
+    "voku/httpful": "0.2.*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "4.7.*"
