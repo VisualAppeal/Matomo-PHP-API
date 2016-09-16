@@ -47,8 +47,10 @@ class Piwik
 	public $verifySsl = false;
 	
 	public $maxRedirects = 5;
-	
-	// WARNING: not used anymore
+
+	/**
+	 * @deprecated
+	 */
 	public $redirects = 0;
 
 	/**
