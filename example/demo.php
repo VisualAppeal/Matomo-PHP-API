@@ -7,8 +7,8 @@
 	<body>
 <?php
 
-require(__DIR__ . '/vendor/autoload.php');
-require('config.php');
+require __DIR__.'/vendor/autoload.php';
+require 'config.php';
 
 use VisualAppeal\Piwik;
 
@@ -20,33 +20,32 @@ $piwik->setLanguage('en');
 $test = $piwik->getApi();
 
 if ($piwik->hasError()) {
-	echo '<p>Invalid request</p>';
-	echo '<pre>';
-	var_dump($piwik->getErrors());
-	echo '</pre>';
+    echo '<p>Invalid request</p>';
+    echo '<pre>';
+    var_dump($piwik->getErrors());
+    echo '</pre>';
 } else {
-	//Default time period: yesterday
-	$visits = $piwik->getVisits();
-	$visitsU = $piwik->getUniqueVisitors();
-	$visitsL = $piwik->getSumVisitsLengthPretty();
+    //Default time period: yesterday
+    $visits = $piwik->getVisits();
+    $visitsU = $piwik->getUniqueVisitors();
+    $visitsL = $piwik->getSumVisitsLengthPretty();
 
-	//Change time period to current year
+    //Change time period to current year
 
-	$piwik->setPeriod(Piwik::PERIOD_YEAR);
-	$piwik->setDate(date('Y-m-d'));
+    $piwik->setPeriod(Piwik::PERIOD_YEAR);
+    $piwik->setDate(date('Y-m-d'));
 
-	$visitsYear = $piwik->getVisits();
-	$visitsUYear = $piwik->getUniqueVisitors(); // To enable see http://piwik.org/faq/how-to/faq_113/
-	$visitsLYear = $piwik->getSumVisitsLengthPretty();
+    $visitsYear = $piwik->getVisits();
+    $visitsUYear = $piwik->getUniqueVisitors(); // To enable see http://piwik.org/faq/how-to/faq_113/
+    $visitsLYear = $piwik->getSumVisitsLengthPretty();
 
-	//Change time period to range
-	$piwik->setPeriod(Piwik::PERIOD_RANGE);
-	$piwik->setRange(date('Y-m-d', mktime(0, 0, 0, 11, 24, 2014)), date('Y-m-d', mktime(0, 0, 0, 11, 31, 2014)));
+    //Change time period to range
+    $piwik->setPeriod(Piwik::PERIOD_RANGE);
+    $piwik->setRange(date('Y-m-d', mktime(0, 0, 0, 11, 24, 2014)), date('Y-m-d', mktime(0, 0, 0, 11, 31, 2014)));
 
-	$visitsRange = $piwik->getVisits();
-	$visitsURange = $piwik->getUniqueVisitors(); // To enable see http://piwik.org/faq/how-to/faq_113/
-	$visitsLRange = $piwik->getSumVisitsLengthPretty();
-	?>
+    $visitsRange = $piwik->getVisits();
+    $visitsURange = $piwik->getUniqueVisitors(); // To enable see http://piwik.org/faq/how-to/faq_113/
+    $visitsLRange = $piwik->getSumVisitsLengthPretty(); ?>
 
 	<h2>Summary Yesterday</h2>
 	<ul>
@@ -81,6 +80,7 @@ if ($piwik->hasError()) {
 	<?php endif; ?>
 
 <?php
+
 }
 ?>
 	</body>
