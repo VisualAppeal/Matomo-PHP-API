@@ -45,10 +45,10 @@ class Piwik
 	private $_errors = array();
 
 	public $verifySsl = false;
-
-  public $maxRedirects = 5;
-
-  // WARNING: not used anymore
+	
+	public $maxRedirects = 5;
+	
+	// WARNING: not used anymore
 	public $redirects = 0;
 
 	/**
@@ -344,12 +344,12 @@ class Piwik
 		if ($url === false)
 			return false;
 
-    $req = Request::get($url);
-    $req->strict_ssl = $this->verifySsl;
-    $req->max_redirects = $this->maxRedirects;
-    $req->setConnectionTimeout(5);
+		$req = Request::get($url);
+		$req->strict_ssl = $this->verifySsl;
+		$req->max_redirects = $this->maxRedirects;
+		$req->setConnectionTimeout(5);
 
-    $buffer = $req->send();
+		$buffer = $req->send();
 
 		if (!empty($buffer))
 			$request = $this->_parseRequest($buffer);
