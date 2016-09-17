@@ -3,7 +3,7 @@
 	"description": "API wrapper for piwik",
 	"license": "Apache-2.0",
 	"require": {
-		"php": ">=5.4.0", 
+		"php": ">=5.4.0",
 		"voku/httpful": "0.2.*"
 	},
 	"require-dev": {
