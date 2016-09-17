@@ -1,4 +1,5 @@
 config.php
 composer.lock
 
+build/
 vendor/
