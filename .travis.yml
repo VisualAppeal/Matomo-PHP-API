@@ -1,8 +1,6 @@
 language: php
 
-env:
-  global:
-    - setup=basic
+dist: trusty
 
 php:
   - hhvm
@@ -12,40 +10,14 @@ matrix:
   fast_finish: true
   include:
   - php: 5.4
-  - php: 5.4
-    env: setup=lowest
   - php: 5.5
-  - php: 5.5
-    env: setup=lowest
   - php: 5.6
-  - php: 5.6
-    env: setup=lowest
   - php: 7.0
-  - php: 7.0
-    env: setup=lowest
   - php: 7.1
-  - php: 7.1
-    env: setup=lowest
 
 before_script:
-  - stty cols 120
-  - php --version
-  - mkdir -p $(dirname ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini)
-  - touch ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - echo "php-config -> orig"
-  - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - wget https://scrutinizer-ci.com/ocular.phar
   - travis_retry composer self-update
-  - travis_retry composer require satooshi/php-coveralls:1.0.0
-  - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction; fi
-  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
   - composer dump-autoload -o
 
 script:
-  - mkdir -p build/logs
   - php vendor/bin/phpunit -c phpunit.xml
-
-after_script:
-  - php vendor/bin/coveralls -v
-  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
-  - bash <(curl -s https://codecov.io/bash)
