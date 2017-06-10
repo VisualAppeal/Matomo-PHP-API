@@ -17,7 +17,7 @@ matrix:
 
 before_script:
   - travis_retry composer self-update
-  - composer dump-autoload -o
+  - composer install
 
 script:
   - php vendor/bin/phpunit -c phpunit.xml
