@@ -3714,23 +3714,28 @@ class Piwik
     }
 
     /**
-     * Add a site
+     * Add a website.
+     * Requires Super User access.
      *
-     * @param string $siteName
+     * The website is defined by a name and an array of URLs.
+     * @param string $siteName Site name
      * @param string $urls Comma separated list of urls
-     * @param string $ecommerce
+     * @param string $ecommerce Is Ecommerce Reporting enabled for this website?
      * @param string $siteSearch
-     * @param string $searchKeywordParameters
-     * @param string $searchCategoryParameters
-     * @param string $excludeIps
+     * @param string $searchKeywordParameters Comma separated list of search keyword parameter names
+     * @param string $searchCategoryParameters Comma separated list of search category parameter names
+     * @param string $excludeIps Comma separated list of IPs to exclude from the reports (allows wildcards)
      * @param string $excludedQueryParameters
-     * @param string $timezone
-     * @param string $currency
-     * @param string $group
-     * @param string $startDate
+     * @param string $timezone Timezone string, eg. 'Europe/London'
+     * @param string $currency Currency, eg. 'EUR'
+     * @param string $group Website group identifier
+     * @param string $startDate Date at which the statistics for this website will start. Defaults to today's date in YYYY-MM-DD format
      * @param string $excludedUserAgents
-     * @param string $keepURLFragments
-     * @param string $type
+     * @param string $keepURLFragments If 1, URL fragments will be kept when tracking. If 2, they
+     *                                 will be removed. If 0, the default global behavior will be used.
+     * @param string $settingValues JSON serialized settings eg {settingName: settingValue, ...}
+     * @param string $type The website type, defaults to "website" if not set.
+     * @param string $excludeUnknownUrls Track only URL matching one of website URLs
      * @param array $optional
      * @return bool|object
      */
@@ -3749,7 +3754,9 @@ class Piwik
         $startDate = '',
         $excludedUserAgents = '',
         $keepURLFragments = '',
+        $settingValues = '',
         $type = '',
+        $excludeUnknownUrls = '',
         $optional = []
     ) {
         return $this->_request('SitesManager.addSite', [
@@ -3767,7 +3774,9 @@ class Piwik
             'startDate' => $startDate,
             'excludedUserAgents' => $excludedUserAgents,
             'keepURLFragments' => $keepURLFragments,
+            'settingValues' => $settingValues,
             'type' => $type,
+            'excludeUnknownUrls' => $excludeUnknownUrls,
         ], $optional);
     }
 

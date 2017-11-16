@@ -1,4 +1,4 @@
-## Piwiki PHP API
+# Piwik PHP API
 
 [![Build Status](https://travis-ci.org/VisualAppeal/Piwik-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Piwik-PHP-API)
 
@@ -11,7 +11,7 @@ A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Install
 
-This library can be installed via composer: `"visualappeal/piwik-php-api": "1.2.*"`
+This library can be installed via composer: `composer require visualappeal/piwik-php-api`
 
 ## Changelog
 
