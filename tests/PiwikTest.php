@@ -4,7 +4,7 @@ require(__DIR__ . '/../src/Piwik.php');
 
 use \VisualAppeal\Piwik;
 
-class PiwikTest extends PHPUnit_Framework_TestCase
+class PiwikTest extends \PHPUnit\Framework\TestCase
 {
 	const TEST_SITE_URL = 'https://demo.piwik.org/';
 
@@ -35,7 +35,7 @@ class PiwikTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testInit()
 	{
-		$this->assertInstanceOf('\VisualAppeal\Piwik', $this->_piwik);
+		$this->assertInstanceOf(\VisualAppeal\Piwik::class, $this->_piwik);
 	}
 
 	/**

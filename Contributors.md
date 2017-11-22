@@ -10,3 +10,4 @@
 * https://github.com/hackolein
 * https://github.com/jirimedved
 * https://github.com/voku
+* https://github.com/simonschaufi
