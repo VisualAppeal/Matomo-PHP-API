@@ -4,7 +4,7 @@
 	"license": "Apache-2.0",
 	"require": {
 		"php": ">=7",
-		"voku/httpful": "0.2.*"
+		"voku/httpful": "0.4.*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^6.4"
