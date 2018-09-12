@@ -6,7 +6,7 @@ use \VisualAppeal\Piwik;
 
 class PiwikTest extends \PHPUnit\Framework\TestCase
 {
-	const TEST_SITE_URL = 'https://demo.piwik.org/';
+	const TEST_SITE_URL = 'https://demo.matomo.org/';
 
 	const TEST_SITE_ID = 7;
 
