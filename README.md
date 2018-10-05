@@ -1,8 +1,8 @@
-# Piwik PHP API
+# Matomo PHP API
 
-[![Build Status](https://travis-ci.org/VisualAppeal/Piwik-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Piwik-PHP-API)
+[![Build Status](https://travis-ci.org/VisualAppeal/Matomo-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Matomo-PHP-API)
 
-A PHP wrapper class for the [Piwik](http://piwik.org/) API.
+A PHP wrapper class for the [Matomo](https://matomo.org/) API.
 
 ## Requirements
 
@@ -11,9 +11,13 @@ A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Install
 
-This library can be installed via composer: `composer require visualappeal/piwik-php-api`
+This library can be installed via composer: `composer require visualappeal/matomo-php-api`
 
 ## Changelog
+
+### 1.3.0 (2018/10/05)
+
+* Renamed to Matomo-PHP-API
 
 ### 1.2.2 (2016/09/17)
 
@@ -27,7 +31,7 @@ This library can be installed via composer: `composer require visualappeal/piwik
 
 * Changed: Removed optional parameters for the methods and added optional parameters array. Some methods signatures changed, so please check your methods before upgrading.
 
-For example `getUrlsForSocial($segment = '', $idSubtable = '')` is now `getUrlsForSocial($segment = '', $optional = [])`. So instead of calling `$piwik->getUrlsForSocial('browserCode==FF;country==DE', 4)` you have to call `$piwik->getUrlsForSocial('browserCode==FF;country==DE', ['idSubtable' => 4])`.
+For example `getUrlsForSocial($segment = '', $idSubtable = '')` is now `getUrlsForSocial($segment = '', $optional = [])`. So instead of calling `$matomo->getUrlsForSocial('browserCode==FF;country==DE', 4)` you have to call `$matomo->getUrlsForSocial('browserCode==FF;country==DE', ['idSubtable' => 4])`.
 
 * Added: Compatible to Piwik 2.13.0
 
@@ -39,7 +43,7 @@ For example `getUrlsForSocial($segment = '', $idSubtable = '')` is now `getUrlsF
 
 ### 1.1.1 (2015/02/18)
 
-* Added: Get separate data entries for a date range without the range period parameter [#14](https://github.com/VisualAppeal/Piwik-PHP-API/issues/14)
+* Added: Get separate data entries for a date range without the range period parameter [#14](https://github.com/VisualAppeal/Matomo-PHP-API/issues/14)
 * Added: Compatible to Piwik 2.11
 
 ### 1.1.0 (2015/02/13)
@@ -56,17 +60,17 @@ For example `getUrlsForSocial($segment = '', $idSubtable = '')` is now `getUrlsF
 
 ## Usage
 
-### Create an instance of piwik
+### Create an instance of matomo
 
 	require(__DIR__ . '/vendor/autoload.php');
 
-	use VisualAppeal\Piwik;
+	use VisualAppeal\Matomo;
 
-	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 'siteId');
+	$matomo = new Matomo('http://stats.example.org', 'my_access_token', 'siteId');
 
 There are some basic parameters (period, date, range) which you can define at the beginning. They do not change until you reset them with
 
-	$piwik->reset();
+	$matomo->reset();
 
 So you can execute multiple requests without specifying the parameters again.
 
@@ -78,24 +82,24 @@ The ID of your website, single number, list separated through comma "1,4,7", or 
 
 The period you request the statistics for
 
-	Piwik::PERIOD_DAY
-	Piwik::PERIOD_WEEK
-	Piwik::PERIOD_MONTH
-	Piwik::PERIOD_YEAR
-	Piwik::PERIOD_RANGE
+	Matomo::PERIOD_DAY
+	Matomo::PERIOD_WEEK
+	Matomo::PERIOD_MONTH
+	Matomo::PERIOD_YEAR
+	Matomo::PERIOD_RANGE
 
-If you set the period to `Piwik::PERIOD_RANGE` you can specify the range via
+If you set the period to `Matomo::PERIOD_RANGE` you can specify the range via
 
-	$piwik->setRange('2012-01-14', '2012-04-30'); //All data from the first to the last date
-	$piwik->setRange('2012-01-14', Piwik::DATE_YESTERDAY); //All data from the first until yesterday
-	$piwik->setRange('2012-01-14'); //All data from the first until now
+	$matomo->setRange('2012-01-14', '2012-04-30'); //All data from the first to the last date
+	$matomo->setRange('2012-01-14', Matomo::DATE_YESTERDAY); //All data from the first until yesterday
+	$matomo->setRange('2012-01-14'); //All data from the first until now
 
 __When you use the period range you do not need to specify a date!__
 
-If you set it to something other than `Piwik::PERIOD_RANGE` you can specify the date via
+If you set it to something other than `Matomo::PERIOD_RANGE` you can specify the date via
 
-	$piwik->setPeriod(x);
-	$piwik->setDate('2012-03-03');
+	$matomo->setPeriod(x);
+	$matomo->setDate('2012-03-03');
 
 	Case x of PERIOD_DAY the report is created for the third of march, 2012
 	Case x of PERIOD_WEEK the report is created for the first week of march, 2012
@@ -106,44 +110,44 @@ If you set it to something other than `Piwik::PERIOD_RANGE` you can specify the 
 
 Set the date via
 
-	$piwik->setDate('YYYY-mm-dd');
+	$matomo->setDate('YYYY-mm-dd');
 
 Or use the constants
 
-	$piwik->setDate(Piwik::DATE_TODAY);
-	$piwik->setDate(Piwik::DATE_YESTERDAY);
+	$matomo->setDate(Matomo::DATE_TODAY);
+	$matomo->setDate(Matomo::DATE_YESTERDAY);
 
 Report for the last seven weeks including the current week
 
-	$piwik->setPeriod(Piwik::PERIOD_WEEK);
-	$piwik->setDate('last7');
+	$matomo->setPeriod(Matomo::PERIOD_WEEK);
+	$matomo->setDate('last7');
 
 Report for the last 2 years without the current year
 
-	$piwik->setPeriod(Piwik::PERIOD_YEAR);
-	$piwik->setDate('previous2');
+	$matomo->setPeriod(Matomo::PERIOD_YEAR);
+	$matomo->setDate('previous2');
 
 ### segment, idSubtable, expanded
 
-For some functions you can specify `segment`, `idSubtable` and `expanded`. Please refer to the piwik [segment documentation](http://piwik.org/docs/analytics-api/segmentation/) and to the [api reference](http://piwik.org/docs/analytics-api/reference/) for more information about these parameters.
+For some functions you can specify `segment`, `idSubtable` and `expanded`. Please refer to the matomo [segment documentation](https://developer.matomo.org/api-reference/reporting-api-segmentation) and to the [api reference](https://developer.matomo.org/api-reference/reporting-api) for more information about these parameters.
 
 ### format
 
 Specify a output format via
 
-	$piwik->setFormat(Piwik::FORMAT_JSON);
+	$matomo->setFormat(Matomo::FORMAT_JSON);
 
 JSON is converted with `json_decode` before returning the request.
 
 All available formats
 
-	Piwik::FORMAT_XML
-	Piwik::FORMAT_JSON
-	Piwik::FORMAT_CSV
-	Piwik::FORMAT_TSV
-	Piwik::FORMAT_HTML
-	Piwik::FORMAT_RSS
-	Piwik::FORMAT_PHP
+	Matomo::FORMAT_XML
+	Matomo::FORMAT_JSON
+	Matomo::FORMAT_CSV
+	Matomo::FORMAT_TSV
+	Matomo::FORMAT_HTML
+	Matomo::FORMAT_RSS
+	Matomo::FORMAT_PHP
 
 
 ## Example
@@ -152,11 +156,11 @@ Get all the unique visitors from yesterday:
 
 	require(__DIR__ . '/vendor/autoload.php');
 
-	use VisualAppeal\Piwik;
+	use VisualAppeal\Matomo;
 
-	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 1, Piwik::FORMAT_JSON);
+	$matomo = new Matomo('http://stats.example.org', 'my_access_token', 1, Matomo::FORMAT_JSON);
 
-	$piwik->setPeriod(Piwik::PERIOD_DAY);
-	$piwik->setDate(Piwik::DATE_YESTERDAY);
+	$matomo->setPeriod(Matomo::PERIOD_DAY);
+	$matomo->setDate(Matomo::DATE_YESTERDAY);
 
-	echo 'Unique visitors yesterday: ' . $piwik->getUniqueVisitors();
+	echo 'Unique visitors yesterday: ' . $matomo->getUniqueVisitors();

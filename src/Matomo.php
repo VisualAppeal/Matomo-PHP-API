@@ -3,10 +3,10 @@
 use Httpful\Request;
 
 /**
- * Repository: https://github.com/VisualAppeal/Piwik-PHP-API
- * Official api reference: http://piwik.org/docs/analytics-api/reference/
+ * Repository: https://github.com/VisualAppeal/Matomo-PHP-API
+ * Official api reference: https://developer.matomo.org/api-reference/reporting-api
  */
-class Piwik
+class Matomo
 {
     const ERROR_INVALID = 10;
     const ERROR_EMPTY = 11;
@@ -49,14 +49,9 @@ class Piwik
     public $maxRedirects = 5;
 
     /**
-     * @deprecated
-     */
-    public $redirects = 0;
-
-    /**
      * Create new instance
      *
-     * @param string $site URL of the piwik installation
+     * @param string $site URL of the matomo installation
      * @param string $token API Access token
      * @param int $siteId ID of the site
      * @param string $format
@@ -95,7 +90,7 @@ class Piwik
      */
 
     /**
-     * Get the url of the piwik installation
+     * Get the url of the matomo installation
      *
      * @return string
      */
@@ -105,7 +100,7 @@ class Piwik
     }
 
     /**
-     * Set the URL of the piwik installation
+     * Set the URL of the matomo installation
      *
      * @param string $url
      * @return $this
@@ -369,7 +364,7 @@ class Piwik
     }
 
     /**
-     * Requests to Piwik api
+     * Requests to matomo api
      */
 
     /**
@@ -560,14 +555,14 @@ class Piwik
      */
 
     /**
-     * Get current piwik version
+     * Get current matomo version
      *
      * @param array $optional
      * @return bool|object
      */
-    public function getPiwikVersion($optional = [])
+    public function getMatomoVersion($optional = [])
     {
-        return $this->_request('API.getPiwikVersion', [], $optional);
+        return $this->_request('API.getMatomoVersion', [], $optional);
     }
 
     /**
@@ -800,19 +795,6 @@ class Piwik
             'legendAppendMetric' => $legendAppendMetric,
             'labelUseAbsoluteUrl' => $labelUseAbsoluteUrl,
         ], $optional);
-    }
-
-    /**
-     * Get last date
-     *
-     * @param array $optional
-     *
-     * @deprecated 2.15.0 https://developer.piwik.org/changelog#piwik-2150
-     * @return bool|object
-     */
-    public function getLastDate($optional = [])
-    {
-        return $this->_request('API.getLastDate', [], $optional);
     }
 
     /**
@@ -1849,18 +1831,18 @@ class Piwik
 
     /**
      * MODULE: EXAMPLE API
-     * Get api and piwiki information
+     * Get api and matomo information
      */
 
     /**
-     * Get the piwik version
+     * Get the matomo version
      *
      * @param array $optional
      * @return bool|object
      */
-    public function getExamplePiwikVersion($optional = [])
+    public function getExampleMatomoVersion($optional = [])
     {
-        return $this->_request('ExampleAPI.getPiwikVersion', [], $optional);
+        return $this->_request('ExampleAPI.getMatomoVersion', [], $optional);
     }
 
     /**
@@ -1913,7 +1895,7 @@ class Piwik
     }
 
     /**
-     * Get a short piwik description
+     * Get a short matomo description
      *
      * @param array $optional
      * @return bool|object
@@ -2279,7 +2261,7 @@ class Piwik
      */
 
     /**
-     * Check if piwik can generate insights for current period
+     * Check if matomo can generate insights for current period
      *
      * @param array $optional
      * @return bool|object
@@ -3480,7 +3462,7 @@ class Piwik
     /**
      * Get the JS tag of the current site
      *
-     * @param string $piwikUrl
+     * @param string $matomoUrl
      * @param string $mergeSubdomains
      * @param string $groupPageTitlesByDomain
      * @param string $mergeAliasUrls
@@ -3494,7 +3476,7 @@ class Piwik
      * @return bool|object
      */
     public function getJavascriptTag(
-        $piwikUrl,
+        $matomoUrl,
         $mergeSubdomains = '',
         $groupPageTitlesByDomain = '',
         $mergeAliasUrls = '',
@@ -3507,7 +3489,7 @@ class Piwik
         $optional = []
     ) {
         return $this->_request('SitesManager.getJavascriptTag', [
-            'piwikUrl' => $piwikUrl,
+            'piwikUrl' => $matomoUrl,
             'mergeSubdomains' => $mergeSubdomains,
             'groupPageTitlesByDomain' => $groupPageTitlesByDomain,
             'mergeAliasUrls' => $mergeAliasUrls,
@@ -3523,7 +3505,7 @@ class Piwik
     /**
      * Get image tracking code of the current site
      *
-     * @param string $piwikUrl
+     * @param string $matomoUrl
      * @param string $actionName
      * @param string $idGoal
      * @param string $revenue
@@ -3531,14 +3513,14 @@ class Piwik
      * @return bool|object
      */
     public function getImageTrackingCode(
-        $piwikUrl,
+        $matomoUrl,
         $actionName = '',
         $idGoal = '',
         $revenue = '',
         $optional = []
     ) {
         return $this->_request('SitesManager.getImageTrackingCode', [
-            'piwikUrl' => $piwikUrl,
+            'piwikUrl' => $matomoUrl,
             'actionName' => $actionName,
             'idGoal' => $idGoal,
             'revenue' => $revenue,
@@ -3612,22 +3594,6 @@ class Piwik
     public function getAllSitesId($optional = [])
     {
         return $this->_request('SitesManager.getAllSitesId', [], $optional);
-    }
-
-    /**
-     * Get all sites with the visit count since $timestamp
-     *
-     * @param string $timestamp
-     * @param array $optional
-     *
-     * @deprecated 2.15.0 https://developer.piwik.org/changelog#piwik-2150
-     * @return bool|object
-     */
-    public function getSitesIdWithVisits($timestamp, $optional = [])
-    {
-        return $this->_request('SitesManager.getSitesIdWithVisits', [
-            'timestamp' => $timestamp,
-        ], $optional);
     }
 
     /**
@@ -4442,7 +4408,7 @@ class Piwik
 
     /**
      * MODULE: USER MANAGER
-     * Manage piwik users
+     * Manage matomo users
      */
 
     /**

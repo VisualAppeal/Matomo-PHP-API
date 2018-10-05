@@ -8,11 +8,8 @@
 		 convertWarningsToExceptions="true"
 		 processIsolation="false"
 		 stopOnFailure="false"
-		 syntaxCheck="false"
-		 verbose="true"
-		 tap="true"
-		 testdox="true">
-	<testsuite name="Piwik-PHP-API Test Suite">
+		 verbose="true">
+	<testsuite name="Matomo-PHP-API Test Suite">
 		<directory>tests</directory>
 	</testsuite>
 	<filter>

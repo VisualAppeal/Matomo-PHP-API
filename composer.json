@@ -1,13 +1,13 @@
 {
-	"name": "visualappeal/piwik-php-api",
-	"description": "API wrapper for piwik",
-	"license": "Apache-2.0",
+	"name": "visualappeal/matomo-php-api",
+	"description": "API wrapper for matomo",
+	"license": "MIT",
 	"require": {
 		"php": ">=7",
 		"voku/httpful": "0.4.*"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "^6.4"
+		"phpunit/phpunit": "7.4.*"
 	},
 	"autoload": {
 		"psr-4": {
