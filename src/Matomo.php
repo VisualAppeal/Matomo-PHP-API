@@ -820,7 +820,7 @@ class Matomo
     /**
      * Get a list of available widgets.
      *
-     * @return array
+     * @return object
      */
     public function getWidgetMetadata()
     {
@@ -830,7 +830,7 @@ class Matomo
     /**
      * Get a list of all available pages that exist including the widgets they include.
      *
-     * @return array
+     * @return object
      */
     public function getReportPagesMetadata()
     {
@@ -3702,7 +3702,7 @@ class Matomo
     /**
      * Get a list of all available settings for a specific site.
      *
-     * @return array
+     * @return object
      */
     public function getSitesIdFromSiteUrl()
     {
