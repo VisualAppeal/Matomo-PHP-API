@@ -15,6 +15,10 @@ This library can be installed via composer: `composer require visualappeal/matom
 
 ## Changelog
 
+### 1.4.1 (2018/10/05)
+
+* Added: Compatible to Matomo 3.6.1
+
 ### 1.4.0 (2018/10/05)
 
 * Renamed to Matomo-PHP-API
