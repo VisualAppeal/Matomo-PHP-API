@@ -4280,6 +4280,16 @@ class Matomo
     }
 
     /**
+     * Get a list of used country codes to country names
+     *
+     * @return object
+     */
+    public function getCountry($segment = '', $optional = [])
+    {
+        return $this->_request('UserCountry.getCountryCodeMapping');
+    }
+
+    /**
      * Get continents of all visitors
      *
      * @param string $segment
