@@ -3704,7 +3704,7 @@ class Matomo
      *
      * @return object
      */
-    public function getSitesIdFromSiteUrl()
+    public function getSiteSettings()
     {
         return $this->_request('SitesManager.getSiteSettings');
     }
@@ -4284,7 +4284,7 @@ class Matomo
      *
      * @return object
      */
-    public function getCountry($segment = '', $optional = [])
+    public function getCountryCodeMapping($segment = '', $optional = [])
     {
         return $this->_request('UserCountry.getCountryCodeMapping');
     }
