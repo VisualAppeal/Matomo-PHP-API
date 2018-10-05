@@ -15,9 +15,10 @@ This library can be installed via composer: `composer require visualappeal/matom
 
 ## Changelog
 
-### 1.3.0 (2018/10/05)
+### 1.4.0 (2018/10/05)
 
 * Renamed to Matomo-PHP-API
+* The `Piwik` class is now called `Matomo`
 
 ### 1.2.2 (2016/09/17)
 
