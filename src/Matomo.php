@@ -818,6 +818,26 @@ class Matomo
     }
 
     /**
+     * Get a list of available widgets.
+     *
+     * @return array
+     */
+    public function getWidgetMetadata()
+    {
+        return $this->_request('API.getWidgetMetadata');
+    }
+
+    /**
+     * Get a list of all available pages that exist including the widgets they include.
+     *
+     * @return array
+     */
+    public function getReportPagesMetadata()
+    {
+        return $this->_request('API.getReportPagesMetadata');
+    }
+
+    /**
      * Get suggested values for segments
      *
      * @param string $segmentName
@@ -3677,6 +3697,16 @@ class Matomo
         return $this->_request('SitesManager.getSitesIdFromSiteUrl', [
             'url' => $url,
         ], $optional);
+    }
+
+    /**
+     * Get a list of all available settings for a specific site.
+     *
+     * @return array
+     */
+    public function getSitesIdFromSiteUrl()
+    {
+        return $this->_request('SitesManager.getSiteSettings');
     }
 
     /**
