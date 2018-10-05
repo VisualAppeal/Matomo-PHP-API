@@ -19,6 +19,7 @@ This library can be installed via composer: `composer require visualappeal/matom
 
 * Renamed to Matomo-PHP-API
 * The `Piwik` class is now called `Matomo`
+* Changed license from Apache 2.0 to MIT
 
 ### 1.2.2 (2016/09/17)
 
