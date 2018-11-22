@@ -2556,6 +2556,19 @@ class Matomo
     }
 
     /**
+     * Get userId for visitors
+     *
+     * @param string $segment
+     * @param array $optional
+     * @return bool|object
+     */
+    public function getUsersById( $segment = '', $optional = []){
+        return $this->_request('UserId.getUsers', [
+            'segment' => $segment,
+        ], $optional);
+    }
+	
+    /**
      * MODULE: MOBILEMESSAGING
      * The MobileMessaging API lets you manage and access all the MobileMessaging plugin features
      * including : - manage SMS API credential - activate phone numbers - check remaining credits -
