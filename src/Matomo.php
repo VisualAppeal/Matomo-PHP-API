@@ -1,5 +1,6 @@
 <?php namespace VisualAppeal;
 
+use Httpful\Exception\ConnectionErrorException;
 use Httpful\Request;
 
 /**
@@ -373,7 +374,7 @@ class Matomo
      * @param string $method
      * @param array $params
      * @param array $optional
-     * @return bool|object
+     * @return bool|object|array
      */
     private function _request($method, $params = [], $optional = [])
     {
@@ -387,7 +388,12 @@ class Matomo
         $req->max_redirects = $this->maxRedirects;
         $req->setConnectionTimeout(5);
 
-        $buffer = $req->send();
+        try {
+			$buffer = $req->send();
+		} catch (ConnectionErrorException $e) {
+        	$this->_addError(sprintf('Could not send buffer: %s', $e->getMessage()));
+        	return false;
+		}
 
         if (!empty($buffer)) {
             $request = $this->_parseRequest($buffer);
@@ -1545,7 +1551,7 @@ class Matomo
      *
      * @param string $segment
      * @param array $optional
-     * @return bool|object
+     * @return array
      */
     public function getCustomVariables($segment = '', $optional = [])
     {
@@ -2567,7 +2573,7 @@ class Matomo
             'segment' => $segment,
         ], $optional);
     }
-	
+
     /**
      * MODULE: MOBILEMESSAGING
      * The MobileMessaging API lets you manage and access all the MobileMessaging plugin features
@@ -4297,7 +4303,7 @@ class Matomo
      *
      * @return object
      */
-    public function getCountryCodeMapping($segment = '', $optional = [])
+    public function getCountryCodeMapping()
     {
         return $this->_request('UserCountry.getCountryCodeMapping');
     }

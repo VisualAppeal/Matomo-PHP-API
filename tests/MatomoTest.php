@@ -8,7 +8,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 {
 	const TEST_SITE_URL = 'https://demo.matomo.org/';
 
-	const TEST_SITE_ID = 7;
+	const TEST_SITE_ID = 62;
 
 	const TEST_TOKEN = 'anonymous';
 
@@ -191,7 +191,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testOptionalParameters()
 	{
-		$this->_matomo->setDate('2011-01-11');
+		$this->_matomo->setDate('2018-10-01');
 		$this->_matomo->setPeriod(Matomo::PERIOD_WEEK);
 		$result = $this->_matomo->getWebsites('', [
 			'flat' => 1,
@@ -199,7 +199,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertInternalType('array', $result);
 		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
-		$this->assertEquals(388, $result[0]->nb_visits);
+		$this->assertEquals(934, $result[0]->nb_visits);
 	}
 
 	/**
@@ -207,10 +207,10 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testCustomVariables()
 	{
-		$this->_matomo->setDate('2011-11-08');
+		$this->_matomo->setDate('2018-10-01');
 		$this->_matomo->setPeriod(Matomo::PERIOD_WEEK);
 		$result = $this->_matomo->getCustomVariables();
 
-		$this->assertEquals(1, count($result));
+		$this->assertEquals(15, count($result));
 	}
 }

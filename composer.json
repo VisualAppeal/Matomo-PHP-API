@@ -4,6 +4,7 @@
 	"license": "MIT",
 	"require": {
 		"php": ">=7",
+		"ext-json": "*",
 		"voku/httpful": "0.4.*"
 	},
 	"require-dev": {
