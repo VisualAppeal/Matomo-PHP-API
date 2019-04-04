@@ -41,7 +41,7 @@ class Matomo
     private $_rangeEnd = null;
     private $_isJsonDecodeAssoc = false;
 
-    private $_limit = '';
+    private $_limit = -1;
 
     private $_errors = [];
 
@@ -444,7 +444,8 @@ class Matomo
             'idSite' => $this->_siteId,
             'period' => $this->_period,
             'format' => $this->_format,
-            'language' => $this->_language
+            'language' => $this->_language,
+			'filter_limit' => $this->_filter
         ] + $params;
 
         foreach ($params as $key => $value) {
