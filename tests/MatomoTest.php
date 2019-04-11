@@ -1,10 +1,10 @@
 <?php
 
-require(__DIR__ . '/../src/Matomo.php');
+use PHPUnit\Framework\TestCase;
 
 use VisualAppeal\Matomo;
 
-class MatomoTest extends \PHPUnit\Framework\TestCase
+class MatomoTest extends TestCase
 {
 	const TEST_SITE_URL = 'https://demo.matomo.org/';
 
@@ -15,16 +15,22 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * Matomo api instance.
 	 *
-	 * @var \VisualAppeal\Matomo
+	 * @var Matomo
 	 */
 	private $_matomo = null;
 
-	protected function setUp()
+    /**
+     * Set up test class.
+     */
+	protected function setUp(): void
 	{
 		$this->_matomo = new Matomo(self::TEST_SITE_URL, self::TEST_TOKEN, self::TEST_SITE_ID);
 	}
 
-	protected function tearDown()
+    /**
+     * Cleanup test class.
+     */
+	protected function tearDown(): void
 	{
 		unset($this->_matomo);
 		$this->_matomo = null;
@@ -35,7 +41,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testInit()
 	{
-		$this->assertInstanceOf(\VisualAppeal\Matomo::class, $this->_matomo);
+		$this->assertInstanceOf(Matomo::class, $this->_matomo);
 	}
 
 	/**
@@ -45,8 +51,8 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 	{
 		$result = $this->_matomo->getVisits();
 
-		$this->assertInternalType('int', $result);
-		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
+		$this->assertIsInt($result);
+		$this->assertEquals(0, count($this->_matomo->getErrors()));
 	}
 
 	/**
@@ -60,7 +66,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 		$this->_matomo->setRange(date('Y-m-d', time() - 3600 * 24), date('Y-m-d'));
 		$result = $this->_matomo->getVisitsSummary();
 
-		$this->assertInternalType('object', $result);
+		$this->assertIsObject($result);
 		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 	}
 
@@ -75,7 +81,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 		$this->_matomo->setDate(date('Y-m-d', time() - 3600 * 24));
 		$result = $this->_matomo->getVisitsSummary();
 
-		$this->assertInternalType('object', $result);
+		$this->assertIsObject($result);
 		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 	}
 
@@ -91,7 +97,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 		$this->_matomo->setRange(date('Y-m-d', time() - 3600 * 24 * 6), date('Y-m-d'));
 		$result = $this->_matomo->getVisitsSummary();
 
-		$this->assertInternalType('object', $result);
+		$this->assertIsObject($result);
 		$this->assertEquals(7, count((array) $result));
 		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 	}
@@ -197,7 +203,7 @@ class MatomoTest extends \PHPUnit\Framework\TestCase
 			'flat' => 1,
 		]);
 
-		$this->assertInternalType('array', $result);
+		$this->assertIsArray($result);
 		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 		$this->assertEquals(934, $result[0]->nb_visits);
 	}

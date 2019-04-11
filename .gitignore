@@ -1,5 +1,7 @@
 config.php
 composer.lock
+.phpunit.result.cache
 
+.idea/
 /build/
 /vendor/

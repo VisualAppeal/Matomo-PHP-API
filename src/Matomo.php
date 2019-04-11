@@ -2,6 +2,7 @@
 
 use Httpful\Exception\ConnectionErrorException;
 use Httpful\Request;
+use Httpful\Response;
 
 /**
  * Repository: https://github.com/VisualAppeal/Matomo-PHP-API
@@ -28,29 +29,80 @@ class Matomo
     const FORMAT_HTML = 'html';
     const FORMAT_RSS = 'rss';
     const FORMAT_PHP = 'php';
-
-    private $_site = '';
-    private $_token = '';
-    private $_siteId = 0;
-    private $_format = self::FORMAT_PHP;
-    private $_language = 'en';
-
-    private $_period = self::PERIOD_DAY;
-    private $_date = '';
-    private $_rangeStart = 'yesterday';
-    private $_rangeEnd = null;
-    private $_isJsonDecodeAssoc = false;
-
-    private $_limit = '';
-
-    private $_errors = [];
-
-    public $verifySsl = false;
-
-    public $maxRedirects = 5;
+    const FORMAT_ORIGINAL = 'original';
 
     /**
-     * Create new instance
+     * @var string URL of the matomo installation
+     */
+    private $_site = '';
+
+    /**
+     * @var string API Access token
+     */
+    private $_token = '';
+
+    /**
+     * @var int The integer id of your website.
+     */
+    private $_siteId = null;
+
+    /**
+     * @var string The period you request the statistics for.
+     */
+    private $_period = self::PERIOD_DAY;
+
+    /**
+     * @var string
+     */
+    private $_date = '';
+
+    /**
+     * @var string Defines the format of the output.
+     */
+    private $_format = self::FORMAT_PHP;
+
+    /**
+     * @var int Defines the number of rows to be returned (-1: All rows).
+     */
+    private $_filter_limit = 100;
+
+    /**
+     * @var string Returns data strings that can be internationalized and will be translated.
+     */
+    private $_language = 'en';
+
+    /**
+     * @var string
+     */
+    private $_rangeStart = 'yesterday';
+
+    /**
+     * @var string|null
+     */
+    private $_rangeEnd = null;
+
+    /**
+     * @var bool
+     */
+    private $_isJsonDecodeAssoc = false;
+
+    /**
+     * @var array
+     */
+    private $_errors = [];
+
+    /**
+     * @var bool If the certificate of the matomo installation should be verified.
+     */
+    private $_verifySsl = false;
+
+    /**
+     * @var int How many redirects curl should execute until aborting.
+     */
+    private $_maxRedirects = 5;
+
+    /**
+     * Create a new instance.
      *
      * @param string $site URL of the matomo installation
      * @param string $token API Access token
@@ -70,7 +122,8 @@ class Matomo
         $date = self::DATE_YESTERDAY,
         $rangeStart = '',
         $rangeEnd = null
-    ) {
+    )
+    {
         $this->_site = $site;
         $this->_token = $token;
         $this->_siteId = $siteId;
@@ -95,7 +148,7 @@ class Matomo
      *
      * @return string
      */
-    public function getSite()
+    public function getSite(): string
     {
         return $this->_site;
     }
@@ -106,7 +159,7 @@ class Matomo
      * @param string $url
      * @return $this
      */
-    public function setSite($url)
+    public function setSite(string $url): Matomo
     {
         $this->_site = $url;
 
@@ -118,7 +171,7 @@ class Matomo
      *
      * @return string
      */
-    public function getToken()
+    public function getToken(): string
     {
         return $this->_token;
     }
@@ -129,7 +182,7 @@ class Matomo
      * @param string $token
      * @return $this
      */
-    public function setToken($token)
+    public function setToken(string $token): Matomo
     {
         $this->_token = $token;
 
@@ -141,9 +194,9 @@ class Matomo
      *
      * @return int
      */
-    public function getSiteId()
+    public function getSiteId(): int
     {
-        return intval($this->_siteId);
+        return $this->_siteId;
     }
 
     /**
@@ -152,7 +205,7 @@ class Matomo
      * @param int $id
      * @return $this
      */
-    public function setSiteId($id)
+    public function setSiteId(int $id): Matomo
     {
         $this->_siteId = $id;
 
@@ -164,7 +217,7 @@ class Matomo
      *
      * @return string
      */
-    public function getFormat()
+    public function getFormat(): string
     {
         return $this->_format;
     }
@@ -182,7 +235,7 @@ class Matomo
      *        FORMAT_PHP
      * @return $this
      */
-    public function setFormat($format)
+    public function setFormat(string $format): Matomo
     {
         $this->_format = $format;
 
@@ -194,7 +247,7 @@ class Matomo
      *
      * @return string
      */
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return $this->_language;
     }
@@ -205,7 +258,7 @@ class Matomo
      * @param string $language
      * @return $this
      */
-    public function setLanguage($language)
+    public function setLanguage(string $language): Matomo
     {
         $this->_language = $language;
 
@@ -217,7 +270,7 @@ class Matomo
      *
      * @return string
      */
-    public function getDate()
+    public function getDate(): string
     {
         return $this->_date;
     }
@@ -230,7 +283,7 @@ class Matomo
      *        DATE_YESTERDAY
      * @return $this
      */
-    public function setDate($date)
+    public function setDate(string $date = null): Matomo
     {
         $this->_date = $date;
         $this->_rangeStart = null;
@@ -244,7 +297,7 @@ class Matomo
      *
      * @return string
      */
-    public function getPeriod()
+    public function getPeriod(): string
     {
         return $this->_period;
     }
@@ -260,7 +313,7 @@ class Matomo
      *        PERIOD_RANGE
      * @return $this
      */
-    public function setPeriod($period)
+    public function setPeriod(string $period)
     {
         $this->_period = $period;
 
@@ -272,7 +325,7 @@ class Matomo
      *
      * @return string
      */
-    public function getRange()
+    public function getRange(): string
     {
         if (empty($this->_rangeEnd)) {
             return $this->_rangeStart;
@@ -289,7 +342,7 @@ class Matomo
      *                         $rangeStart until now
      * @return $this
      */
-    public function setRange($rangeStart, $rangeEnd = null)
+    public function setRange(string $rangeStart = null, string $rangeEnd = null): Matomo
     {
         $this->_date = '';
         $this->_rangeStart = $rangeStart;
@@ -307,36 +360,26 @@ class Matomo
     }
 
     /**
-     * Get the limit of returned rows
+     * Get the number rows which should be returned
      *
      * @return int
      */
-    public function getLimit()
+    public function getFilterLimit(): int
     {
-        return intval($this->_limit);
+        return $this->_filter_limit;
     }
 
     /**
-     * Set the limit of returned rows
+     * Set the number of rows which should be returned
      *
-     * @param int $limit
+     * @param int $filterLimit
      * @return $this
      */
-    public function setLimit($limit)
+    public function setFilterLimit(int $filterLimit): Matomo
     {
-        $this->_limit = $limit;
+        $this->_filter_limit = $filterLimit;
 
         return $this;
-    }
-
-    /**
-     * Sets the json_decode format
-     *
-     * @param bool $isJsonDecodeAssoc false decode as Object, true for decode as Associate array
-     */
-    public function setIsJsonDecodeAssoc($isJsonDecodeAssoc)
-    {
-        $this->_isJsonDecodeAssoc = $isJsonDecodeAssoc;
     }
 
     /**
@@ -344,15 +387,74 @@ class Matomo
      *
      * @return bool
      */
-    public function isIsJsonDecodeAssoc()
+    public function isJsonDecodeAssoc(): bool
     {
         return $this->_isJsonDecodeAssoc;
     }
 
     /**
-     * Reset all default variables
+     * Sets the json_decode format
+     *
+     * @param bool $isJsonDecodeAssoc false decode as Object, true for decode as Associate array
+     * @return $this
      */
-    public function reset()
+    public function setIsJsonDecodeAssoc(bool $isJsonDecodeAssoc): Matomo
+    {
+        $this->_isJsonDecodeAssoc = $isJsonDecodeAssoc;
+
+        return $this;
+    }
+
+    /**
+     * If the certificate of the matomo installation should be verified.
+     *
+     * @return bool
+     */
+    public function getVerifySsl(): bool
+    {
+        return $this->_verifySsl;
+    }
+
+    /**
+     * Set if the certificate of the matomo installation should be verified.
+     *
+     * @param bool $verifySsl
+     * @return Matomo
+     */
+    public function setVerifySsl(bool $verifySsl): Matomo
+    {
+        $this->_verifySsl = $verifySsl;
+
+        return $this;
+    }
+
+    /**
+     * How many redircts curl should execute unitil aborting.
+     *
+     * @return int
+     */
+    public function getMaxRedirects(): int
+    {
+        return $this->_maxRedirects;
+    }
+
+    /**
+     * Set how many redircts curl should execute unitil aborting.
+     *
+     * @param int $maxRedirects
+     * @return Matomo
+     */
+    public function setMaxRedirects(int $maxRedirects): Matomo
+    {
+        $this->_maxRedirects = $maxRedirects;
+
+        return $this;
+    }
+
+    /**
+     * Reset all default variables.
+     */
+    public function reset(): Matomo
     {
         $this->_period = self::PERIOD_DAY;
         $this->_date = '';
@@ -374,9 +476,9 @@ class Matomo
      * @param string $method
      * @param array $params
      * @param array $optional
-     * @return bool|object|array
+     * @return bool|object
      */
-    private function _request($method, $params = [], $optional = [])
+    private function _request(string $method, array $params = [], array $optional = [])
     {
         $url = $this->_parseUrl($method, $params + $optional);
         if ($url === false) {
@@ -384,46 +486,45 @@ class Matomo
         }
 
         $req = Request::get($url);
-        $req->strict_ssl = $this->verifySsl;
-        $req->max_redirects = $this->maxRedirects;
+        $req->strict_ssl = $this->_verifySsl;
+        $req->max_redirects = $this->_maxRedirects;
         $req->setConnectionTimeout(5);
 
         try {
-			$buffer = $req->send();
-		} catch (ConnectionErrorException $e) {
-        	$this->_addError(sprintf('Could not send buffer: %s', $e->getMessage()));
-        	return false;
-		}
-
-        if (!empty($buffer)) {
-            $request = $this->_parseRequest($buffer);
-        } else {
-            $request = false;
+            $buffer = $req->send();
+        } catch (ConnectionErrorException $e) {
+            $this->_addError(sprintf('Could not send buffer: %s', $e->getMessage()));
+            return false;
         }
 
-        return $this->_finishRequest($request, $method, $params + $optional);
+        if (!empty($buffer)) {
+            return $this->_finishResponse($this->_parseResponse($buffer), $method, $params + $optional);
+        }
+
+        return false;
     }
 
     /**
-     * Validate request and return the values
+     * Validate request and return the values.
      *
-     * @param object $request
+     * @param mixed $response
      * @param string $method
      * @param array $params
      * @return bool|object
      */
-    private function _finishRequest($request, $method, $params)
+    private function _finishResponse($response, string $method, array $params)
     {
-        $valid = $this->_validRequest($request);
+        $valid = $this->_isValidResponse($response);
 
         if ($valid === true) {
-            if (isset($request->value)) {
-                return $request->value;
+            if (isset($response->value)) {
+                return $response->value;
             } else {
-                return $request;
+                return $response;
             }
         } else {
             $this->_addError($valid . ' (' . $this->_parseUrl($method, $params) . ')');
+
             return false;
         }
     }
@@ -433,19 +534,20 @@ class Matomo
      *
      * @param string $method The request method
      * @param array $params Request params
-     * @return string
+     * @return string|false
      */
-    private function _parseUrl($method, array $params = [])
+    private function _parseUrl(string $method, array $params = [])
     {
         $params = [
-            'module' => 'API',
-            'method' => $method,
-            'token_auth' => $this->_token,
-            'idSite' => $this->_siteId,
-            'period' => $this->_period,
-            'format' => $this->_format,
-            'language' => $this->_language
-        ] + $params;
+                'module' => 'API',
+                'method' => $method,
+                'token_auth' => $this->_token,
+                'idSite' => $this->_siteId,
+                'period' => $this->_period,
+                'format' => $this->_format,
+                'language' => $this->_language,
+                'filter_limit' => $this->_filter_limit
+            ] + $params;
 
         foreach ($params as $key => $value) {
             $params[$key] = urlencode($value);
@@ -453,14 +555,15 @@ class Matomo
 
         if (!empty($this->_rangeStart) && !empty($this->_rangeEnd)) {
             $params = $params + [
-                'date' => $this->_rangeStart . ',' . $this->_rangeEnd,
-            ];
+                    'date' => $this->_rangeStart . ',' . $this->_rangeEnd,
+                ];
         } elseif (!empty($this->_date)) {
             $params = $params + [
-                'date' => $this->_date,
-            ];
+                    'date' => $this->_date,
+                ];
         } else {
             $this->_addError('Specify a date or a date range!');
+
             return false;
         }
 
@@ -487,41 +590,38 @@ class Matomo
     }
 
     /**
-     * Validate the request result
+     * Check if the request was successfull.
      *
-     * @param object $request
+     * @param mixed $response
      * @return bool|int
      */
-    private function _validRequest($request)
+    private function _isValidResponse($response)
     {
-        if (($request !== false) and (!is_null($request))) {
-            if (!isset($request->result) or ($request->result != 'error')) {
-                return true;
-            }
-            return $request->message;
+        if (is_null($response)) {
+            return self::ERROR_EMPTY;
         }
 
-        if (is_null($request)) {
-            return self::ERROR_EMPTY;
-        } else {
-            return self::ERROR_INVALID;
+        if (!isset($response->result) or ($response->result != 'error')) {
+            return true;
         }
+
+        return $response->message;
     }
 
     /**
      * Parse request result
      *
-     * @param object $request
-     * @return mixed|object
+     * @param Response $response
+     * @return mixed
      */
-    private function _parseRequest($request)
+    private function _parseResponse(Response $response)
     {
         switch ($this->_format) {
             case self::FORMAT_JSON:
-                return json_decode($request, $this->_isJsonDecodeAssoc);
+                return json_decode($response, $this->_isJsonDecodeAssoc);
                 break;
             default:
-                return $request;
+                return $response;
         }
     }
 
@@ -533,24 +633,31 @@ class Matomo
      * Add error
      *
      * @param string $msg Error message
+     * @return $this
      */
-    protected function _addError($msg = '')
+    protected function _addError(string $msg = ''): Matomo
     {
         array_push($this->_errors, $msg);
+
+        return $this;
     }
 
     /**
      * Check for errors
+     *
+     * @return bool
      */
-    public function hasError()
+    public function hasError(): bool
     {
         return (count($this->_errors) > 0);
     }
 
     /**
      * Return all errors
+     *
+     * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->_errors;
     }
@@ -566,7 +673,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getMatomoVersion($optional = [])
+    public function getMatomoVersion(array $optional = [])
     {
         return $this->_request('API.getMatomoVersion', [], $optional);
     }
@@ -577,7 +684,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getIpFromHeader($optional = [])
+    public function getIpFromHeader(array $optional = [])
     {
         return $this->_request('API.getIpFromHeader', [], $optional);
     }
@@ -588,7 +695,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSettings($optional = [])
+    public function getSettings(array $optional = [])
     {
         return $this->_request('API.getSettings', [], $optional);
     }
@@ -599,7 +706,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDefaultMetricTranslations($optional = [])
+    public function getDefaultMetricTranslations(array $optional = [])
     {
         return $this->_request('API.getDefaultMetricTranslations', [], $optional);
     }
@@ -610,7 +717,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDefaultMetrics($optional = [])
+    public function getDefaultMetrics(array $optional = [])
     {
         return $this->_request('API.getDefaultMetrics', [], $optional);
     }
@@ -621,7 +728,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDefaultProcessedMetrics($optional = [])
+    public function getDefaultProcessedMetrics(array $optional = [])
     {
         return $this->_request('API.getDefaultProcessedMetrics', [], $optional);
     }
@@ -632,7 +739,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDefaultMetricsDocumentation($optional = [])
+    public function getDefaultMetricsDocumentation(array $optional = [])
     {
         return $this->_request('API.getDefaultMetricsDocumentation', [], $optional);
     }
@@ -644,7 +751,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSegmentsMetadata($sites = [], $optional = [])
+    public function getSegmentsMetadata($sites = [], array $optional = [])
     {
         return $this->_request('API.getSegmentsMetadata', [
             'idSites' => $sites
@@ -658,7 +765,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getLogoUrl($pathOnly = false, $optional = [])
+    public function getLogoUrl($pathOnly = false, array $optional = [])
     {
         return $this->_request('API.getLogoUrl', [
             'pathOnly' => $pathOnly
@@ -672,7 +779,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getHeaderLogoUrl($pathOnly = false, $optional = [])
+    public function getHeaderLogoUrl($pathOnly = false, array $optional = [])
     {
         return $this->_request('API.getHeaderLogoUrl', [
             'pathOnly' => $pathOnly
@@ -688,7 +795,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getMetadata($apiModule, $apiAction, $apiParameters = [], $optional = [])
+    public function getMetadata($apiModule, $apiAction, $apiParameters = [], array $optional = [])
     {
         return $this->_request('API.getMetadata', [
             'apiModule' => $apiModule,
@@ -710,8 +817,9 @@ class Matomo
         array $idSites,
         $hideMetricsDoc = '',
         $showSubtableReports = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('API.getReportMetadata', [
             'idSites' => $idSites,
             'hideMetricsDoc' => $hideMetricsDoc,
@@ -740,8 +848,9 @@ class Matomo
         $idGoal = '',
         $showTimer = '1',
         $hideMetricsDoc = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('API.getProcessedReport', [
             'apiModule' => $apiModule,
             'apiAction' => $apiAction,
@@ -761,7 +870,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getApi($segment = '', $columns = '', $optional = [])
+    public function getApi($segment = '', $columns = '', array $optional = [])
     {
         return $this->_request('API.get', [
             'segment' => $segment,
@@ -790,8 +899,9 @@ class Matomo
         $idGoal = '',
         $legendAppendMetric = '1',
         $labelUseAbsoluteUrl = '1',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('API.getRowEvolution', [
             'apiModule' => $apiModule,
             'apiAction' => $apiAction,
@@ -812,7 +922,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getBulkRequest($methods = [], $optional = [])
+    public function getBulkRequest($methods = [], array $optional = [])
     {
         $urls = [];
 
@@ -850,7 +960,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSuggestedValuesForSegment($segmentName, $optional = [])
+    public function getSuggestedValuesForSegment($segmentName, array $optional = [])
     {
         return $this->_request('API.getSuggestedValuesForSegment', [
             'segmentName' => $segmentName,
@@ -870,7 +980,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAction($segment = '', $columns = '', $optional = [])
+    public function getAction($segment = '', $columns = '', array $optional = [])
     {
         return $this->_request('Actions.get', [
             'segment' => $segment,
@@ -885,7 +995,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getPageUrls($segment = '', $optional = [])
+    public function getPageUrls($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getPageUrls', [
             'segment' => $segment,
@@ -899,7 +1009,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getPageUrlsFollowingSiteSearch($segment = '', $optional = [])
+    public function getPageUrlsFollowingSiteSearch($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getPageUrlsFollowingSiteSearch', [
             'segment' => $segment,
@@ -913,7 +1023,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getPageTitlesFollowingSiteSearch($segment = '', $optional = [])
+    public function getPageTitlesFollowingSiteSearch($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getPageTitlesFollowingSiteSearch', [
             'segment' => $segment,
@@ -927,7 +1037,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getEntryPageUrls($segment = '', $optional = [])
+    public function getEntryPageUrls($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getEntryPageUrls', [
             'segment' => $segment,
@@ -941,7 +1051,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExitPageUrls($segment = '', $optional = [])
+    public function getExitPageUrls($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getExitPageUrls', [
             'segment' => $segment,
@@ -956,7 +1066,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getPageUrl($pageUrl, $segment = '', $optional = [])
+    public function getPageUrl($pageUrl, $segment = '', array $optional = [])
     {
         return $this->_request('Actions.getPageUrl', [
             'pageUrl' => $pageUrl,
@@ -971,7 +1081,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getPageTitles($segment = '', $optional = [])
+    public function getPageTitles($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getPageTitles', [
             'segment' => $segment,
@@ -985,7 +1095,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getEntryPageTitles($segment = '', $optional = [])
+    public function getEntryPageTitles($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getEntryPageTitles', [
             'segment' => $segment,
@@ -999,7 +1109,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExitPageTitles($segment = '', $optional = [])
+    public function getExitPageTitles($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getExitPageTitles', [
             'segment' => $segment,
@@ -1014,7 +1124,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getPageTitle($pageName, $segment = '', $optional = [])
+    public function getPageTitle($pageName, $segment = '', array $optional = [])
     {
         return $this->_request('Actions.getPageTitle', [
             'pageName' => $pageName,
@@ -1029,7 +1139,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDownloads($segment = '', $optional = [])
+    public function getDownloads($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getDownloads', [
             'segment' => $segment,
@@ -1044,7 +1154,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDownload($downloadUrl, $segment = '', $optional = [])
+    public function getDownload($downloadUrl, $segment = '', array $optional = [])
     {
         return $this->_request('Actions.getDownload', [
             'downloadUrl' => $downloadUrl,
@@ -1059,7 +1169,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOutlinks($segment = '', $optional = [])
+    public function getOutlinks($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getOutlinks', [
             'segment' => $segment,
@@ -1074,7 +1184,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOutlink($outlinkUrl, $segment = '', $optional = [])
+    public function getOutlink($outlinkUrl, $segment = '', array $optional = [])
     {
         return $this->_request('Actions.getOutlink', [
             'outlinkUrl' => $outlinkUrl,
@@ -1089,7 +1199,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSiteSearchKeywords($segment = '', $optional = [])
+    public function getSiteSearchKeywords($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getSiteSearchKeywords', [
             'segment' => $segment,
@@ -1103,7 +1213,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSiteSearchNoResultKeywords($segment = '', $optional = [])
+    public function getSiteSearchNoResultKeywords($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getSiteSearchNoResultKeywords', [
             'segment' => $segment,
@@ -1117,7 +1227,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSiteSearchCategories($segment = '', $optional = [])
+    public function getSiteSearchCategories($segment = '', array $optional = [])
     {
         return $this->_request('Actions.getSiteSearchCategories', [
             'segment' => $segment,
@@ -1136,7 +1246,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function addAnnotation($note, $starred = 0, $optional = [])
+    public function addAnnotation($note, $starred = 0, array $optional = [])
     {
         return $this->_request('Annotations.add', [
             'note' => $note,
@@ -1153,7 +1263,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function saveAnnotation($idNote, $note = '', $starred = '', $optional = [])
+    public function saveAnnotation($idNote, $note = '', $starred = '', array $optional = [])
     {
         return $this->_request('Annotations.save', [
             'idNote' => $idNote,
@@ -1169,7 +1279,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteAnnotation($idNote, $optional = [])
+    public function deleteAnnotation($idNote, array $optional = [])
     {
         return $this->_request('Annotations.delete', [
             'idNote' => $idNote,
@@ -1182,7 +1292,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteAllAnnotations($optional = [])
+    public function deleteAllAnnotations(array $optional = [])
     {
         return $this->_request('Annotations.deleteAll', [], $optional);
     }
@@ -1194,7 +1304,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAnnotation($idNote, $optional = [])
+    public function getAnnotation($idNote, array $optional = [])
     {
         return $this->_request('Annotations.get', [
             'idNote' => $idNote,
@@ -1208,7 +1318,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAllAnnotation($lastN = '', $optional = [])
+    public function getAllAnnotation($lastN = '', array $optional = [])
     {
         return $this->_request('Annotations.getAll', [
             'lastN' => $lastN,
@@ -1223,7 +1333,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAnnotationCountForDates($lastN, $getAnnotationText, $optional = [])
+    public function getAnnotationCountForDates($lastN, $getAnnotationText, array $optional = [])
     {
         return $this->_request('Annotations.getAnnotationCountForDates', [
             'lastN' => $lastN,
@@ -1242,7 +1352,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getContentNames($segment = '', $optional = [])
+    public function getContentNames($segment = '', array $optional = [])
     {
         return $this->_request('Contents.getContentNames', [
             'segment' => $segment,
@@ -1256,7 +1366,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getContentPieces($segment = '', $optional = [])
+    public function getContentPieces($segment = '', array $optional = [])
     {
         return $this->_request('Contents.getContentPieces', [
             'segment' => $segment,
@@ -1274,7 +1384,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAlert($idAlert, $optional = [])
+    public function getAlert($idAlert, array $optional = [])
     {
         return $this->_request('CustomAlerts.getAlert', [
             'idAlert' => $idAlert,
@@ -1289,7 +1399,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getValuesForAlertInPast($idAlert, $subPeriodN, $optional = [])
+    public function getValuesForAlertInPast($idAlert, $subPeriodN, array $optional = [])
     {
         return $this->_request('CustomAlerts.getValuesForAlertInPast', [
             'idAlert' => $idAlert,
@@ -1305,7 +1415,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAlerts($idSites, $ifSuperUserReturnAllAlerts = '', $optional = [])
+    public function getAlerts($idSites, $ifSuperUserReturnAllAlerts = '', array $optional = [])
     {
         return $this->_request('CustomAlerts.getAlerts', [
             'idSites' => $idSites,
@@ -1344,8 +1454,9 @@ class Matomo
         $reportUniqueId,
         $reportCondition = '',
         $reportValue = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('CustomAlerts.addAlert', [
             'name' => $name,
             'idSites' => $idSites,
@@ -1395,8 +1506,9 @@ class Matomo
         $reportUniqueId,
         $reportCondition = '',
         $reportValue = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('CustomAlerts.editAlert', [
             'idAlert' => $idAlert,
             'name' => $name,
@@ -1421,7 +1533,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteAlert($idAlert, $optional = [])
+    public function deleteAlert($idAlert, array $optional = [])
     {
         return $this->_request('CustomAlerts.deleteAlert', [
             'idAlert' => $idAlert,
@@ -1435,7 +1547,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getTriggeredAlerts($idSites, $optional = [])
+    public function getTriggeredAlerts($idSites, array $optional = [])
     {
         return $this->_request('CustomAlerts.getTriggeredAlerts', [
             'idSites' => $idSites,
@@ -1456,7 +1568,7 @@ class Matomo
      *
      * @return bool|object
      */
-    public function getCustomDimension($idDimension, $optional = [])
+    public function getCustomDimension($idDimension, array $optional = [])
     {
         return $this->_request('CustomDimensions.getCustomDimension', [
             'idDimension' => $idDimension,
@@ -1473,12 +1585,12 @@ class Matomo
      * @param string $name The name of the dimension
      * @param string $scope Either 'visit' or 'action'. To get an up to date list of available scopes fetch the
      *                      API method `CustomDimensions.getAvailableScopes`
-     * @param int $active  '0' if dimension should be inactive, '1' if dimension should be active
+     * @param int $active '0' if dimension should be inactive, '1' if dimension should be active
      * @param array $optional
      *
      * @return bool|object
      */
-    public function configureNewCustomDimension($name, $scope, $active, $optional = [])
+    public function configureNewCustomDimension($name, $scope, $active, array $optional = [])
     {
         return $this->_request('CustomDimensions.configureNewCustomDimension', [
             'name' => $name,
@@ -1491,14 +1603,14 @@ class Matomo
      * Updates an existing Custom Dimension. This method updates all values, you need to pass existing values of the
      * dimension if you do not want to reset any value. Requires at least Admin access for the specified website.
      *
-     * @param int $idDimension  The id of a Custom Dimension.
-     * @param string $name      The name of the dimension
-     * @param int $active       '0' if dimension should be inactive, '1' if dimension should be active
+     * @param int $idDimension The id of a Custom Dimension.
+     * @param string $name The name of the dimension
+     * @param int $active '0' if dimension should be inactive, '1' if dimension should be active
      * @param array $optional
      *
      * @return bool|object
      */
-    public function configureExistingCustomDimension($idDimension, $name, $active, $optional = [])
+    public function configureExistingCustomDimension($idDimension, $name, $active, array $optional = [])
     {
         return $this->_request('CustomDimensions.configureExistingCustomDimension', [
             'idDimension' => $idDimension,
@@ -1551,9 +1663,9 @@ class Matomo
      *
      * @param string $segment
      * @param array $optional
-     * @return array
+     * @return bool|array
      */
-    public function getCustomVariables($segment = '', $optional = [])
+    public function getCustomVariables($segment = '', array $optional = [])
     {
         return $this->_request('CustomVariables.getCustomVariables', [
             'segment' => $segment,
@@ -1568,7 +1680,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCustomVariable($idSubtable, $segment = '', $optional = [])
+    public function getCustomVariable($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('CustomVariables.getCustomVariablesValuesFromNameId', [
             'idSubtable' => $idSubtable,
@@ -1586,7 +1698,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDashboards($optional = [])
+    public function getDashboards(array $optional = [])
     {
         return $this->_request('Dashboard.getDashboards', [], $optional);
     }
@@ -1602,7 +1714,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDeviceType($segment = '', $optional = [])
+    public function getDeviceType($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getType', [
             'segment' => $segment,
@@ -1616,7 +1728,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDeviceBrand($segment = '', $optional = [])
+    public function getDeviceBrand($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getBrand', [
             'segment' => $segment,
@@ -1630,7 +1742,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDeviceModel($segment = '', $optional = [])
+    public function getDeviceModel($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getModel', [
             'segment' => $segment,
@@ -1644,7 +1756,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOSFamilies($segment = '', $optional = [])
+    public function getOSFamilies($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getOsFamilies', [
             'segment' => $segment,
@@ -1658,7 +1770,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOsVersions($segment = '', $optional = [])
+    public function getOsVersions($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getOsVersions', [
             'segment' => $segment,
@@ -1672,7 +1784,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getBrowsers($segment = '', $optional = [])
+    public function getBrowsers($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getBrowsers', [
             'segment' => $segment,
@@ -1686,7 +1798,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getBrowserVersions($segment = '', $optional = [])
+    public function getBrowserVersions($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getBrowserVersions', [
             'segment' => $segment,
@@ -1700,7 +1812,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getBrowserEngines($segment = '', $optional = [])
+    public function getBrowserEngines($segment = '', array $optional = [])
     {
         return $this->_request('DevicesDetection.getBrowserEngines', [
             'segment' => $segment,
@@ -1719,7 +1831,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getEventCategory($segment = '', $secondaryDimension = '', $optional = [])
+    public function getEventCategory($segment = '', $secondaryDimension = '', array $optional = [])
     {
         return $this->_request('Events.getCategory', [
             'segment' => $segment,
@@ -1735,7 +1847,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getEventAction($segment = '', $secondaryDimension = '', $optional = [])
+    public function getEventAction($segment = '', $secondaryDimension = '', array $optional = [])
     {
         return $this->_request('Events.getAction', [
             'segment' => $segment,
@@ -1751,7 +1863,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getEventName($segment = '', $secondaryDimension = '', $optional = [])
+    public function getEventName($segment = '', $secondaryDimension = '', array $optional = [])
     {
         return $this->_request('Events.getName', [
             'segment' => $segment,
@@ -1767,7 +1879,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getActionFromCategoryId($idSubtable, $segment = '', $optional = [])
+    public function getActionFromCategoryId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Events.getActionFromCategoryId', [
             'idSubtable' => $idSubtable,
@@ -1783,7 +1895,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNameFromCategoryId($idSubtable, $segment = '', $optional = [])
+    public function getNameFromCategoryId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Events.getNameFromCategoryId', [
             'idSubtable' => $idSubtable,
@@ -1799,7 +1911,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCategoryFromActionId($idSubtable, $segment = '', $optional = [])
+    public function getCategoryFromActionId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Events.getCategoryFromActionId', [
             'idSubtable' => $idSubtable,
@@ -1815,7 +1927,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNameFromActionId($idSubtable, $segment = '', $optional = [])
+    public function getNameFromActionId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Events.getNameFromActionId', [
             'idSubtable' => $idSubtable,
@@ -1831,7 +1943,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getActionFromNameId($idSubtable, $segment = '', $optional = [])
+    public function getActionFromNameId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Events.getActionFromNameId', [
             'idSubtable' => $idSubtable,
@@ -1847,7 +1959,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCategoryFromNameId($idSubtable, $segment = '', $optional = [])
+    public function getCategoryFromNameId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Events.getCategoryFromNameId', [
             'idSubtable' => $idSubtable,
@@ -1866,7 +1978,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleMatomoVersion($optional = [])
+    public function getExampleMatomoVersion(array $optional = [])
     {
         return $this->_request('ExampleAPI.getMatomoVersion', [], $optional);
     }
@@ -1877,7 +1989,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleAnswerToLife($optional = [])
+    public function getExampleAnswerToLife(array $optional = [])
     {
         return $this->_request('ExampleAPI.getAnswerToLife', [], $optional);
     }
@@ -1888,7 +2000,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleObject($optional = [])
+    public function getExampleObject(array $optional = [])
     {
         return $this->_request('ExampleAPI.getObject', [], $optional);
     }
@@ -1901,7 +2013,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleSum($a = 0, $b = 0, $optional = [])
+    public function getExampleSum($a = 0, $b = 0, array $optional = [])
     {
         return $this->_request('ExampleAPI.getSum', [
             'a' => $a,
@@ -1915,7 +2027,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleNull($optional = [])
+    public function getExampleNull(array $optional = [])
     {
         return $this->_request('ExampleAPI.getNull', [], $optional);
     }
@@ -1926,7 +2038,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleDescriptionArray($optional = [])
+    public function getExampleDescriptionArray(array $optional = [])
     {
         return $this->_request('ExampleAPI.getDescriptionArray', [], $optional);
     }
@@ -1937,7 +2049,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleCompetitionDatatable($optional = [])
+    public function getExampleCompetitionDatatable(array $optional = [])
     {
         return $this->_request('ExampleAPI.getCompetitionDatatable', [], $optional);
     }
@@ -1949,7 +2061,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleMoreInformationAnswerToLife($optional = [])
+    public function getExampleMoreInformationAnswerToLife(array $optional = [])
     {
         return $this->_request('ExampleAPI.getMoreInformationAnswerToLife', [], $optional);
     }
@@ -1960,7 +2072,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExampleMultiArray($optional = [])
+    public function getExampleMultiArray(array $optional = [])
     {
         return $this->_request('ExampleAPI.getMultiArray', [], $optional);
     }
@@ -1976,7 +2088,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExamplePluginAnswerToLife($truth = 1, $optional = [])
+    public function getExamplePluginAnswerToLife($truth = 1, array $optional = [])
     {
         return $this->_request('ExamplePlugin.getAnswerToLife', [
             'truth' => $truth,
@@ -1990,7 +2102,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExamplePluginReport($segment = '', $optional = [])
+    public function getExamplePluginReport($segment = '', array $optional = [])
     {
         return $this->_request('ExamplePlugin.getExampleReport', [
             'segment' => $segment,
@@ -2010,7 +2122,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function sendFeedbackForFeature($featureName, $like, $message = '', $optional = [])
+    public function sendFeedbackForFeature($featureName, $like, $message = '', array $optional = [])
     {
         return $this->_request('Feedback.sendFeedbackForFeature', [
             'featureName' => $featureName,
@@ -2030,7 +2142,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getGoals($optional = [])
+    public function getGoals(array $optional = [])
     {
         return $this->_request('Goals.getGoals', [], $optional);
     }
@@ -2056,8 +2168,9 @@ class Matomo
         $caseSensitive = '',
         $revenue = '',
         $allowMultipleConversionsPerVisit = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('Goals.addGoal', [
             'name' => $name,
             'matchAttribute' => $matchAttribute,
@@ -2092,8 +2205,9 @@ class Matomo
         $caseSensitive = '',
         $revenue = '',
         $allowMultipleConversionsPerVisit = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('Goals.updateGoal', [
             'idGoal' => $idGoal,
             'name' => $name,
@@ -2113,7 +2227,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteGoal($idGoal, $optional = [])
+    public function deleteGoal($idGoal, array $optional = [])
     {
         return $this->_request('Goals.deleteGoal', [
             'idGoal' => $idGoal,
@@ -2127,7 +2241,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getItemsSku($abandonedCarts, $optional = [])
+    public function getItemsSku($abandonedCarts, array $optional = [])
     {
         return $this->_request('Goals.getItemsSku', [
             'abandonedCarts' => $abandonedCarts,
@@ -2141,7 +2255,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getItemsName($abandonedCarts, $optional = [])
+    public function getItemsName($abandonedCarts, array $optional = [])
     {
         return $this->_request('Goals.getItemsName', [
             'abandonedCarts' => $abandonedCarts,
@@ -2155,7 +2269,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getItemsCategory($abandonedCarts, $optional = [])
+    public function getItemsCategory($abandonedCarts, array $optional = [])
     {
         return $this->_request('Goals.getItemsCategory', [
             'abandonedCarts' => $abandonedCarts,
@@ -2171,7 +2285,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getGoal($segment = '', $idGoal = '', $columns = [], $optional = [])
+    public function getGoal($segment = '', $idGoal = '', $columns = [], array $optional = [])
     {
         return $this->_request('Goals.get', [
             'segment' => $segment,
@@ -2188,7 +2302,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDaysToConversion($segment = '', $idGoal = '', $optional = [])
+    public function getDaysToConversion($segment = '', $idGoal = '', array $optional = [])
     {
         return $this->_request('Goals.getDaysToConversion', [
             'segment' => $segment,
@@ -2204,7 +2318,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisitsUntilConversion($segment = '', $idGoal = '', $optional = [])
+    public function getVisitsUntilConversion($segment = '', $idGoal = '', array $optional = [])
     {
         return $this->_request('Goals.getVisitsUntilConversion', [
             'segment' => $segment,
@@ -2261,8 +2375,9 @@ class Matomo
         $aliasedGraph = '1',
         $idGoal = '',
         $colors = [],
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('ImageGraph.get', [
             'apiModule' => $apiModule,
             'apiAction' => $apiAction,
@@ -2292,7 +2407,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function canGenerateInsights($optional = [])
+    public function canGenerateInsights(array $optional = [])
     {
         return $this->_request('Insights.canGenerateInsights', [], $optional);
     }
@@ -2304,7 +2419,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getInsightsOverview($segment, $optional = [])
+    public function getInsightsOverview($segment, array $optional = [])
     {
         return $this->_request('Insights.getInsightsOverview', [
             'segment' => $segment,
@@ -2318,7 +2433,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getMoversAndShakersOverview($segment, $optional = [])
+    public function getMoversAndShakersOverview($segment, array $optional = [])
     {
         return $this->_request('Insights.getMoversAndShakersOverview', [
             'segment' => $segment,
@@ -2342,8 +2457,9 @@ class Matomo
         $comparedToXPeriods = 1,
         $limitIncreaser = 4,
         $limitDecreaser = 4,
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('Insights.getMoversAndShakers', [
             'reportUniqueId' => $reportUniqueId,
             'segment' => $segment,
@@ -2378,8 +2494,9 @@ class Matomo
         $minGrowthPercent = 20,
         $comparedToXPeriods = 1,
         $orderBy = 'absolute',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('Insights.getInsights', [
             'reportUniqueId' => $reportUniqueId,
             'segment' => $segment,
@@ -2405,7 +2522,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getLanguageAvailable($languageCode, $optional = [])
+    public function getLanguageAvailable($languageCode, array $optional = [])
     {
         return $this->_request('LanguagesManager.isLanguageAvailable', [
             'languageCode' => $languageCode,
@@ -2418,7 +2535,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAvailableLanguages($optional = [])
+    public function getAvailableLanguages(array $optional = [])
     {
         return $this->_request('LanguagesManager.getAvailableLanguages', [], $optional);
     }
@@ -2429,7 +2546,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAvailableLanguagesInfo($optional = [])
+    public function getAvailableLanguagesInfo(array $optional = [])
     {
         return $this->_request('LanguagesManager.getAvailableLanguagesInfo', [], $optional);
     }
@@ -2440,7 +2557,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAvailableLanguageNames($optional = [])
+    public function getAvailableLanguageNames(array $optional = [])
     {
         return $this->_request('LanguagesManager.getAvailableLanguageNames', [], $optional);
     }
@@ -2452,7 +2569,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getTranslations($languageCode, $optional = [])
+    public function getTranslations($languageCode, array $optional = [])
     {
         return $this->_request('LanguagesManager.getTranslationsForLanguage', [
             'languageCode' => $languageCode,
@@ -2466,7 +2583,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getLanguageForUser($login, $optional = [])
+    public function getLanguageForUser($login, array $optional = [])
     {
         return $this->_request('LanguagesManager.getLanguageForUser', [
             'login' => $login,
@@ -2481,7 +2598,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setLanguageForUser($login, $languageCode, $optional = [])
+    public function setLanguageForUser($login, $languageCode, array $optional = [])
     {
         return $this->_request('LanguagesManager.setLanguageForUser', [
             'login' => $login,
@@ -2503,7 +2620,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCounters($lastMinutes = 60, $segment = '', $optional = [])
+    public function getCounters($lastMinutes = 60, $segment = '', array $optional = [])
     {
         return $this->_request('Live.getCounters', [
             'lastMinutes' => $lastMinutes,
@@ -2522,7 +2639,7 @@ class Matomo
      * @internal param int $filterLimit
      * @internal param int $maxIdVisit
      */
-    public function getLastVisitsDetails($segment = '', $minTimestamp = '', $doNotFetchActions = '', $optional = [])
+    public function getLastVisitsDetails($segment = '', $minTimestamp = '', $doNotFetchActions = '', array $optional = [])
     {
         return $this->_request('Live.getLastVisitsDetails', [
             'segment' => $segment,
@@ -2539,7 +2656,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisitorProfile($visitorId = '', $segment = '', $optional = [])
+    public function getVisitorProfile($visitorId = '', $segment = '', array $optional = [])
     {
         return $this->_request('Live.getVisitorProfile', [
             'visitorId' => $visitorId,
@@ -2554,7 +2671,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getMostRecentVisitorId($segment = '', $optional = [])
+    public function getMostRecentVisitorId($segment = '', array $optional = [])
     {
         return $this->_request('Live.getMostRecentVisitorId', [
             'segment' => $segment,
@@ -2568,7 +2685,8 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUsersById( $segment = '', $optional = []){
+    public function getUsersById($segment = '', array $optional = [])
+    {
         return $this->_request('UserId.getUsers', [
             'segment' => $segment,
         ], $optional);
@@ -2587,7 +2705,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function areSMSAPICredentialProvided($optional = [])
+    public function areSMSAPICredentialProvided(array $optional = [])
     {
         return $this->_request('MobileMessaging.areSMSAPICredentialProvided', [], $optional);
     }
@@ -2598,7 +2716,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSMSProvider($optional = [])
+    public function getSMSProvider(array $optional = [])
     {
         return $this->_request('MobileMessaging.getSMSProvider', [], $optional);
     }
@@ -2611,7 +2729,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setSMSAPICredential($provider, $apiKey, $optional = [])
+    public function setSMSAPICredential($provider, $apiKey, array $optional = [])
     {
         return $this->_request('MobileMessaging.setSMSAPICredential', [
             'provider' => $provider,
@@ -2626,7 +2744,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function addPhoneNumber($phoneNumber, $optional = [])
+    public function addPhoneNumber($phoneNumber, array $optional = [])
     {
         return $this->_request('MobileMessaging.addPhoneNumber', [
             'phoneNumber' => $phoneNumber,
@@ -2639,7 +2757,7 @@ class Matomo
      * @param array $optional
      * @return mixed
      */
-    public function getCreditLeft($optional = [])
+    public function getCreditLeft(array $optional = [])
     {
         return $this->_request('MobileMessaging.getCreditLeft', [], $optional);
     }
@@ -2651,7 +2769,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function removePhoneNumber($phoneNumber, $optional = [])
+    public function removePhoneNumber($phoneNumber, array $optional = [])
     {
         return $this->_request('MobileMessaging.removePhoneNumber', [
             'phoneNumber' => $phoneNumber,
@@ -2666,7 +2784,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function validatePhoneNumber($phoneNumber, $verificationCode, $optional = [])
+    public function validatePhoneNumber($phoneNumber, $verificationCode, array $optional = [])
     {
         return $this->_request('MobileMessaging.validatePhoneNumber', [
             'phoneNumber' => $phoneNumber,
@@ -2680,7 +2798,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteSMSAPICredential($optional = [])
+    public function deleteSMSAPICredential(array $optional = [])
     {
         return $this->_request('MobileMessaging.deleteSMSAPICredential', [], $optional);
     }
@@ -2692,7 +2810,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setDelegatedManagement($delegatedManagement, $optional = [])
+    public function setDelegatedManagement($delegatedManagement, array $optional = [])
     {
         return $this->_request('MobileMessaging.setDelegatedManagement', [
             'delegatedManagement' => $delegatedManagement,
@@ -2705,7 +2823,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDelegatedManagement($optional = [])
+    public function getDelegatedManagement(array $optional = [])
     {
         return $this->_request('MobileMessaging.getDelegatedManagement', [], $optional);
     }
@@ -2724,7 +2842,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getMultiSites($segment = '', $enhanced = '', $optional = [])
+    public function getMultiSites($segment = '', $enhanced = '', array $optional = [])
     {
         return $this->_request('MultiSites.getAll', [
             'segment' => $segment,
@@ -2740,7 +2858,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOne($segment = '', $enhanced = '', $optional = [])
+    public function getOne($segment = '', $enhanced = '', array $optional = [])
     {
         return $this->_request('MultiSites.getOne', [
             'segment' => $segment,
@@ -2758,7 +2876,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOverlayTranslations($optional = [])
+    public function getOverlayTranslations(array $optional = [])
     {
         return $this->_request('Overlay.getTranslations', [], $optional);
     }
@@ -2769,7 +2887,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOverlayExcludedQueryParameters($optional = [])
+    public function getOverlayExcludedQueryParameters(array $optional = [])
     {
         return $this->_request('Overlay.getExcludedQueryParameters', [], $optional);
     }
@@ -2781,7 +2899,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getOverlayFollowingPages($segment = '', $optional = [])
+    public function getOverlayFollowingPages($segment = '', array $optional = [])
     {
         return $this->_request('Overlay.getFollowingPages', [
             'segment' => $segment,
@@ -2800,7 +2918,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getProvider($segment = '', $optional = [])
+    public function getProvider($segment = '', array $optional = [])
     {
         return $this->_request('Provider.getProvider', [
             'segment' => $segment,
@@ -2820,7 +2938,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getReferrerType($segment = '', $typeReferrer = '', $optional = [])
+    public function getReferrerType($segment = '', $typeReferrer = '', array $optional = [])
     {
         return $this->_request('Referrers.getReferrerType', [
             'segment' => $segment,
@@ -2835,7 +2953,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAllReferrers($segment = '', $optional = [])
+    public function getAllReferrers($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getAll', [
             'segment' => $segment,
@@ -2849,7 +2967,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getKeywords($segment = '', $optional = [])
+    public function getKeywords($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getKeywords', [
             'segment' => $segment,
@@ -2863,7 +2981,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getKeywordsForPageUrl($url, $optional = [])
+    public function getKeywordsForPageUrl($url, array $optional = [])
     {
         return $this->_request('Referrers.getKeywordsForPageUrl', [
             'url' => $url,
@@ -2877,7 +2995,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getKeywordsForPageTitle($title, $optional = [])
+    public function getKeywordsForPageTitle($title, array $optional = [])
     {
         return $this->_request('Referrers.getKeywordsForPageTitle', [
             'title' => $title,
@@ -2892,7 +3010,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSearchEnginesFromKeywordId($idSubtable, $segment = '', $optional = [])
+    public function getSearchEnginesFromKeywordId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getSearchEnginesFromKeywordId', [
             'idSubtable' => $idSubtable,
@@ -2907,7 +3025,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSearchEngines($segment = '', $optional = [])
+    public function getSearchEngines($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getSearchEngines', [
             'segment' => $segment,
@@ -2922,7 +3040,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getKeywordsFromSearchEngineId($idSubtable, $segment = '', $optional = [])
+    public function getKeywordsFromSearchEngineId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getKeywordsFromSearchEngineId', [
             'idSubtable' => $idSubtable,
@@ -2937,7 +3055,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCampaigns($segment = '', $optional = [])
+    public function getCampaigns($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getCampaigns', [
             'segment' => $segment,
@@ -2952,7 +3070,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getKeywordsFromCampaignId($idSubtable, $segment = '', $optional = [])
+    public function getKeywordsFromCampaignId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getKeywordsFromCampaignId', [
             'idSubtable' => $idSubtable,
@@ -2968,7 +3086,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingName($segment = '', $optional = [])
+    public function getAdvancedCampaignReportingName($segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getName', [
             'segment' => $segment,
@@ -2983,7 +3101,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingKeywordContentFromNameId($segment = '', $optional = [])
+    public function getAdvancedCampaignReportingKeywordContentFromNameId($segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getKeywordContentFromNameId', [
             'segment' => $segment
@@ -2998,7 +3116,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingKeyword($segment = '', $optional = [])
+    public function getAdvancedCampaignReportingKeyword($segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getKeyword', [
             'segment' => $segment
@@ -3013,7 +3131,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingSource($segment = '', $optional = [])
+    public function getAdvancedCampaignReportingSource($segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getSource', [
             'segment' => $segment
@@ -3028,7 +3146,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingMedium($segment = '', $optional = [])
+    public function getAdvancedCampaignReportingMedium($segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getMedium', [
             'segment' => $segment
@@ -3043,7 +3161,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingContent($segment = '', $optional = [])
+    public function getAdvancedCampaignReportingContent($segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getContent', [
             'segment' => $segment
@@ -3058,7 +3176,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingSourceMedium($segment = '', $optional = [])
+    public function getAdvancedCampaignReportingSourceMedium($segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getSourceMedium', [
             'segment' => $segment
@@ -3074,7 +3192,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAdvancedCampaignReportingNameFromSourceMediumId($idSubtable, $segment = '', $optional = [])
+    public function getAdvancedCampaignReportingNameFromSourceMediumId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('AdvancedCampaignReporting.getNameFromSourceMediumId', [
             'idSubtable' => $idSubtable,
@@ -3089,7 +3207,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getWebsites($segment = '', $optional = [])
+    public function getWebsites($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getWebsites', [
             'segment' => $segment,
@@ -3104,7 +3222,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUrlsFromWebsiteId($idSubtable, $segment = '', $optional = [])
+    public function getUrlsFromWebsiteId($idSubtable, $segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getUrlsFromWebsiteId', [
             'idSubtable' => $idSubtable,
@@ -3119,7 +3237,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSocials($segment = '', $optional = [])
+    public function getSocials($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getSocials', [
             'segment' => $segment,
@@ -3133,7 +3251,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUrlsForSocial($segment = '', $optional = [])
+    public function getUrlsForSocial($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getUrlsForSocial', [
             'segment' => $segment,
@@ -3147,7 +3265,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfSearchEngines($segment = '', $optional = [])
+    public function getNumberOfSearchEngines($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getNumberOfDistinctSearchEngines', [
             'segment' => $segment,
@@ -3161,7 +3279,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfKeywords($segment = '', $optional = [])
+    public function getNumberOfKeywords($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getNumberOfDistinctKeywords', [
             'segment' => $segment,
@@ -3175,7 +3293,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfCampaigns($segment = '', $optional = [])
+    public function getNumberOfCampaigns($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getNumberOfDistinctCampaigns', [
             'segment' => $segment,
@@ -3189,7 +3307,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfWebsites($segment = '', $optional = [])
+    public function getNumberOfWebsites($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getNumberOfDistinctWebsites', [
             'segment' => $segment,
@@ -3203,7 +3321,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfWebsitesUrls($segment = '', $optional = [])
+    public function getNumberOfWebsitesUrls($segment = '', array $optional = [])
     {
         return $this->_request('Referrers.getNumberOfDistinctWebsitesUrls', [
             'segment' => $segment,
@@ -3222,7 +3340,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSeoRank($url, $optional = [])
+    public function getSeoRank($url, array $optional = [])
     {
         return $this->_request('SEO.getRank', [
             'url' => $url,
@@ -3257,8 +3375,9 @@ class Matomo
         $reports,
         $parameters,
         $idSegment = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('ScheduledReports.addReport', [
             'description' => $description,
             'period' => $period,
@@ -3296,8 +3415,9 @@ class Matomo
         $reports,
         $parameters,
         $idSegment = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('ScheduledReports.updateReport', [
             'idReport' => $idReport,
             'description' => $description,
@@ -3318,7 +3438,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteReport($idReport, $optional = [])
+    public function deleteReport($idReport, array $optional = [])
     {
         return $this->_request('ScheduledReports.deleteReport', [
             'idReport' => $idReport,
@@ -3338,8 +3458,9 @@ class Matomo
         $idReport = '',
         $ifSuperUserReturnOnlySuperUserReports = '',
         $idSegment = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('ScheduledReports.getReports', [
             'idReport' => $idReport,
             'ifSuperUserReturnOnlySuperUserReports' => $ifSuperUserReturnOnlySuperUserReports,
@@ -3364,8 +3485,9 @@ class Matomo
         $outputType = '',
         $reportFormat = '',
         $parameters = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('ScheduledReports.generateReport', [
             'idReport' => $idReport,
             'language' => $language,
@@ -3383,7 +3505,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function sendReport($idReport, $force = '', $optional = [])
+    public function sendReport($idReport, $force = '', array $optional = [])
     {
         return $this->_request('ScheduledReports.sendReport', [
             'idReport' => $idReport,
@@ -3401,7 +3523,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function isUserCanAddNewSegment($optional = [])
+    public function isUserCanAddNewSegment(array $optional = [])
     {
         return $this->_request('SegmentEditor.isUserCanAddNewSegment', [], $optional);
     }
@@ -3413,7 +3535,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteSegment($idSegment, $optional = [])
+    public function deleteSegment($idSegment, array $optional = [])
     {
         return $this->_request('SegmentEditor.delete', [
             'idSegment' => $idSegment,
@@ -3437,8 +3559,9 @@ class Matomo
         $definition,
         $autoArchive = '',
         $enableAllUsers = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('SegmentEditor.update', [
             'idSegment' => $idSegment,
             'name' => $name,
@@ -3458,7 +3581,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function addSegment($name, $definition, $autoArchive = '', $enableAllUsers = '', $optional = [])
+    public function addSegment($name, $definition, $autoArchive = '', $enableAllUsers = '', array $optional = [])
     {
         return $this->_request('SegmentEditor.add', [
             'name' => $name,
@@ -3475,7 +3598,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSegment($idSegment, $optional = [])
+    public function getSegment($idSegment, array $optional = [])
     {
         return $this->_request('SegmentEditor.get', [
             'idSegment' => $idSegment,
@@ -3488,7 +3611,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAllSegments($optional = [])
+    public function getAllSegments(array $optional = [])
     {
         return $this->_request('SegmentEditor.getAll', [], $optional);
     }
@@ -3525,8 +3648,9 @@ class Matomo
         $customCampaignKeywordParam = '',
         $doNotTrack = '',
         $disableCookies = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('SitesManager.getJavascriptTag', [
             'piwikUrl' => $matomoUrl,
             'mergeSubdomains' => $mergeSubdomains,
@@ -3556,8 +3680,9 @@ class Matomo
         $actionName = '',
         $idGoal = '',
         $revenue = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('SitesManager.getImageTrackingCode', [
             'piwikUrl' => $matomoUrl,
             'actionName' => $actionName,
@@ -3573,7 +3698,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesFromGroup($group, $optional = [])
+    public function getSitesFromGroup($group, array $optional = [])
     {
         return $this->_request('SitesManager.getSitesFromGroup', [
             'group' => $group,
@@ -3586,7 +3711,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesGroups($optional = [])
+    public function getSitesGroups(array $optional = [])
     {
         return $this->_request('SitesManager.getSitesGroups', [], $optional);
     }
@@ -3597,7 +3722,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSiteInformation($optional = [])
+    public function getSiteInformation(array $optional = [])
     {
         return $this->_request('SitesManager.getSiteFromId', [], $optional);
     }
@@ -3608,7 +3733,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSiteUrls($optional = [])
+    public function getSiteUrls(array $optional = [])
     {
         return $this->_request('SitesManager.getSiteUrlsFromId', [], $optional);
     }
@@ -3619,7 +3744,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAllSites($optional = [])
+    public function getAllSites(array $optional = [])
     {
         return $this->_request('SitesManager.getAllSites', [], $optional);
     }
@@ -3630,7 +3755,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getAllSitesId($optional = [])
+    public function getAllSitesId(array $optional = [])
     {
         return $this->_request('SitesManager.getAllSitesId', [], $optional);
     }
@@ -3641,7 +3766,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesWithAdminAccess($optional = [])
+    public function getSitesWithAdminAccess(array $optional = [])
     {
         return $this->_request('SitesManager.getSitesWithAdminAccess', [], $optional);
     }
@@ -3652,7 +3777,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesWithViewAccess($optional = [])
+    public function getSitesWithViewAccess(array $optional = [])
     {
         return $this->_request('SitesManager.getSitesWithViewAccess', [], $optional);
     }
@@ -3664,7 +3789,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesWithAtLeastViewAccess($limit = '', $optional = [])
+    public function getSitesWithAtLeastViewAccess($limit = '', array $optional = [])
     {
         return $this->_request('SitesManager.getSitesWithAtLeastViewAccess', [
             'limit' => $limit,
@@ -3677,7 +3802,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesIdWithAdminAccess($optional = [])
+    public function getSitesIdWithAdminAccess(array $optional = [])
     {
         return $this->_request('SitesManager.getSitesIdWithAdminAccess', [], $optional);
     }
@@ -3688,7 +3813,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesIdWithViewAccess($optional = [])
+    public function getSitesIdWithViewAccess(array $optional = [])
     {
         return $this->_request('SitesManager.getSitesIdWithViewAccess', [], $optional);
     }
@@ -3699,7 +3824,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesIdWithAtLeastViewAccess($optional = [])
+    public function getSitesIdWithAtLeastViewAccess(array $optional = [])
     {
         return $this->_request('SitesManager.getSitesIdWithAtLeastViewAccess', [], $optional);
     }
@@ -3711,7 +3836,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesIdFromSiteUrl($url, $optional = [])
+    public function getSitesIdFromSiteUrl($url, array $optional = [])
     {
         return $this->_request('SitesManager.getSitesIdFromSiteUrl', [
             'url' => $url,
@@ -3772,8 +3897,9 @@ class Matomo
         $settingValues = '',
         $type = '',
         $excludeUnknownUrls = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('SitesManager.addSite', [
             'siteName' => $siteName,
             'urls' => $urls,
@@ -3801,7 +3927,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteSite($optional = [])
+    public function deleteSite(array $optional = [])
     {
         return $this->_request('SitesManager.deleteSite', [], $optional);
     }
@@ -3813,7 +3939,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function addSiteAliasUrls($urls, $optional = [])
+    public function addSiteAliasUrls($urls, array $optional = [])
     {
         return $this->_request('SitesManager.addSiteAliasUrls', [
             'urls' => $urls,
@@ -3827,7 +3953,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setSiteAliasUrls($urls, $optional = [])
+    public function setSiteAliasUrls($urls, array $optional = [])
     {
         return $this->_request('SitesManager.setSiteAliasUrls', [
             'urls' => $urls,
@@ -3841,7 +3967,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getIpsForRange($ipRange, $optional = [])
+    public function getIpsForRange($ipRange, array $optional = [])
     {
         return $this->_request('SitesManager.getIpsForRange', [
             'ipRange' => $ipRange,
@@ -3855,7 +3981,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setExcludedIps($excludedIps, $optional = [])
+    public function setExcludedIps($excludedIps, array $optional = [])
     {
         return $this->_request('SitesManager.setGlobalExcludedIps', [
             'excludedIps' => $excludedIps,
@@ -3870,7 +3996,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setGlobalSearchParameters($searchKeywordParameters, $searchCategoryParameters, $optional = [])
+    public function setGlobalSearchParameters($searchKeywordParameters, $searchCategoryParameters, array $optional = [])
     {
         return $this->_request('SitesManager.setGlobalSearchParameters ', [
             'searchKeywordParameters' => $searchKeywordParameters,
@@ -3884,7 +4010,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSearchKeywordParametersGlobal($optional = [])
+    public function getSearchKeywordParametersGlobal(array $optional = [])
     {
         return $this->_request('SitesManager.getSearchKeywordParametersGlobal', [], $optional);
     }
@@ -3895,7 +4021,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSearchCategoryParametersGlobal($optional = [])
+    public function getSearchCategoryParametersGlobal(array $optional = [])
     {
         return $this->_request('SitesManager.getSearchCategoryParametersGlobal', [], $optional);
     }
@@ -3906,7 +4032,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExcludedParameters($optional = [])
+    public function getExcludedParameters(array $optional = [])
     {
         return $this->_request('SitesManager.getExcludedQueryParametersGlobal', [], $optional);
     }
@@ -3917,7 +4043,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExcludedUserAgentsGlobal($optional = [])
+    public function getExcludedUserAgentsGlobal(array $optional = [])
     {
         return $this->_request('SitesManager.getExcludedUserAgentsGlobal', [], $optional);
     }
@@ -3929,7 +4055,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setGlobalExcludedUserAgents($excludedUserAgents, $optional = [])
+    public function setGlobalExcludedUserAgents($excludedUserAgents, array $optional = [])
     {
         return $this->_request('SitesManager.setGlobalExcludedUserAgents', [
             'excludedUserAgents' => $excludedUserAgents,
@@ -3942,7 +4068,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function isSiteSpecificUserAgentExcludeEnabled($optional = [])
+    public function isSiteSpecificUserAgentExcludeEnabled(array $optional = [])
     {
         return $this->_request('SitesManager.isSiteSpecificUserAgentExcludeEnabled', [], $optional);
     }
@@ -3954,7 +4080,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setSiteSpecificUserAgentExcludeEnabled($enabled, $optional = [])
+    public function setSiteSpecificUserAgentExcludeEnabled($enabled, array $optional = [])
     {
         return $this->_request('SitesManager.setSiteSpecificUserAgentExcludeEnabled', [
             'enabled' => $enabled,
@@ -3967,7 +4093,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getKeepURLFragmentsGlobal($optional = [])
+    public function getKeepURLFragmentsGlobal(array $optional = [])
     {
         return $this->_request('SitesManager.getKeepURLFragmentsGlobal', [], $optional);
     }
@@ -3979,7 +4105,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setKeepURLFragmentsGlobal($enabled, $optional = [])
+    public function setKeepURLFragmentsGlobal($enabled, array $optional = [])
     {
         return $this->_request('SitesManager.setKeepURLFragmentsGlobal', [
             'enabled' => $enabled,
@@ -3993,7 +4119,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setExcludedParameters($excludedQueryParameters, $optional = [])
+    public function setExcludedParameters($excludedQueryParameters, array $optional = [])
     {
         return $this->_request('SitesManager.setGlobalExcludedQueryParameters', [
             'excludedQueryParameters' => $excludedQueryParameters,
@@ -4006,7 +4132,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getExcludedIps($optional = [])
+    public function getExcludedIps(array $optional = [])
     {
         return $this->_request('SitesManager.getExcludedIpsGlobal', [], $optional);
     }
@@ -4017,7 +4143,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDefaultCurrency($optional = [])
+    public function getDefaultCurrency(array $optional = [])
     {
         return $this->_request('SitesManager.getDefaultCurrency', [], $optional);
     }
@@ -4029,7 +4155,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setDefaultCurrency($defaultCurrency, $optional = [])
+    public function setDefaultCurrency($defaultCurrency, array $optional = [])
     {
         return $this->_request('SitesManager.setDefaultCurrency', [
             'defaultCurrency' => $defaultCurrency,
@@ -4042,7 +4168,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getDefaultTimezone($optional = [])
+    public function getDefaultTimezone(array $optional = [])
     {
         return $this->_request('SitesManager.getDefaultTimezone', [], $optional);
     }
@@ -4054,7 +4180,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setDefaultTimezone($defaultTimezone, $optional = [])
+    public function setDefaultTimezone($defaultTimezone, array $optional = [])
     {
         return $this->_request('SitesManager.setDefaultTimezone', [
             'defaultTimezone' => $defaultTimezone,
@@ -4100,8 +4226,9 @@ class Matomo
         $keepURLFragments = '',
         $type = '',
         $settings = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('SitesManager.updateSite', [
             'siteName' => $siteName,
             'urls' => $urls,
@@ -4128,7 +4255,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCurrencyList($optional = [])
+    public function getCurrencyList(array $optional = [])
     {
         return $this->_request('SitesManager.getCurrencyList', [], $optional);
     }
@@ -4139,7 +4266,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCurrencySymbols($optional = [])
+    public function getCurrencySymbols(array $optional = [])
     {
         return $this->_request('SitesManager.getCurrencySymbols', [], $optional);
     }
@@ -4150,7 +4277,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getTimezonesList($optional = [])
+    public function getTimezonesList(array $optional = [])
     {
         return $this->_request('SitesManager.getTimezonesList', [], $optional);
     }
@@ -4161,7 +4288,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUniqueSiteTimezones($optional = [])
+    public function getUniqueSiteTimezones(array $optional = [])
     {
         return $this->_request('SitesManager.getUniqueSiteTimezones', [], $optional);
     }
@@ -4174,7 +4301,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function renameGroup($oldGroupName, $newGroupName, $optional = [])
+    public function renameGroup($oldGroupName, $newGroupName, array $optional = [])
     {
         return $this->_request('SitesManager.renameGroup', [
             'oldGroupName' => $oldGroupName,
@@ -4189,7 +4316,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getPatternMatchSites($pattern, $optional = [])
+    public function getPatternMatchSites($pattern, array $optional = [])
     {
         return $this->_request('SitesManager.getPatternMatchSites', [
             'pattern' => $pattern,
@@ -4210,7 +4337,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getTransitionsForPageTitle($pageTitle, $segment = '', $limitBeforeGrouping = '', $optional = [])
+    public function getTransitionsForPageTitle($pageTitle, $segment = '', $limitBeforeGrouping = '', array $optional = [])
     {
         return $this->_request('Transitions.getTransitionsForPageTitle', [
             'pageTitle' => $pageTitle,
@@ -4228,7 +4355,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getTransitionsForPageUrl($pageUrl, $segment = '', $limitBeforeGrouping = '', $optional = [])
+    public function getTransitionsForPageUrl($pageUrl, $segment = '', $limitBeforeGrouping = '', array $optional = [])
     {
         return $this->_request('Transitions.getTransitionsForPageTitle', [
             'pageUrl' => $pageUrl,
@@ -4256,8 +4383,9 @@ class Matomo
         $limitBeforeGrouping = '',
         $parts = 'all',
         $returnNormalizedUrls = '',
-        $optional = []
-    ) {
+        array $optional = []
+    )
+    {
         return $this->_request('Transitions.getTransitionsForAction', [
             'actionName' => $actionName,
             'actionType' => $actionType,
@@ -4274,7 +4402,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getTransitionsTranslations($optional = [])
+    public function getTransitionsTranslations(array $optional = [])
     {
         return $this->_request('Transitions.getTranslations', [], $optional);
     }
@@ -4291,7 +4419,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCountry($segment = '', $optional = [])
+    public function getCountry($segment = '', array $optional = [])
     {
         return $this->_request('UserCountry.getCountry', [
             'segment' => $segment,
@@ -4315,7 +4443,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getContinent($segment = '', $optional = [])
+    public function getContinent($segment = '', array $optional = [])
     {
         return $this->_request('UserCountry.getContinent', [
             'segment' => $segment,
@@ -4329,7 +4457,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getRegion($segment = '', $optional = [])
+    public function getRegion($segment = '', array $optional = [])
     {
         return $this->_request('UserCountry.getRegion', [
             'segment' => $segment,
@@ -4343,7 +4471,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCity($segment = '', $optional = [])
+    public function getCity($segment = '', array $optional = [])
     {
         return $this->_request('UserCountry.getCity', [
             'segment' => $segment,
@@ -4358,7 +4486,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getLocationFromIP($ip, $provider = '', $optional = [])
+    public function getLocationFromIP($ip, $provider = '', array $optional = [])
     {
         return $this->_request('UserCountry.getLocationFromIP', [
             'ip' => $ip,
@@ -4373,7 +4501,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getCountryNumber($segment = '', $optional = [])
+    public function getCountryNumber($segment = '', array $optional = [])
     {
         return $this->_request('UserCountry.getNumberOfDistinctCountries', [
             'segment' => $segment,
@@ -4392,7 +4520,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getResolution($segment = '', $optional = [])
+    public function getResolution($segment = '', array $optional = [])
     {
         return $this->_request('Resolution.getResolution', [
             'segment' => $segment,
@@ -4406,7 +4534,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getConfiguration($segment = '', $optional = [])
+    public function getConfiguration($segment = '', array $optional = [])
     {
         return $this->_request('Resolution.getConfiguration', [
             'segment' => $segment,
@@ -4425,7 +4553,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUserPlugin($segment = '', $optional = [])
+    public function getUserPlugin($segment = '', array $optional = [])
     {
         return $this->_request('DevicePlugins.getPlugin', [
             'segment' => $segment,
@@ -4444,7 +4572,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUserLanguage($segment = '', $optional = [])
+    public function getUserLanguage($segment = '', array $optional = [])
     {
         return $this->_request('UserLanguage.getLanguage', [
             'segment' => $segment,
@@ -4458,7 +4586,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUserLanguageCode($segment = '', $optional = [])
+    public function getUserLanguageCode($segment = '', array $optional = [])
     {
         return $this->_request('UserLanguage.getLanguageCode', [
             'segment' => $segment,
@@ -4479,7 +4607,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setUserPreference($userLogin, $preferenceName, $preferenceValue, $optional = [])
+    public function setUserPreference($userLogin, $preferenceName, $preferenceValue, array $optional = [])
     {
         return $this->_request('UsersManager.setUserPreference', [
             'userLogin' => $userLogin,
@@ -4496,7 +4624,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUserPreference($userLogin, $preferenceName, $optional = [])
+    public function getUserPreference($userLogin, $preferenceName, array $optional = [])
     {
         return $this->_request('UsersManager.getUserPreference', [
             'userLogin' => $userLogin,
@@ -4511,7 +4639,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUsers($userLogins = '', $optional = [])
+    public function getUsers($userLogins = '', array $optional = [])
     {
         return $this->_request('UsersManager.getUsers', [
             'userLogins' => $userLogins,
@@ -4524,7 +4652,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUsersLogin($optional = [])
+    public function getUsersLogin(array $optional = [])
     {
         return $this->_request('UsersManager.getUsersLogin', [], $optional);
     }
@@ -4536,7 +4664,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUsersSitesFromAccess($access, $optional = [])
+    public function getUsersSitesFromAccess($access, array $optional = [])
     {
         return $this->_request('UsersManager.getUsersSitesFromAccess', [
             'access' => $access,
@@ -4549,7 +4677,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUsersAccess($optional = [])
+    public function getUsersAccess(array $optional = [])
     {
         return $this->_request('UsersManager.getUsersAccessFromSite', [], $optional);
     }
@@ -4561,7 +4689,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUsersWithSiteAccess($access, $optional = [])
+    public function getUsersWithSiteAccess($access, array $optional = [])
     {
         return $this->_request('UsersManager.getUsersWithSiteAccess', [
             'access' => $access,
@@ -4575,7 +4703,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSitesAccessFromUser($userLogin, $optional = [])
+    public function getSitesAccessFromUser($userLogin, array $optional = [])
     {
         return $this->_request('UsersManager.getSitesAccessFromUser', [
             'userLogin' => $userLogin,
@@ -4589,7 +4717,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUser($userLogin, $optional = [])
+    public function getUser($userLogin, array $optional = [])
     {
         return $this->_request('UsersManager.getUser', [
             'userLogin' => $userLogin,
@@ -4603,7 +4731,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUserByEmail($userEmail, $optional = [])
+    public function getUserByEmail($userEmail, array $optional = [])
     {
         return $this->_request('UsersManager.getUserByEmail', [
             'userEmail' => $userEmail,
@@ -4620,7 +4748,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function addUser($userLogin, $password, $email, $alias = '', $optional = [])
+    public function addUser($userLogin, $password, $email, $alias = '', array $optional = [])
     {
         return $this->_request('UsersManager.addUser', [
             'userLogin' => $userLogin,
@@ -4638,7 +4766,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setSuperUserAccess($userLogin, $hasSuperUserAccess, $optional = [])
+    public function setSuperUserAccess($userLogin, $hasSuperUserAccess, array $optional = [])
     {
         return $this->_request('UsersManager.setSuperUserAccess', [
             'userLogin' => $userLogin,
@@ -4652,7 +4780,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function hasSuperUserAccess($optional = [])
+    public function hasSuperUserAccess(array $optional = [])
     {
         return $this->_request('UsersManager.hasSuperUserAccess', [], $optional);
     }
@@ -4663,7 +4791,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUsersHavingSuperUserAccess($optional = [])
+    public function getUsersHavingSuperUserAccess(array $optional = [])
     {
         return $this->_request('UsersManager.getUsersHavingSuperUserAccess', [], $optional);
     }
@@ -4678,7 +4806,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function updateUser($userLogin, $password = '', $email = '', $alias = '', $optional = [])
+    public function updateUser($userLogin, $password = '', $email = '', $alias = '', array $optional = [])
     {
         return $this->_request('UsersManager.updateUser', [
             'userLogin' => $userLogin,
@@ -4695,7 +4823,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function deleteUser($userLogin, $optional = [])
+    public function deleteUser($userLogin, array $optional = [])
     {
         return $this->_request('UsersManager.deleteUser', [
             'userLogin' => $userLogin,
@@ -4709,7 +4837,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function userExists($userLogin, $optional = [])
+    public function userExists($userLogin, array $optional = [])
     {
         return $this->_request('UsersManager.userExists', [
             'userLogin' => $userLogin,
@@ -4723,7 +4851,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function userEmailExists($userEmail, $optional = [])
+    public function userEmailExists($userEmail, array $optional = [])
     {
         return $this->_request('UsersManager.userEmailExists', [
             'userEmail' => $userEmail,
@@ -4739,7 +4867,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function setUserAccess($userLogin, $access, $idSites, $optional = [])
+    public function setUserAccess($userLogin, $access, $idSites, array $optional = [])
     {
         return $this->_request('UsersManager.setUserAccess', [
             'userLogin' => $userLogin,
@@ -4756,7 +4884,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getTokenAuth($userLogin, $md5Password, $optional = [])
+    public function getTokenAuth($userLogin, $md5Password, array $optional = [])
     {
         return $this->_request('UsersManager.getTokenAuth', [
             'userLogin' => $userLogin,
@@ -4777,7 +4905,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisitFrequency($segment = '', $columns = '', $optional = [])
+    public function getVisitFrequency($segment = '', $columns = '', array $optional = [])
     {
         return $this->_request('VisitFrequency.get', [
             'segment' => $segment,
@@ -4797,7 +4925,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisitLocalTime($segment = '', $optional = [])
+    public function getVisitLocalTime($segment = '', array $optional = [])
     {
         return $this->_request('VisitTime.getVisitInformationPerLocalTime', [
             'segment' => $segment,
@@ -4812,7 +4940,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisitServerTime($segment = '', $hideFutureHoursWhenToday = '', $optional = [])
+    public function getVisitServerTime($segment = '', $hideFutureHoursWhenToday = '', array $optional = [])
     {
         return $this->_request('VisitTime.getVisitInformationPerServerTime', [
             'segment' => $segment,
@@ -4827,7 +4955,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getByDayOfWeek($segment = '', $optional = [])
+    public function getByDayOfWeek($segment = '', array $optional = [])
     {
         return $this->_request('VisitTime.getByDayOfWeek', [
             'segment' => $segment,
@@ -4846,7 +4974,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfVisitsPerDuration($segment = '', $optional = [])
+    public function getNumberOfVisitsPerDuration($segment = '', array $optional = [])
     {
         return $this->_request('VisitorInterest.getNumberOfVisitsPerVisitDuration', [
             'segment' => $segment,
@@ -4860,7 +4988,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfVisitsPerPage($segment = '', $optional = [])
+    public function getNumberOfVisitsPerPage($segment = '', array $optional = [])
     {
         return $this->_request('VisitorInterest.getNumberOfVisitsPerPage', [
             'segment' => $segment,
@@ -4874,7 +5002,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfVisitsByDaySinceLast($segment = '', $optional = [])
+    public function getNumberOfVisitsByDaySinceLast($segment = '', array $optional = [])
     {
         return $this->_request('VisitorInterest.getNumberOfVisitsByDaysSinceLast', [
             'segment' => $segment,
@@ -4888,7 +5016,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getNumberOfVisitsByCount($segment = '', $optional = [])
+    public function getNumberOfVisitsByCount($segment = '', array $optional = [])
     {
         return $this->_request('VisitorInterest.getNumberOfVisitsByVisitCount', [
             'segment' => $segment,
@@ -4908,7 +5036,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisitsSummary($segment = '', $columns = '', $optional = [])
+    public function getVisitsSummary($segment = '', $columns = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.get', [
             'segment' => $segment,
@@ -4923,7 +5051,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisits($segment = '', $optional = [])
+    public function getVisits($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getVisits', [
             'segment' => $segment,
@@ -4937,7 +5065,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUniqueVisitors($segment = '', $optional = [])
+    public function getUniqueVisitors($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getUniqueVisitors', [
             'segment' => $segment,
@@ -4951,7 +5079,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getUserVisitors($segment = '', $optional = [])
+    public function getUserVisitors($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getUsers', [
             'segment' => $segment,
@@ -4965,7 +5093,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getActions($segment = '', $optional = [])
+    public function getActions($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getActions', [
             'segment' => $segment,
@@ -4979,7 +5107,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getMaxActions($segment = '', $optional = [])
+    public function getMaxActions($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getMaxActions', [
             'segment' => $segment,
@@ -4993,7 +5121,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getBounceCount($segment = '', $optional = [])
+    public function getBounceCount($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getBounceCount', [
             'segment' => $segment,
@@ -5007,7 +5135,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getVisitsConverted($segment = '', $optional = [])
+    public function getVisitsConverted($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getVisitsConverted', [
             'segment' => $segment,
@@ -5021,7 +5149,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSumVisitsLength($segment = '', $optional = [])
+    public function getSumVisitsLength($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getSumVisitsLength', [
             'segment' => $segment,
@@ -5035,7 +5163,7 @@ class Matomo
      * @param array $optional
      * @return bool|object
      */
-    public function getSumVisitsLengthPretty($segment = '', $optional = [])
+    public function getSumVisitsLengthPretty($segment = '', array $optional = [])
     {
         return $this->_request('VisitsSummary.getSumVisitsLengthPretty', [
             'segment' => $segment,
