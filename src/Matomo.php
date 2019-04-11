@@ -37,11 +37,15 @@ class Matomo
 
     private $_period = self::PERIOD_DAY;
     private $_date = '';
+    /**
+     * @var int Defines the number of rows to be returned (-1: All rows).
+     */
+    private $_filter_limit = 100;
     private $_rangeStart = 'yesterday';
     private $_rangeEnd = null;
     private $_isJsonDecodeAssoc = false;
 
-    private $_limit = -1;
+    /**
 
     private $_errors = [];
 
@@ -307,24 +311,24 @@ class Matomo
     }
 
     /**
-     * Get the limit of returned rows
+     * Get the number rows which should be returned
      *
      * @return int
      */
-    public function getLimit()
+    public function getFilterLimit(): int
     {
-        return intval($this->_limit);
+        return $this->_filter_limit;
     }
 
     /**
-     * Set the limit of returned rows
+     * Set the number of rows which should be returned
      *
-     * @param int $limit
+     * @param int $filterLimit
      * @return $this
      */
-    public function setLimit($limit)
+    public function setFilterLimit(int $filterLimit): Matomo
     {
-        $this->_limit = $limit;
+        $this->_filter_limit = $filterLimit;
 
         return $this;
     }
@@ -445,8 +449,8 @@ class Matomo
             'period' => $this->_period,
             'format' => $this->_format,
             'language' => $this->_language,
-			'filter_limit' => $this->_filter
-        ] + $params;
+                'filter_limit' => $this->_filter_limit
+            ] + $params;
 
         foreach ($params as $key => $value) {
             $params[$key] = urlencode($value);
