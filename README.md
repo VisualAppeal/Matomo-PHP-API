@@ -6,7 +6,7 @@ A PHP wrapper class for the [Matomo](https://matomo.org/) API.
 
 ## Requirements
 
-* PHP >= 7.0
+* PHP >= 7.2
 * cUrl (php-curl)
 
 ## Install
@@ -14,6 +14,12 @@ A PHP wrapper class for the [Matomo](https://matomo.org/) API.
 This library can be installed via composer: `composer require visualappeal/matomo-php-api`
 
 ## Changelog
+
+### 1.5.0 (2019/04/11)
+
+* Changed: PHP >= 7.2 is now required
+* Changed: Added type hints
+* Fixed: Filter Limit
 
 ### 1.4.1 (2018/10/05)
 
