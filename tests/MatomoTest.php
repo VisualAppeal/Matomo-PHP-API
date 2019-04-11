@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
+use VisualAppeal\InvalidRequestException;
 use VisualAppeal\Matomo;
 
 class MatomoTest extends TestCase
@@ -44,22 +45,24 @@ class MatomoTest extends TestCase
 		$this->assertInstanceOf(Matomo::class, $this->_matomo);
 	}
 
-	/**
-	 * Test the default api call.
-	 */
+    /**
+     * Test the default api call.
+     *
+     * @throws InvalidRequestException
+     */
 	public function testDefaultCall()
 	{
 		$result = $this->_matomo->getVisits();
 
 		$this->assertIsInt($result);
-		$this->assertEquals(0, count($this->_matomo->getErrors()));
 	}
 
-	/**
-	 * Test the result of a time range.
-	 *
-	 * @depends testDefaultCall
-	 */
+    /**
+     * Test the result of a time range.
+     *
+     * @depends testDefaultCall
+     * @throws InvalidRequestException
+     */
 	public function testRangePeriod()
 	{
 		$this->_matomo->setPeriod(Matomo::PERIOD_RANGE);
@@ -67,14 +70,14 @@ class MatomoTest extends TestCase
 		$result = $this->_matomo->getVisitsSummary();
 
 		$this->assertIsObject($result);
-		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 	}
 
-	/**
-	 * Test the result of one day
-	 *
-	 * @depends testDefaultCall
-	 */
+    /**
+     * Test the result of one day.
+     *
+     * @depends testDefaultCall
+     * @throws InvalidRequestException
+     */
 	public function testDayPeriod()
 	{
 		$this->_matomo->setPeriod(Matomo::PERIOD_DAY);
@@ -82,15 +85,15 @@ class MatomoTest extends TestCase
 		$result = $this->_matomo->getVisitsSummary();
 
 		$this->assertIsObject($result);
-		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 	}
 
-	/**
-	 * Test the result of multiple dates.
-	 *
-	 * @depends testDayPeriod
-	 * @link https://github.com/VisualAppeal/Matomo-PHP-API/issues/14
-	 */
+    /**
+     * Test the result of multiple dates.
+     *
+     * @depends testDayPeriod
+     * @link https://github.com/VisualAppeal/Matomo-PHP-API/issues/14
+     * @throws InvalidRequestException
+     */
 	public function testMultipleDates()
 	{
 		$this->_matomo->setPeriod(Matomo::PERIOD_DAY);
@@ -99,15 +102,15 @@ class MatomoTest extends TestCase
 
 		$this->assertIsObject($result);
 		$this->assertEquals(7, count((array) $result));
-		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 	}
 
-	/**
-	 * Test if all dates and ranges get the same result
-	 *
-	 * @depends testRangePeriod
-	 * @depends testMultipleDates
-	 */
+    /**
+     * Test if all dates and ranges get the same result
+     *
+     * @depends testRangePeriod
+     * @depends testMultipleDates
+     * @throws InvalidRequestException
+     */
 	public function testDateEquals()
 	{
 		$date = date('Y-m-d', time() - 3600 * 24 * 7);
@@ -157,44 +160,52 @@ class MatomoTest extends TestCase
 		$this->assertEquals($result4, $result5);
 	}
 
-	/**
-	 * Test call with no date or range set
-	 *
-	 * @depends testDefaultCall
-	 */
+    /**
+     * Test call with no date or range set.
+     *
+     * @depends testDefaultCall
+     * @throws InvalidRequestException
+     */
 	public function testNoPeriodOrDate()
 	{
 		$this->_matomo->setRange(null, null);
 		$this->_matomo->setDate(null);
-		$result = $this->_matomo->getVisitsSummary();
 
-		$this->assertFalse($result);
-		$this->assertEquals(1, count($this->_matomo->getErrors()));
+		$this->expectException(InvalidArgumentException::class);
+		$this->_matomo->getVisitsSummary();
 	}
 
-	/**
-	 * Test that multiple errors were added.
-	 */
-	public function testMultipleErrors()
-	{
-		// Test with no access => error 1
-		$this->_matomo->setToken('403');
-		$result = $this->_matomo->getVisitsSummary();
+    /**
+     * Test that an exception is thrown with an invalid access token.
+     *
+     * @throws InvalidRequestException
+     */
+	public function testInvalidAccessToken()
+    {
+        $this->_matomo->setToken('403');
 
-		$this->assertFalse($result);
-		$this->assertEquals(1, count($this->_matomo->getErrors()));
+        $this->expectException(InvalidRequestException::class);
+        $this->_matomo->getVisitsSummary();
+    }
 
-		// Test with wrong url => error 2
+    /**
+     * Test that an exception is thrown with an invalid url.
+     *
+     * @throws InvalidRequestException
+     */
+    public function testInvalidUrl()
+    {
 		$this->_matomo->setSite('http://example.com/404');
-		$result = $this->_matomo->getVisitsSummary();
 
-		$this->assertFalse($result);
-		$this->assertEquals(2, count($this->_matomo->getErrors()));
+		$this->expectException(InvalidRequestException::class);
+		$this->_matomo->getVisitsSummary();
 	}
 
-	/**
-	 * Test if optional parameters work.
-	 */
+    /**
+     * Test if optional parameters work.
+     *
+     * @throws InvalidRequestException
+     */
 	public function testOptionalParameters()
 	{
 		$this->_matomo->setDate('2018-10-01');
@@ -204,13 +215,14 @@ class MatomoTest extends TestCase
 		]);
 
 		$this->assertIsArray($result);
-		$this->assertEquals('', implode(',', $this->_matomo->getErrors()));
 		$this->assertEquals(934, $result[0]->nb_visits);
 	}
 
-	/**
-	 * Test if the response contains custom variables
-	 */
+    /**
+     * Test if the response contains custom variables.
+     *
+     * @throws InvalidRequestException
+     */
 	public function testCustomVariables()
 	{
 		$this->_matomo->setDate('2018-10-01');

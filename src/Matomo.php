@@ -1,5 +1,7 @@
 <?php namespace VisualAppeal;
 
+use InvalidArgumentException;
+
 use Httpful\Exception\ConnectionErrorException;
 use Httpful\Request;
 use Httpful\Response;
@@ -85,11 +87,6 @@ class Matomo
      * @var bool
      */
     private $_isJsonDecodeAssoc = false;
-
-    /**
-     * @var array
-     */
-    private $_errors = [];
 
     /**
      * @var bool If the certificate of the matomo installation should be verified.
@@ -461,8 +458,6 @@ class Matomo
         $this->_rangeStart = 'yesterday';
         $this->_rangeEnd = null;
 
-        $this->_errors = [];
-
         return $this;
     }
 
@@ -477,12 +472,13 @@ class Matomo
      * @param array $params
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     private function _request(string $method, array $params = [], array $optional = [])
     {
         $url = $this->_parseUrl($method, $params + $optional);
         if ($url === false) {
-            return false;
+            throw new InvalidRequestException('Could not parse URL!');
         }
 
         $req = Request::get($url);
@@ -493,15 +489,18 @@ class Matomo
         try {
             $buffer = $req->send();
         } catch (ConnectionErrorException $e) {
-            $this->_addError(sprintf('Could not send buffer: %s', $e->getMessage()));
-            return false;
+            throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
         }
 
         if (!empty($buffer)) {
-            return $this->_finishResponse($this->_parseResponse($buffer), $method, $params + $optional);
+            try {
+                return $this->_finishResponse($this->_parseResponse($buffer), $method, $params + $optional);
+            } catch (InvalidResponseException $e) {
+                throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
+            }
         }
 
-        return false;
+        throw new InvalidRequestException('Empty response!');
     }
 
     /**
@@ -511,6 +510,7 @@ class Matomo
      * @param string $method
      * @param array $params
      * @return bool|object
+     * @throws InvalidResponseException
      */
     private function _finishResponse($response, string $method, array $params)
     {
@@ -523,9 +523,7 @@ class Matomo
                 return $response;
             }
         } else {
-            $this->_addError($valid . ' (' . $this->_parseUrl($method, $params) . ')');
-
-            return false;
+            throw new InvalidResponseException($valid . ' (' . $this->_parseUrl($method, $params) . ')');
         }
     }
 
@@ -535,6 +533,7 @@ class Matomo
      * @param string $method The request method
      * @param array $params Request params
      * @return string|false
+     * @throws \InvalidArgumentException
      */
     private function _parseUrl(string $method, array $params = [])
     {
@@ -562,9 +561,7 @@ class Matomo
                     'date' => $this->_date,
                 ];
         } else {
-            $this->_addError('Specify a date or a date range!');
-
-            return false;
+            throw new InvalidArgumentException('Specify a date or a date range!');
         }
 
         $url = $this->_site;
@@ -626,43 +623,6 @@ class Matomo
     }
 
     /**
-     * Error methods
-     */
-
-    /**
-     * Add error
-     *
-     * @param string $msg Error message
-     * @return $this
-     */
-    protected function _addError(string $msg = ''): Matomo
-    {
-        array_push($this->_errors, $msg);
-
-        return $this;
-    }
-
-    /**
-     * Check for errors
-     *
-     * @return bool
-     */
-    public function hasError(): bool
-    {
-        return (count($this->_errors) > 0);
-    }
-
-    /**
-     * Return all errors
-     *
-     * @return array
-     */
-    public function getErrors(): array
-    {
-        return $this->_errors;
-    }
-
-    /**
      * MODULE: API
      * API metadata
      */
@@ -672,6 +632,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getMatomoVersion(array $optional = [])
     {
@@ -683,6 +644,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getIpFromHeader(array $optional = [])
     {
@@ -694,6 +656,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSettings(array $optional = [])
     {
@@ -705,6 +668,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDefaultMetricTranslations(array $optional = [])
     {
@@ -716,6 +680,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDefaultMetrics(array $optional = [])
     {
@@ -727,6 +692,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDefaultProcessedMetrics(array $optional = [])
     {
@@ -738,6 +704,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDefaultMetricsDocumentation(array $optional = [])
     {
@@ -750,6 +717,7 @@ class Matomo
      * @param array $sites Array with the ID's of the sites
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSegmentsMetadata($sites = [], array $optional = [])
     {
@@ -764,6 +732,7 @@ class Matomo
      * @param bool $pathOnly Return the url (false) or the absolute path (true)
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getLogoUrl($pathOnly = false, array $optional = [])
     {
@@ -778,6 +747,7 @@ class Matomo
      * @param bool $pathOnly Return the url (false) or the absolute path (true)
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getHeaderLogoUrl($pathOnly = false, array $optional = [])
     {
@@ -794,6 +764,7 @@ class Matomo
      * @param array $apiParameters Parameters
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getMetadata($apiModule, $apiAction, $apiParameters = [], array $optional = [])
     {
@@ -812,6 +783,7 @@ class Matomo
      * @param string $showSubtableReports
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getReportMetadata(
         array $idSites,
@@ -839,6 +811,7 @@ class Matomo
      * @param string $hideMetricsDoc
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getProcessedReport(
         $apiModule,
@@ -869,6 +842,7 @@ class Matomo
      * @param string $columns
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getApi($segment = '', $columns = '', array $optional = [])
     {
@@ -890,6 +864,7 @@ class Matomo
      * @param string $labelUseAbsoluteUrl
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getRowEvolution(
         $apiModule,
@@ -921,6 +896,7 @@ class Matomo
      * @param array $methods
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getBulkRequest($methods = [], array $optional = [])
     {
@@ -937,6 +913,7 @@ class Matomo
      * Get a list of available widgets.
      *
      * @return object
+     * @throws InvalidRequestException
      */
     public function getWidgetMetadata()
     {
@@ -947,6 +924,7 @@ class Matomo
      * Get a list of all available pages that exist including the widgets they include.
      *
      * @return object
+     * @throws InvalidRequestException
      */
     public function getReportPagesMetadata()
     {
@@ -959,6 +937,7 @@ class Matomo
      * @param string $segmentName
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSuggestedValuesForSegment($segmentName, array $optional = [])
     {
@@ -979,6 +958,7 @@ class Matomo
      * @param string $columns
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAction($segment = '', $columns = '', array $optional = [])
     {
@@ -994,6 +974,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getPageUrls($segment = '', array $optional = [])
     {
@@ -1008,6 +989,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getPageUrlsFollowingSiteSearch($segment = '', array $optional = [])
     {
@@ -1022,6 +1004,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getPageTitlesFollowingSiteSearch($segment = '', array $optional = [])
     {
@@ -1036,6 +1019,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getEntryPageUrls($segment = '', array $optional = [])
     {
@@ -1050,6 +1034,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExitPageUrls($segment = '', array $optional = [])
     {
@@ -1065,6 +1050,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getPageUrl($pageUrl, $segment = '', array $optional = [])
     {
@@ -1080,6 +1066,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getPageTitles($segment = '', array $optional = [])
     {
@@ -1094,6 +1081,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getEntryPageTitles($segment = '', array $optional = [])
     {
@@ -1108,6 +1096,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExitPageTitles($segment = '', array $optional = [])
     {
@@ -1123,6 +1112,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getPageTitle($pageName, $segment = '', array $optional = [])
     {
@@ -1138,6 +1128,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDownloads($segment = '', array $optional = [])
     {
@@ -1153,6 +1144,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDownload($downloadUrl, $segment = '', array $optional = [])
     {
@@ -1168,6 +1160,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOutlinks($segment = '', array $optional = [])
     {
@@ -1183,6 +1176,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOutlink($outlinkUrl, $segment = '', array $optional = [])
     {
@@ -1198,6 +1192,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSiteSearchKeywords($segment = '', array $optional = [])
     {
@@ -1212,6 +1207,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSiteSearchNoResultKeywords($segment = '', array $optional = [])
     {
@@ -1226,6 +1222,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSiteSearchCategories($segment = '', array $optional = [])
     {
@@ -1245,6 +1242,7 @@ class Matomo
      * @param int $starred
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addAnnotation($note, $starred = 0, array $optional = [])
     {
@@ -1262,6 +1260,7 @@ class Matomo
      * @param string $starred
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function saveAnnotation($idNote, $note = '', $starred = '', array $optional = [])
     {
@@ -1278,6 +1277,7 @@ class Matomo
      * @param int $idNote
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteAnnotation($idNote, array $optional = [])
     {
@@ -1291,6 +1291,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteAllAnnotations(array $optional = [])
     {
@@ -1303,6 +1304,7 @@ class Matomo
      * @param int $idNote
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAnnotation($idNote, array $optional = [])
     {
@@ -1317,6 +1319,7 @@ class Matomo
      * @param string $lastN
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAllAnnotation($lastN = '', array $optional = [])
     {
@@ -1332,6 +1335,7 @@ class Matomo
      * @param string $getAnnotationText
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAnnotationCountForDates($lastN, $getAnnotationText, array $optional = [])
     {
@@ -1351,6 +1355,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getContentNames($segment = '', array $optional = [])
     {
@@ -1365,6 +1370,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getContentPieces($segment = '', array $optional = [])
     {
@@ -1383,6 +1389,7 @@ class Matomo
      * @param int $idAlert
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAlert($idAlert, array $optional = [])
     {
@@ -1398,6 +1405,7 @@ class Matomo
      * @param string $subPeriodN
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getValuesForAlertInPast($idAlert, $subPeriodN, array $optional = [])
     {
@@ -1414,6 +1422,7 @@ class Matomo
      * @param string $ifSuperUserReturnAllAlerts
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAlerts($idSites, $ifSuperUserReturnAllAlerts = '', array $optional = [])
     {
@@ -1440,6 +1449,7 @@ class Matomo
      * @param string $reportValue
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addAlert(
         $name,
@@ -1491,6 +1501,7 @@ class Matomo
      * @param string $reportValue
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function editAlert(
         $idAlert,
@@ -1532,6 +1543,7 @@ class Matomo
      * @param int $idAlert
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteAlert($idAlert, array $optional = [])
     {
@@ -1546,6 +1558,7 @@ class Matomo
      * @param array $idSites
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTriggeredAlerts($idSites, array $optional = [])
     {
@@ -1565,8 +1578,8 @@ class Matomo
      *
      * @param int $idDimension
      * @param array $optional
-     *
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCustomDimension($idDimension, array $optional = [])
     {
@@ -1589,6 +1602,7 @@ class Matomo
      * @param array $optional
      *
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function configureNewCustomDimension($name, $scope, $active, array $optional = [])
     {
@@ -1609,6 +1623,7 @@ class Matomo
      * @param array $optional
      *
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function configureExistingCustomDimension($idDimension, $name, $active, array $optional = [])
     {
@@ -1621,6 +1636,7 @@ class Matomo
 
     /**
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getConfiguredCustomDimensions()
     {
@@ -1634,6 +1650,7 @@ class Matomo
      * Dimensions can be created or not. Requires at least Admin access for the specified website.
      *
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAvailableScopes()
     {
@@ -1646,6 +1663,7 @@ class Matomo
      * to one website.
      *
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAvailableExtractionDimensions()
     {
@@ -1664,6 +1682,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|array
+     * @throws InvalidRequestException
      */
     public function getCustomVariables($segment = '', array $optional = [])
     {
@@ -1679,6 +1698,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCustomVariable($idSubtable, $segment = '', array $optional = [])
     {
@@ -1697,6 +1717,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDashboards(array $optional = [])
     {
@@ -1713,6 +1734,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDeviceType($segment = '', array $optional = [])
     {
@@ -1727,6 +1749,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDeviceBrand($segment = '', array $optional = [])
     {
@@ -1741,6 +1764,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDeviceModel($segment = '', array $optional = [])
     {
@@ -1755,6 +1779,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOSFamilies($segment = '', array $optional = [])
     {
@@ -1769,6 +1794,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOsVersions($segment = '', array $optional = [])
     {
@@ -1783,6 +1809,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getBrowsers($segment = '', array $optional = [])
     {
@@ -1797,6 +1824,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getBrowserVersions($segment = '', array $optional = [])
     {
@@ -1811,6 +1839,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getBrowserEngines($segment = '', array $optional = [])
     {
@@ -1830,6 +1859,7 @@ class Matomo
      * @param string $secondaryDimension ('eventAction' or 'eventName')
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getEventCategory($segment = '', $secondaryDimension = '', array $optional = [])
     {
@@ -1846,6 +1876,7 @@ class Matomo
      * @param string $secondaryDimension ('eventName' or 'eventCategory')
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getEventAction($segment = '', $secondaryDimension = '', array $optional = [])
     {
@@ -1862,6 +1893,7 @@ class Matomo
      * @param string $secondaryDimension ('eventAction' or 'eventCategory')
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getEventName($segment = '', $secondaryDimension = '', array $optional = [])
     {
@@ -1878,6 +1910,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getActionFromCategoryId($idSubtable, $segment = '', array $optional = [])
     {
@@ -1894,6 +1927,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNameFromCategoryId($idSubtable, $segment = '', array $optional = [])
     {
@@ -1910,6 +1944,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCategoryFromActionId($idSubtable, $segment = '', array $optional = [])
     {
@@ -1926,6 +1961,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNameFromActionId($idSubtable, $segment = '', array $optional = [])
     {
@@ -1942,6 +1978,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getActionFromNameId($idSubtable, $segment = '', array $optional = [])
     {
@@ -1958,6 +1995,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCategoryFromNameId($idSubtable, $segment = '', array $optional = [])
     {
@@ -1977,6 +2015,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleMatomoVersion(array $optional = [])
     {
@@ -1988,6 +2027,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleAnswerToLife(array $optional = [])
     {
@@ -1999,6 +2039,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleObject(array $optional = [])
     {
@@ -2012,6 +2053,7 @@ class Matomo
      * @param int $b
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleSum($a = 0, $b = 0, array $optional = [])
     {
@@ -2026,6 +2068,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleNull(array $optional = [])
     {
@@ -2037,6 +2080,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleDescriptionArray(array $optional = [])
     {
@@ -2048,6 +2092,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleCompetitionDatatable(array $optional = [])
     {
@@ -2060,6 +2105,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleMoreInformationAnswerToLife(array $optional = [])
     {
@@ -2071,6 +2117,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExampleMultiArray(array $optional = [])
     {
@@ -2087,6 +2134,7 @@ class Matomo
      * @param int $truth
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExamplePluginAnswerToLife($truth = 1, array $optional = [])
     {
@@ -2101,6 +2149,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExamplePluginReport($segment = '', array $optional = [])
     {
@@ -2121,6 +2170,7 @@ class Matomo
      * @param string $message
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function sendFeedbackForFeature($featureName, $like, $message = '', array $optional = [])
     {
@@ -2141,6 +2191,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getGoals(array $optional = [])
     {
@@ -2159,6 +2210,7 @@ class Matomo
      * @param string $allowMultipleConversionsPerVisit
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addGoal(
         $name,
@@ -2195,6 +2247,7 @@ class Matomo
      * @param string $allowMultipleConversionsPerVisit
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function updateGoal(
         $idGoal,
@@ -2226,6 +2279,7 @@ class Matomo
      * @param int $idGoal
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteGoal($idGoal, array $optional = [])
     {
@@ -2240,6 +2294,7 @@ class Matomo
      * @param string $abandonedCarts
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getItemsSku($abandonedCarts, array $optional = [])
     {
@@ -2254,6 +2309,7 @@ class Matomo
      * @param bool $abandonedCarts
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getItemsName($abandonedCarts, array $optional = [])
     {
@@ -2268,6 +2324,7 @@ class Matomo
      * @param bool $abandonedCarts
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getItemsCategory($abandonedCarts, array $optional = [])
     {
@@ -2284,6 +2341,7 @@ class Matomo
      * @param array $columns
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getGoal($segment = '', $idGoal = '', $columns = [], array $optional = [])
     {
@@ -2301,6 +2359,7 @@ class Matomo
      * @param string $idGoal
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDaysToConversion($segment = '', $idGoal = '', array $optional = [])
     {
@@ -2317,6 +2376,7 @@ class Matomo
      * @param string $idGoal
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisitsUntilConversion($segment = '', $idGoal = '', array $optional = [])
     {
@@ -2359,6 +2419,7 @@ class Matomo
      *                      value without '#'
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getImageGraph(
         $apiModule,
@@ -2406,6 +2467,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function canGenerateInsights(array $optional = [])
     {
@@ -2418,6 +2480,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getInsightsOverview($segment, array $optional = [])
     {
@@ -2432,6 +2495,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getMoversAndShakersOverview($segment, array $optional = [])
     {
@@ -2450,6 +2514,7 @@ class Matomo
      * @param int $limitDecreaser
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getMoversAndShakers(
         $reportUniqueId,
@@ -2483,6 +2548,7 @@ class Matomo
      * @param string $orderBy
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getInsights(
         $reportUniqueId,
@@ -2521,6 +2587,7 @@ class Matomo
      * @param string $languageCode
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getLanguageAvailable($languageCode, array $optional = [])
     {
@@ -2534,6 +2601,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAvailableLanguages(array $optional = [])
     {
@@ -2545,6 +2613,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAvailableLanguagesInfo(array $optional = [])
     {
@@ -2556,6 +2625,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAvailableLanguageNames(array $optional = [])
     {
@@ -2568,6 +2638,7 @@ class Matomo
      * @param string $languageCode
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTranslations($languageCode, array $optional = [])
     {
@@ -2582,6 +2653,7 @@ class Matomo
      * @param string $login
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getLanguageForUser($login, array $optional = [])
     {
@@ -2597,6 +2669,7 @@ class Matomo
      * @param string $languageCode
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setLanguageForUser($login, $languageCode, array $optional = [])
     {
@@ -2619,6 +2692,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCounters($lastMinutes = 60, $segment = '', array $optional = [])
     {
@@ -2636,8 +2710,9 @@ class Matomo
      * @param string $doNotFetchActions
      * @param array $optional
      * @return bool|object
-     * @internal param int $filterLimit
+     * @throws InvalidRequestException
      * @internal param int $maxIdVisit
+     * @internal param int $filterLimit
      */
     public function getLastVisitsDetails($segment = '', $minTimestamp = '', $doNotFetchActions = '', array $optional = [])
     {
@@ -2655,6 +2730,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisitorProfile($visitorId = '', $segment = '', array $optional = [])
     {
@@ -2670,6 +2746,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getMostRecentVisitorId($segment = '', array $optional = [])
     {
@@ -2684,6 +2761,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUsersById($segment = '', array $optional = [])
     {
@@ -2704,6 +2782,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function areSMSAPICredentialProvided(array $optional = [])
     {
@@ -2715,6 +2794,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSMSProvider(array $optional = [])
     {
@@ -2728,6 +2808,7 @@ class Matomo
      * @param string $apiKey
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setSMSAPICredential($provider, $apiKey, array $optional = [])
     {
@@ -2743,6 +2824,7 @@ class Matomo
      * @param string $phoneNumber
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addPhoneNumber($phoneNumber, array $optional = [])
     {
@@ -2756,6 +2838,7 @@ class Matomo
      *
      * @param array $optional
      * @return mixed
+     * @throws InvalidRequestException
      */
     public function getCreditLeft(array $optional = [])
     {
@@ -2768,6 +2851,7 @@ class Matomo
      * @param string $phoneNumber
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function removePhoneNumber($phoneNumber, array $optional = [])
     {
@@ -2783,6 +2867,7 @@ class Matomo
      * @param string $verificationCode
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function validatePhoneNumber($phoneNumber, $verificationCode, array $optional = [])
     {
@@ -2797,6 +2882,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteSMSAPICredential(array $optional = [])
     {
@@ -2809,6 +2895,7 @@ class Matomo
      * @param $delegatedManagement
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setDelegatedManagement($delegatedManagement, array $optional = [])
     {
@@ -2822,6 +2909,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDelegatedManagement(array $optional = [])
     {
@@ -2841,6 +2929,7 @@ class Matomo
      * @param string $enhanced
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getMultiSites($segment = '', $enhanced = '', array $optional = [])
     {
@@ -2857,6 +2946,7 @@ class Matomo
      * @param string $enhanced
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOne($segment = '', $enhanced = '', array $optional = [])
     {
@@ -2875,6 +2965,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOverlayTranslations(array $optional = [])
     {
@@ -2886,6 +2977,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOverlayExcludedQueryParameters(array $optional = [])
     {
@@ -2898,6 +2990,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getOverlayFollowingPages($segment = '', array $optional = [])
     {
@@ -2917,6 +3010,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getProvider($segment = '', array $optional = [])
     {
@@ -2937,6 +3031,7 @@ class Matomo
      * @param string $typeReferrer
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getReferrerType($segment = '', $typeReferrer = '', array $optional = [])
     {
@@ -2952,6 +3047,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAllReferrers($segment = '', array $optional = [])
     {
@@ -2966,6 +3062,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getKeywords($segment = '', array $optional = [])
     {
@@ -2980,6 +3077,7 @@ class Matomo
      * @param string $url
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getKeywordsForPageUrl($url, array $optional = [])
     {
@@ -2994,6 +3092,7 @@ class Matomo
      * @param string $title
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getKeywordsForPageTitle($title, array $optional = [])
     {
@@ -3009,6 +3108,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSearchEnginesFromKeywordId($idSubtable, $segment = '', array $optional = [])
     {
@@ -3024,6 +3124,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSearchEngines($segment = '', array $optional = [])
     {
@@ -3039,6 +3140,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getKeywordsFromSearchEngineId($idSubtable, $segment = '', array $optional = [])
     {
@@ -3054,6 +3156,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCampaigns($segment = '', array $optional = [])
     {
@@ -3069,6 +3172,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getKeywordsFromCampaignId($idSubtable, $segment = '', array $optional = [])
     {
@@ -3085,6 +3189,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingName($segment = '', array $optional = [])
     {
@@ -3100,6 +3205,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingKeywordContentFromNameId($segment = '', array $optional = [])
     {
@@ -3115,6 +3221,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingKeyword($segment = '', array $optional = [])
     {
@@ -3130,6 +3237,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingSource($segment = '', array $optional = [])
     {
@@ -3145,6 +3253,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingMedium($segment = '', array $optional = [])
     {
@@ -3160,6 +3269,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingContent($segment = '', array $optional = [])
     {
@@ -3175,6 +3285,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingSourceMedium($segment = '', array $optional = [])
     {
@@ -3191,6 +3302,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAdvancedCampaignReportingNameFromSourceMediumId($idSubtable, $segment = '', array $optional = [])
     {
@@ -3206,6 +3318,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getWebsites($segment = '', array $optional = [])
     {
@@ -3221,6 +3334,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUrlsFromWebsiteId($idSubtable, $segment = '', array $optional = [])
     {
@@ -3236,6 +3350,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSocials($segment = '', array $optional = [])
     {
@@ -3250,6 +3365,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUrlsForSocial($segment = '', array $optional = [])
     {
@@ -3264,6 +3380,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfSearchEngines($segment = '', array $optional = [])
     {
@@ -3278,6 +3395,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfKeywords($segment = '', array $optional = [])
     {
@@ -3292,6 +3410,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfCampaigns($segment = '', array $optional = [])
     {
@@ -3306,6 +3425,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfWebsites($segment = '', array $optional = [])
     {
@@ -3320,6 +3440,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfWebsitesUrls($segment = '', array $optional = [])
     {
@@ -3339,6 +3460,7 @@ class Matomo
      * @param string $url
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSeoRank($url, array $optional = [])
     {
@@ -3365,6 +3487,7 @@ class Matomo
      * @param string $idSegment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addReport(
         $description,
@@ -3404,6 +3527,7 @@ class Matomo
      * @param string $idSegment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function updateReport(
         $idReport,
@@ -3437,6 +3561,7 @@ class Matomo
      * @param int $idReport
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteReport($idReport, array $optional = [])
     {
@@ -3453,6 +3578,7 @@ class Matomo
      * @param string $idSegment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getReports(
         $idReport = '',
@@ -3478,6 +3604,7 @@ class Matomo
      * @param string $parameters
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function generateReport(
         $idReport,
@@ -3504,6 +3631,7 @@ class Matomo
      * @param string $force
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function sendReport($idReport, $force = '', array $optional = [])
     {
@@ -3522,6 +3650,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function isUserCanAddNewSegment(array $optional = [])
     {
@@ -3534,6 +3663,7 @@ class Matomo
      * @param int $idSegment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteSegment($idSegment, array $optional = [])
     {
@@ -3552,6 +3682,7 @@ class Matomo
      * @param string $enableAllUsers
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function updateSegment(
         $idSegment,
@@ -3580,6 +3711,7 @@ class Matomo
      * @param string $enableAllUsers
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addSegment($name, $definition, $autoArchive = '', $enableAllUsers = '', array $optional = [])
     {
@@ -3597,6 +3729,7 @@ class Matomo
      * @param int $idSegment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSegment($idSegment, array $optional = [])
     {
@@ -3610,6 +3743,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAllSegments(array $optional = [])
     {
@@ -3636,6 +3770,7 @@ class Matomo
      * @param string $disableCookies
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getJavascriptTag(
         $matomoUrl,
@@ -3674,6 +3809,7 @@ class Matomo
      * @param string $revenue
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getImageTrackingCode(
         $matomoUrl,
@@ -3697,6 +3833,7 @@ class Matomo
      * @param string $group
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesFromGroup($group, array $optional = [])
     {
@@ -3710,6 +3847,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesGroups(array $optional = [])
     {
@@ -3721,6 +3859,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSiteInformation(array $optional = [])
     {
@@ -3732,6 +3871,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSiteUrls(array $optional = [])
     {
@@ -3743,6 +3883,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAllSites(array $optional = [])
     {
@@ -3754,6 +3895,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getAllSitesId(array $optional = [])
     {
@@ -3765,6 +3907,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesWithAdminAccess(array $optional = [])
     {
@@ -3776,6 +3919,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesWithViewAccess(array $optional = [])
     {
@@ -3788,6 +3932,7 @@ class Matomo
      * @param string $limit
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesWithAtLeastViewAccess($limit = '', array $optional = [])
     {
@@ -3801,6 +3946,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesIdWithAdminAccess(array $optional = [])
     {
@@ -3812,6 +3958,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesIdWithViewAccess(array $optional = [])
     {
@@ -3823,6 +3970,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesIdWithAtLeastViewAccess(array $optional = [])
     {
@@ -3835,6 +3983,7 @@ class Matomo
      * @param string $url
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesIdFromSiteUrl($url, array $optional = [])
     {
@@ -3847,6 +3996,7 @@ class Matomo
      * Get a list of all available settings for a specific site.
      *
      * @return object
+     * @throws InvalidRequestException
      */
     public function getSiteSettings()
     {
@@ -3878,6 +4028,7 @@ class Matomo
      * @param string $excludeUnknownUrls Track only URL matching one of website URLs
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addSite(
         $siteName,
@@ -3926,6 +4077,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteSite(array $optional = [])
     {
@@ -3938,6 +4090,7 @@ class Matomo
      * @param array $urls
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addSiteAliasUrls($urls, array $optional = [])
     {
@@ -3952,6 +4105,7 @@ class Matomo
      * @param array $urls
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setSiteAliasUrls($urls, array $optional = [])
     {
@@ -3966,6 +4120,7 @@ class Matomo
      * @param string $ipRange
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getIpsForRange($ipRange, array $optional = [])
     {
@@ -3980,6 +4135,7 @@ class Matomo
      * @param array $excludedIps
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setExcludedIps($excludedIps, array $optional = [])
     {
@@ -3995,6 +4151,7 @@ class Matomo
      * @param $searchCategoryParameters
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setGlobalSearchParameters($searchKeywordParameters, $searchCategoryParameters, array $optional = [])
     {
@@ -4009,6 +4166,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSearchKeywordParametersGlobal(array $optional = [])
     {
@@ -4020,6 +4178,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSearchCategoryParametersGlobal(array $optional = [])
     {
@@ -4031,6 +4190,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExcludedParameters(array $optional = [])
     {
@@ -4042,6 +4202,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExcludedUserAgentsGlobal(array $optional = [])
     {
@@ -4054,6 +4215,7 @@ class Matomo
      * @param array $excludedUserAgents
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setGlobalExcludedUserAgents($excludedUserAgents, array $optional = [])
     {
@@ -4067,6 +4229,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function isSiteSpecificUserAgentExcludeEnabled(array $optional = [])
     {
@@ -4079,6 +4242,7 @@ class Matomo
      * @param int $enabled
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setSiteSpecificUserAgentExcludeEnabled($enabled, array $optional = [])
     {
@@ -4092,6 +4256,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getKeepURLFragmentsGlobal(array $optional = [])
     {
@@ -4104,6 +4269,7 @@ class Matomo
      * @param int $enabled
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setKeepURLFragmentsGlobal($enabled, array $optional = [])
     {
@@ -4118,6 +4284,7 @@ class Matomo
      * @param array $excludedQueryParameters
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setExcludedParameters($excludedQueryParameters, array $optional = [])
     {
@@ -4131,6 +4298,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getExcludedIps(array $optional = [])
     {
@@ -4142,6 +4310,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDefaultCurrency(array $optional = [])
     {
@@ -4154,6 +4323,7 @@ class Matomo
      * @param string $defaultCurrency
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setDefaultCurrency($defaultCurrency, array $optional = [])
     {
@@ -4167,6 +4337,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getDefaultTimezone(array $optional = [])
     {
@@ -4179,6 +4350,7 @@ class Matomo
      * @param string $defaultTimezone
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setDefaultTimezone($defaultTimezone, array $optional = [])
     {
@@ -4208,6 +4380,7 @@ class Matomo
      * @param string $settings
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function updateSite(
         $siteName,
@@ -4254,6 +4427,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCurrencyList(array $optional = [])
     {
@@ -4265,6 +4439,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCurrencySymbols(array $optional = [])
     {
@@ -4276,6 +4451,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTimezonesList(array $optional = [])
     {
@@ -4287,6 +4463,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUniqueSiteTimezones(array $optional = [])
     {
@@ -4300,6 +4477,7 @@ class Matomo
      * @param string $newGroupName
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function renameGroup($oldGroupName, $newGroupName, array $optional = [])
     {
@@ -4315,6 +4493,7 @@ class Matomo
      * @param string $pattern
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getPatternMatchSites($pattern, array $optional = [])
     {
@@ -4336,6 +4515,7 @@ class Matomo
      * @param string $limitBeforeGrouping
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTransitionsForPageTitle($pageTitle, $segment = '', $limitBeforeGrouping = '', array $optional = [])
     {
@@ -4354,6 +4534,7 @@ class Matomo
      * @param string $limitBeforeGrouping
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTransitionsForPageUrl($pageUrl, $segment = '', $limitBeforeGrouping = '', array $optional = [])
     {
@@ -4375,6 +4556,7 @@ class Matomo
      * @param string $returnNormalizedUrls
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTransitionsForAction(
         $actionName,
@@ -4401,6 +4583,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTransitionsTranslations(array $optional = [])
     {
@@ -4418,6 +4601,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCountry($segment = '', array $optional = [])
     {
@@ -4430,6 +4614,7 @@ class Matomo
      * Get a list of used country codes to country names
      *
      * @return object
+     * @throws InvalidRequestException
      */
     public function getCountryCodeMapping()
     {
@@ -4442,6 +4627,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getContinent($segment = '', array $optional = [])
     {
@@ -4456,6 +4642,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getRegion($segment = '', array $optional = [])
     {
@@ -4470,6 +4657,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCity($segment = '', array $optional = [])
     {
@@ -4485,6 +4673,7 @@ class Matomo
      * @param string $provider
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getLocationFromIP($ip, $provider = '', array $optional = [])
     {
@@ -4500,6 +4689,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getCountryNumber($segment = '', array $optional = [])
     {
@@ -4519,6 +4709,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getResolution($segment = '', array $optional = [])
     {
@@ -4533,6 +4724,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getConfiguration($segment = '', array $optional = [])
     {
@@ -4552,6 +4744,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUserPlugin($segment = '', array $optional = [])
     {
@@ -4571,6 +4764,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUserLanguage($segment = '', array $optional = [])
     {
@@ -4585,6 +4779,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUserLanguageCode($segment = '', array $optional = [])
     {
@@ -4606,6 +4801,7 @@ class Matomo
      * @param string $preferenceValue
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setUserPreference($userLogin, $preferenceName, $preferenceValue, array $optional = [])
     {
@@ -4623,6 +4819,7 @@ class Matomo
      * @param string $preferenceName
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUserPreference($userLogin, $preferenceName, array $optional = [])
     {
@@ -4638,6 +4835,7 @@ class Matomo
      * @param string $userLogins Comma separated list with user names
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUsers($userLogins = '', array $optional = [])
     {
@@ -4651,6 +4849,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUsersLogin(array $optional = [])
     {
@@ -4663,6 +4862,7 @@ class Matomo
      * @param string $access
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUsersSitesFromAccess($access, array $optional = [])
     {
@@ -4676,6 +4876,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUsersAccess(array $optional = [])
     {
@@ -4688,6 +4889,7 @@ class Matomo
      * @param string $access
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUsersWithSiteAccess($access, array $optional = [])
     {
@@ -4702,6 +4904,7 @@ class Matomo
      * @param string $userLogin Username
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSitesAccessFromUser($userLogin, array $optional = [])
     {
@@ -4716,6 +4919,7 @@ class Matomo
      * @param string $userLogin Username
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUser($userLogin, array $optional = [])
     {
@@ -4730,6 +4934,7 @@ class Matomo
      * @param string $userEmail
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUserByEmail($userEmail, array $optional = [])
     {
@@ -4747,6 +4952,7 @@ class Matomo
      * @param string $alias
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function addUser($userLogin, $password, $email, $alias = '', array $optional = [])
     {
@@ -4765,6 +4971,7 @@ class Matomo
      * @param int $hasSuperUserAccess
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setSuperUserAccess($userLogin, $hasSuperUserAccess, array $optional = [])
     {
@@ -4779,6 +4986,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function hasSuperUserAccess(array $optional = [])
     {
@@ -4790,6 +4998,7 @@ class Matomo
      *
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUsersHavingSuperUserAccess(array $optional = [])
     {
@@ -4805,6 +5014,7 @@ class Matomo
      * @param string $alias
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function updateUser($userLogin, $password = '', $email = '', $alias = '', array $optional = [])
     {
@@ -4822,6 +5032,7 @@ class Matomo
      * @param string $userLogin Username
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function deleteUser($userLogin, array $optional = [])
     {
@@ -4836,6 +5047,7 @@ class Matomo
      * @param string $userLogin
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function userExists($userLogin, array $optional = [])
     {
@@ -4850,6 +5062,7 @@ class Matomo
      * @param string $userEmail
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function userEmailExists($userEmail, array $optional = [])
     {
@@ -4866,6 +5079,7 @@ class Matomo
      * @param array $idSites
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function setUserAccess($userLogin, $access, $idSites, array $optional = [])
     {
@@ -4883,6 +5097,7 @@ class Matomo
      * @param string $md5Password Password in clear text
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getTokenAuth($userLogin, $md5Password, array $optional = [])
     {
@@ -4904,6 +5119,7 @@ class Matomo
      * @param string $columns
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisitFrequency($segment = '', $columns = '', array $optional = [])
     {
@@ -4924,6 +5140,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisitLocalTime($segment = '', array $optional = [])
     {
@@ -4939,6 +5156,7 @@ class Matomo
      * @param string $hideFutureHoursWhenToday Hide the future hours when the report is created for today
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisitServerTime($segment = '', $hideFutureHoursWhenToday = '', array $optional = [])
     {
@@ -4954,6 +5172,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getByDayOfWeek($segment = '', array $optional = [])
     {
@@ -4973,6 +5192,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfVisitsPerDuration($segment = '', array $optional = [])
     {
@@ -4987,6 +5207,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfVisitsPerPage($segment = '', array $optional = [])
     {
@@ -5001,6 +5222,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfVisitsByDaySinceLast($segment = '', array $optional = [])
     {
@@ -5015,6 +5237,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getNumberOfVisitsByCount($segment = '', array $optional = [])
     {
@@ -5035,6 +5258,7 @@ class Matomo
      * @param string $columns
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisitsSummary($segment = '', $columns = '', array $optional = [])
     {
@@ -5050,6 +5274,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisits($segment = '', array $optional = [])
     {
@@ -5064,6 +5289,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUniqueVisitors($segment = '', array $optional = [])
     {
@@ -5078,6 +5304,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getUserVisitors($segment = '', array $optional = [])
     {
@@ -5092,6 +5319,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getActions($segment = '', array $optional = [])
     {
@@ -5106,6 +5334,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getMaxActions($segment = '', array $optional = [])
     {
@@ -5120,6 +5349,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getBounceCount($segment = '', array $optional = [])
     {
@@ -5134,6 +5364,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getVisitsConverted($segment = '', array $optional = [])
     {
@@ -5148,6 +5379,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSumVisitsLength($segment = '', array $optional = [])
     {
@@ -5162,6 +5394,7 @@ class Matomo
      * @param string $segment
      * @param array $optional
      * @return bool|object
+     * @throws InvalidRequestException
      */
     public function getSumVisitsLengthPretty($segment = '', array $optional = [])
     {
