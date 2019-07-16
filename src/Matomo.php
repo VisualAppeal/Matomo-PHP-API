@@ -512,7 +512,10 @@ class Matomo
         $req = Request::get($url);
         $req->strict_ssl = $this->_verifySsl;
         $req->max_redirects = $this->_maxRedirects;
-        $req->setConnectionTimeout($this->connectionTimeout);
+
+        if (is_int($this->getConnectionTimeout())) {
+            $req->setConnectionTimeout($this->getConnectionTimeout());
+        }
 
         try {
             $buffer = $req->send();
