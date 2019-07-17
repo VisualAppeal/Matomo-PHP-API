@@ -99,6 +99,11 @@ class Matomo
     private $_maxRedirects = 5;
 
     /**
+     * @var null|int Maximum number of seconds the request might take
+     */
+    private $_connectionTimeout = 5;
+
+    /**
      * Create a new instance.
      *
      * @param string $site URL of the matomo installation
@@ -449,6 +454,29 @@ class Matomo
     }
 
     /**
+     * How many seconds until the request errors.
+     *
+     * @return null|int
+     */
+    public function getConnectionTimeout(): ?int
+    {
+        return $this->_connectionTimeout;
+    }
+
+    /**
+     * Set how many seconds until the request errors.
+     *
+     * @param null|int $connectionTimeout
+     * @return Matomo
+     */
+    public function setConnectionTimeout(?int $connectionTimeout = null): Matomo
+    {
+        $this->_connectionTimeout = $connectionTimeout;
+
+        return $this;
+    }
+
+    /**
      * Reset all default variables.
      */
     public function reset(): Matomo
@@ -484,7 +512,10 @@ class Matomo
         $req = Request::get($url);
         $req->strict_ssl = $this->_verifySsl;
         $req->max_redirects = $this->_maxRedirects;
-        $req->setConnectionTimeout(5);
+
+        if (is_int($this->getConnectionTimeout())) {
+            $req->setConnectionTimeout($this->getConnectionTimeout());
+        }
 
         try {
             $buffer = $req->send();
