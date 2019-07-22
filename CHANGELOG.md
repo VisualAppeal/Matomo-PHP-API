@@ -3,6 +3,7 @@
 ### 1.5.1 (2019/07/22)
 
 * Changed: Moved changelog to separate file
+* Changed: Updated dependencies
 
 ### 1.5.0 (2019/04/11)
 

@@ -2,7 +2,7 @@
 
 use InvalidArgumentException;
 
-use Httpful\Exception\ConnectionErrorException;
+use Httpful\Exception\NetworkErrorException;
 use Httpful\Request;
 use Httpful\Response;
 
@@ -97,11 +97,6 @@ class Matomo
      * @var int How many redirects curl should execute until aborting.
      */
     private $_maxRedirects = 5;
-
-    /**
-     * @var null|int Maximum number of seconds the request might take
-     */
-    private $_connectionTimeout = 5;
 
     /**
      * Create a new instance.
@@ -454,29 +449,6 @@ class Matomo
     }
 
     /**
-     * How many seconds until the request errors.
-     *
-     * @return null|int
-     */
-    public function getConnectionTimeout(): ?int
-    {
-        return $this->_connectionTimeout;
-    }
-
-    /**
-     * Set how many seconds until the request errors.
-     *
-     * @param null|int $connectionTimeout
-     * @return Matomo
-     */
-    public function setConnectionTimeout(?int $connectionTimeout = null): Matomo
-    {
-        $this->_connectionTimeout = $connectionTimeout;
-
-        return $this;
-    }
-
-    /**
      * Reset all default variables.
      */
     public function reset(): Matomo
@@ -510,16 +482,17 @@ class Matomo
         }
 
         $req = Request::get($url);
-        $req->strict_ssl = $this->_verifySsl;
-        $req->max_redirects = $this->_maxRedirects;
-
-        if (is_int($this->getConnectionTimeout())) {
-            $req->setConnectionTimeout($this->getConnectionTimeout());
-        }
+        if ($this->_verifySsl) {
+			$req->enableStrictSSL();
+		} else {
+        	$req->disableStrictSSL();
+		}
+        $req->followRedirects($this->_maxRedirects);
+        $req->withTimeout(5);
 
         try {
             $buffer = $req->send();
-        } catch (ConnectionErrorException $e) {
+        } catch (NetworkErrorException $e) {
             throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -564,7 +537,7 @@ class Matomo
      * @param string $method The request method
      * @param array $params Request params
      * @return string|false
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function _parseUrl(string $method, array $params = [])
     {
