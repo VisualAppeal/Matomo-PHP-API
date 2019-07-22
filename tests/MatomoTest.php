@@ -208,14 +208,14 @@ class MatomoTest extends TestCase
      */
 	public function testOptionalParameters()
 	{
-		$this->_matomo->setDate('2018-10-01');
+		$this->_matomo->setDate('2019-07-01');
 		$this->_matomo->setPeriod(Matomo::PERIOD_WEEK);
 		$result = $this->_matomo->getWebsites('', [
 			'flat' => 1,
 		]);
 
 		$this->assertIsArray($result);
-		$this->assertEquals(934, $result[0]->nb_visits);
+		$this->assertEquals(717, $result[0]->nb_visits);
 	}
 
     /**
@@ -225,7 +225,7 @@ class MatomoTest extends TestCase
      */
 	public function testCustomVariables()
 	{
-		$this->_matomo->setDate('2018-10-01');
+		$this->_matomo->setDate('2019-07-01');
 		$this->_matomo->setPeriod(Matomo::PERIOD_WEEK);
 		$result = $this->_matomo->getCustomVariables();
 
