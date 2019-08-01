@@ -215,7 +215,7 @@ class MatomoTest extends TestCase
 		]);
 
 		$this->assertIsArray($result);
-		$this->assertEquals(717, $result[0]->nb_visits);
+		$this->assertEquals(1198, $result[0]->nb_visits);
 	}
 
     /**
