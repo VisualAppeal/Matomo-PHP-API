@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.5.2 (2019/08/01)
+
+* Fixed: The site ID can now be of mixed type again (e.g. 5, "9", "3,24,27", "all") or null
+
 ### 1.5.1 (2019/07/22)
 
 * Changed: Moved changelog to separate file

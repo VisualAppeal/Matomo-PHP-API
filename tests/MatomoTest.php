@@ -231,4 +231,20 @@ class MatomoTest extends TestCase
 
 		$this->assertEquals(15, count($result));
 	}
+
+	/**
+	 * Test if matamo can be used without the site ID parameter.
+	 *
+	 * @throws InvalidRequestException
+	 */
+	public function testEmptySiteId()
+	{
+		$matomo = new Matomo(self::TEST_SITE_URL, self::TEST_TOKEN);
+		$this->assertNull($matomo->getSiteId());
+
+		$matomo->setSiteId(null);
+		$this->assertNull($matomo->getSiteId());
+
+		$this->assertIsObject($matomo->getTimezonesList());
+	}
 }

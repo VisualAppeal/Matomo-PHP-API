@@ -12,7 +12,6 @@ use Httpful\Response;
  */
 class Matomo
 {
-    const ERROR_INVALID = 10;
     const ERROR_EMPTY = 11;
 
     const PERIOD_DAY = 'day';
@@ -44,7 +43,7 @@ class Matomo
     private $_token = '';
 
     /**
-     * @var int The integer id of your website.
+     * @var mixed The integer id of your website.
      */
     private $_siteId = null;
 
@@ -113,7 +112,7 @@ class Matomo
     function __construct(
         $site,
         $token,
-        $siteId,
+        $siteId = null,
         $format = self::FORMAT_JSON,
         $period = self::PERIOD_DAY,
         $date = self::DATE_YESTERDAY,
@@ -189,9 +188,9 @@ class Matomo
     /**
      * Get current site ID
      *
-     * @return int
+     * @return mixed
      */
-    public function getSiteId(): int
+    public function getSiteId()
     {
         return $this->_siteId;
     }
@@ -199,10 +198,10 @@ class Matomo
     /**
      * Set current site ID
      *
-     * @param int $id
+     * @param mixed $id
      * @return $this
      */
-    public function setSiteId(int $id): Matomo
+    public function setSiteId($id = null): Matomo
     {
         $this->_siteId = $id;
 
@@ -3847,7 +3846,8 @@ class Matomo
     }
 
     /**
-     * Get all site groups
+     * Get all site groups.
+	 * Requires superuser access.
      *
      * @param array $optional
      * @return bool|object
