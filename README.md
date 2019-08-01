@@ -47,8 +47,8 @@ The period you request the statistics for
 If you set the period to `Matomo::PERIOD_RANGE` you can specify the range via
 
 	$matomo->setRange('2012-01-14', '2012-04-30'); //All data from the first to the last date
-	$matomo->setRange('2012-01-14', Matomo::DATE_YESTERDAY); //All data from the first until yesterday
-	$matomo->setRange('2012-01-14'); //All data from the first until now
+	$matomo->setRange('2012-01-14', Matomo::DATE_YESTERDAY); //All data from the first date until yesterday
+	$matomo->setRange('2012-01-14'); //All data from the first date until now
 
 __When you use the period range you do not need to specify a date!__
 
