@@ -1,6 +1,6 @@
 # Matomo PHP API
 
-[![Build Status](https://travis-ci.org/VisualAppeal/Matomo-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Matomo-PHP-API)
+[![Build Status](https://travis-ci.org/VisualAppeal/Matomo-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Matomo-PHP-API) [![Packagist](https://img.shields.io/packagist/dt/visualappeal/matomo-php-api)](https://packagist.org/packages/visualappeal/matomo-php-api)
 
 A PHP wrapper class for the [Matomo](https://matomo.org/) API.
 
@@ -8,6 +8,7 @@ A PHP wrapper class for the [Matomo](https://matomo.org/) API.
 
 * PHP >= 7.2
 * cUrl (php-curl)
+* JSON (php-json)
 
 ## Install
 
