@@ -552,7 +552,11 @@ class Matomo
             ] + $params;
 
         foreach ($params as $key => $value) {
-            $params[$key] = urlencode($value);
+            if(is_array($value)){
+                $params[$key] = urlencode(implode(',',$value));
+            }else{
+                $params[$key] = urlencode($value);
+            }
         }
 
         if (!empty($this->_rangeStart) && !empty($this->_rangeEnd)) {
