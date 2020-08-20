@@ -98,6 +98,11 @@ class Matomo
     private $_maxRedirects = 5;
 
     /**
+     * @var int Timeout in seconds.
+     */
+    private $_timeout = 5;
+
+    /**
      * Create a new instance.
      *
      * @param string $site URL of the matomo installation
@@ -448,6 +453,24 @@ class Matomo
     }
 
     /**
+     * @return int
+     */
+    public function getTimeout(): int
+    {
+        return $this->_timeout;
+    }
+
+    /**
+     * @param int $timeout
+     */
+    public function setTimeout(int $timeout): Matomo
+    {
+        $this->_timeout = $timeout;
+
+        return $this;
+    }
+
+    /**
      * Reset all default variables.
      */
     public function reset(): Matomo
@@ -487,7 +510,7 @@ class Matomo
             $req->disableStrictSSL();
         }
         $req->followRedirects($this->_maxRedirects);
-        $req->withTimeout(5);
+        $req->withTimeout($this->_timeout);
 
         try {
             $buffer = $req->send();
