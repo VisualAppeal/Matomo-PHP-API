@@ -490,13 +490,14 @@ class Matomo
     /**
      * Make API request
      *
-     * @param string $method
-     * @param array $params
-     * @param array $optional
+     * @param string $method HTTP method
+     * @param array $params Query parameters
+     * @param array $optional Optional arguments for this api call
+     * @param int|null $format Override the response format
      * @return bool|object
      * @throws InvalidRequestException
      */
-    private function _request(string $method, array $params = [], array $optional = [])
+    private function _request(string $method, array $params = [], array $optional = [], $format = null)
     {
         $url = $this->_parseUrl($method, $params + $optional);
         if ($url === false) {
@@ -520,7 +521,7 @@ class Matomo
 
         if (!empty($buffer)) {
             try {
-                return $this->_finishResponse($this->_parseResponse($buffer), $method, $params + $optional);
+                return $this->_finishResponse($this->_parseResponse($buffer, $format), $method, $params + $optional);
             } catch (InvalidResponseException $e) {
                 throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
             }
@@ -639,11 +640,17 @@ class Matomo
      * Parse request result
      *
      * @param Response $response
+     * @param int|null $overrideFormat Override the default format
      * @return mixed
      */
-    private function _parseResponse(Response $response)
+    private function _parseResponse(Response $response, $overrideFormat = null)
     {
-        switch ($this->_format) {
+        $format = $this->_format;
+        if ($overrideFormat !== null) {
+            $format = $overrideFormat;
+        }
+
+        switch ($format) {
             case self::FORMAT_JSON:
                 return json_decode($response, $this->_isJsonDecodeAssoc);
             default:
@@ -2483,7 +2490,7 @@ class Matomo
             'aliasedGraph' => $aliasedGraph,
             'idGoal ' => $idGoal,
             'colors' => $colors,
-        ], $optional);
+        ], $optional, self::FORMAT_PHP);
     }
 
     /**

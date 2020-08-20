@@ -247,4 +247,18 @@ class MatomoTest extends TestCase
 
 		$this->assertIsObject($matomo->getTimezonesList());
 	}
+
+	/**
+	 * Test if matamo can be used without the site ID parameter.
+	 */
+	public function testGetImageGraph()
+	{
+        /**
+         * @var $response \Httpful\Response
+         */
+		$response = $this->_matomo->getImageGraph('UserCountry', 'getCountry');
+		$this->assertIsObject($response);
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertStringContainsString('PNG', $response->getRawBody());
+	}
 }
