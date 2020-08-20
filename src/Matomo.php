@@ -35,22 +35,22 @@ class Matomo
     /**
      * @var string URL of the matomo installation
      */
-    private $_site = '';
+    private $_site;
 
     /**
      * @var string API Access token
      */
-    private $_token = '';
+    private $_token;
 
     /**
      * @var mixed The integer id of your website.
      */
-    private $_siteId = null;
+    private $_siteId;
 
     /**
      * @var string The period you request the statistics for.
      */
-    private $_period = self::PERIOD_DAY;
+    private $_period;
 
     /**
      * @var string
@@ -60,7 +60,7 @@ class Matomo
     /**
      * @var string Defines the format of the output.
      */
-    private $_format = self::FORMAT_PHP;
+    private $_format;
 
     /**
      * @var int Defines the number of rows to be returned (-1: All rows).
@@ -75,12 +75,12 @@ class Matomo
     /**
      * @var string
      */
-    private $_rangeStart = 'yesterday';
+    private $_rangeStart;
 
     /**
      * @var string|null
      */
-    private $_rangeEnd = null;
+    private $_rangeEnd;
 
     /**
      * @var bool
