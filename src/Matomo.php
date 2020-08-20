@@ -482,10 +482,10 @@ class Matomo
 
         $req = Request::get($url);
         if ($this->_verifySsl) {
-			$req->enableStrictSSL();
-		} else {
-        	$req->disableStrictSSL();
-		}
+            $req->enableStrictSSL();
+        } else {
+            $req->disableStrictSSL();
+        }
         $req->followRedirects($this->_maxRedirects);
         $req->withTimeout(5);
 
@@ -552,9 +552,9 @@ class Matomo
             ] + $params;
 
         foreach ($params as $key => $value) {
-            if(is_array($value)){
-                $params[$key] = urlencode(implode(',',$value));
-            }else{
+            if (is_array($value)) {
+                $params[$key] = urlencode(implode(',', $value));
+            } else {
                 $params[$key] = urlencode($value);
             }
         }
@@ -563,7 +563,7 @@ class Matomo
             $params = $params + [
                     'date' => $this->_rangeStart . ',' . $this->_rangeEnd,
                 ];
-        } elseif (!empty($this->_date)) {
+        } else if (!empty($this->_date)) {
             $params = $params + [
                     'date' => $this->_date,
                 ];
@@ -623,7 +623,6 @@ class Matomo
         switch ($this->_format) {
             case self::FORMAT_JSON:
                 return json_decode($response, $this->_isJsonDecodeAssoc);
-                break;
             default:
                 return $response;
         }
@@ -3851,7 +3850,7 @@ class Matomo
 
     /**
      * Get all site groups.
-	 * Requires superuser access.
+     * Requires superuser access.
      *
      * @param array $optional
      * @return bool|object
@@ -4016,6 +4015,7 @@ class Matomo
      * Requires Super User access.
      *
      * The website is defined by a name and an array of URLs.
+     *
      * @param string $siteName Site name
      * @param string $urls Comma separated list of urls
      * @param string $ecommerce Is Ecommerce Reporting enabled for this website?
@@ -4027,7 +4027,8 @@ class Matomo
      * @param string $timezone Timezone string, eg. 'Europe/London'
      * @param string $currency Currency, eg. 'EUR'
      * @param string $group Website group identifier
-     * @param string $startDate Date at which the statistics for this website will start. Defaults to today's date in YYYY-MM-DD format
+     * @param string $startDate Date at which the statistics for this website will start. Defaults to today's date in
+     *     YYYY-MM-DD format
      * @param string $excludedUserAgents
      * @param string $keepURLFragments If 1, URL fragments will be kept when tracking. If 2, they
      *                                 will be removed. If 0, the default global behavior will be used.
