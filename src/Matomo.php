@@ -102,12 +102,12 @@ class Matomo
      *
      * @param string $site URL of the matomo installation
      * @param string $token API Access token
-     * @param int $siteId ID of the site
+     * @param int|null $siteId ID of the site
      * @param string $format
      * @param string $period
      * @param string $date
      * @param string $rangeStart
-     * @param string $rangeEnd
+     * @param string|null $rangeEnd
      */
     function __construct(
         $site,
@@ -274,7 +274,7 @@ class Matomo
     /**
      * Set date
      *
-     * @param string $date Format Y-m-d or class constant:
+     * @param string|null $date Format Y-m-d or class constant:
      *        DATE_TODAY
      *        DATE_YESTERDAY
      * @return $this
@@ -333,8 +333,8 @@ class Matomo
     /**
      * Set date range
      *
-     * @param string $rangeStart e.g. 2012-02-10 (YYYY-mm-dd) or last5(lastX), previous12(previousY)...
-     * @param string $rangeEnd e.g. 2012-02-12. Leave this parameter empty to request all data from
+     * @param string|null $rangeStart e.g. 2012-02-10 (YYYY-mm-dd) or last5(lastX), previous12(previousY)...
+     * @param string|null $rangeEnd e.g. 2012-02-12. Leave this parameter empty to request all data from
      *                         $rangeStart until now
      * @return $this
      */
