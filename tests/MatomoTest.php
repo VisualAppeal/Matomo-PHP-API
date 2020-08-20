@@ -101,7 +101,7 @@ class MatomoTest extends TestCase
 		$result = $this->_matomo->getVisitsSummary();
 
 		$this->assertIsObject($result);
-		$this->assertEquals(7, count((array) $result));
+		$this->assertCount(7, (array) $result);
 	}
 
     /**
@@ -229,7 +229,7 @@ class MatomoTest extends TestCase
 		$this->_matomo->setPeriod(Matomo::PERIOD_WEEK);
 		$result = $this->_matomo->getCustomVariables();
 
-		$this->assertEquals(15, count($result));
+		$this->assertCount(15, $result);
 	}
 
 	/**
