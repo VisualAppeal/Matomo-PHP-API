@@ -314,7 +314,7 @@ class Matomo
      *        PERIOD_RANGE
      * @return $this
      */
-    public function setPeriod(string $period)
+    public function setPeriod(string $period): Matomo
     {
         $this->_period = $period;
 
