@@ -17,14 +17,9 @@ $matomo->setLanguage('en');
 
 // $matomo->verifySsl = false;
 
-$test = $matomo->getApi();
+try {
+	$test = $matomo->getApi();
 
-if ($matomo->hasError()) {
-	echo '<p>Invalid request</p>';
-	echo '<pre>';
-	var_dump($matomo->getErrors());
-	echo '</pre>';
-} else {
 	//Default time period: yesterday
 	$visits = $matomo->getVisits();
 	$visitsU = $matomo->getUniqueVisitors();
@@ -36,51 +31,24 @@ if ($matomo->hasError()) {
 	$matomo->setDate(date('Y-m-d'));
 
 	$visitsYear = $matomo->getVisits();
-	$visitsUYear = $matomo->getUniqueVisitors(); // To enable see https://matomo.org/faq/how-to/faq_113/
-	$visitsLYear = $matomo->getSumVisitsLengthPretty();
 
 	//Change time period to range
 	$matomo->setPeriod(Matomo::PERIOD_RANGE);
 	$matomo->setRange(date('Y-m-d', mktime(0, 0, 0, 11, 24, 2014)), date('Y-m-d', mktime(0, 0, 0, 11, 31, 2014)));
 
-	$visitsRange = $matomo->getVisits();
-	$visitsURange = $matomo->getUniqueVisitors(); // To enable see https://matomo.org/faq/how-to/faq_113/
-	$visitsLRange = $matomo->getSumVisitsLengthPretty();
 	?>
-
-	<h2>Summary Yesterday</h2>
-	<ul>
-		<li>Visit count: <?php echo $visits; ?></li>
-		<li>Unique visit count: <?php echo $visitsU; ?></li>
-		<li>Summary of the visit lengths: <?php echo ($visitsL !== false) ? $visitsL : 0; ?></li>
-	</ul>
 
 	<h2>Summary <?php echo date('Y') ?></h2>
 	<ul>
 		<li>Visit count: <?php echo $visitsYear; ?></li>
-		<li>Unique visit count: <?php echo $visitsUYear; ?></li>
-		<li>Summary of the visit lengths: <?php echo ($visitsLYear !== false) ? $visitsLYear : 0; ?></li>
 	</ul>
 
-	<h2>Summary <?php echo date('Y-m-d', mktime(0, 0, 0, 12, 24, 2011)); ?> - <?php echo date('Y-m-d', mktime(0, 0, 0, 12, 31, 2011)); ?></h2>
-	<ul>
-		<li>Visit count: <?php echo $visitsRange; ?></li>
-		<li>Unique visit count: <?php echo $visitsURange; ?></li>
-		<li>Summary of the visit lengths: <?php echo ($visitsLRange !== false) ? $visitsLRange : 0; ?></li>
-	</ul>
-
-	<?php if ($matomo->hasError()): ?>
-		<h2>Error Summary</h2>
-		<ul>
-			<?php foreach ($matomo->getErrors() as $error): ?>
-				<li><?php echo $error; ?></li>
-			<?php endforeach; ?>
-		</ul>
-	<?php else: ?>
-		<p><strong>No errors!</strong></p>
-	<?php endif; ?>
 
 <?php
+} catch (Exception $e) {
+	echo '<pre>';
+	var_dump($e);
+	echo '</pre>';
 }
 ?>
 	</body>
