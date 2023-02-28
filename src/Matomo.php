@@ -521,7 +521,7 @@ class Matomo
 
         if (!empty($buffer)) {
             try {
-                return $this->_finishResponse($this->_parseResponse($buffer, $format), $method, $params + $optional);
+                return $this->_finishResponse($buffer, $method, $params + $optional, $format);
             } catch (InvalidResponseException $e) {
                 throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
             }
@@ -533,24 +533,33 @@ class Matomo
     /**
      * Validate request and return the values.
      *
-     * @param mixed $response
+     * @param \Httpful\Response $response
      * @param string $method
      * @param array $params
+     * @param int|null $format
      * @return bool|object
      * @throws InvalidResponseException
      */
-    private function _finishResponse($response, string $method, array $params)
+    private function _finishResponse(Response $response, string $method, array $params, int|null $format = null)
     {
-        $valid = $this->_isValidResponse($response);
-
-        if ($valid === true) {
-            if (isset($response->value)) {
-                return $response->value;
-            } else {
-                return $response;
+        try {
+            $result = $this->_parseResponse($response, $format);
+            if ($result === null) {
+                $url = $this->_parseUrl($method, $params);
+                throw new InvalidResponseException('Empty response returned from request (request URL: ' . $url . ')', self::ERROR_EMPTY);
             }
-        } else {
-            throw new InvalidResponseException($valid . ' (' . $this->_parseUrl($method, $params) . ')');
+            if (isset($result->value)) {
+                return $result->value;
+            } else {
+                return $result;
+            }
+        } catch (InvalidResponseException $e) {
+            // We want to catch the exception so we can augment it with some additional
+            // information and re-throw it.
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            $url = $this->_parseUrl($method, $params);
+            throw new InvalidResponseException('Error: ' . $code . ' - ' . $message . ' (request URL: ' . $url . ')', $e->getCode(), $e);
         }
     }
 
@@ -620,20 +629,24 @@ class Matomo
     /**
      * Check if the request was successfull.
      *
-     * @param mixed $response
+     * @param \Httpful\Response $response
      * @return bool|int
+     * @throws InvalidResponseException
      */
-    private function _isValidResponse($response)
+    private function _isValidResponse(Response $response)
     {
-        if (is_null($response)) {
-            return self::ERROR_EMPTY;
+        if ($response->getStatusCode() != 200) {
+            // Unsuccessful server response.
+            throw new InvalidResponseException($response->getReasonPhrase(), $response->getStatusCode());
         }
 
-        if (!isset($response->result) or ($response->result != 'error')) {
-            return true;
+        $response_body = (string) $response;
+
+        if (empty($response_body)) {
+            throw new InvalidResponseException('No data in response.', self::ERROR_EMPTY);
         }
 
-        return $response->message;
+        return true;
     }
 
     /**
@@ -645,17 +658,23 @@ class Matomo
      */
     private function _parseResponse(Response $response, $overrideFormat = null)
     {
-        $format = $this->_format;
-        if ($overrideFormat !== null) {
-            $format = $overrideFormat;
-        }
+        if ($this->_isValidResponse($response)) {
+            $format = $this->_format;
+            if ($overrideFormat !== null) {
+                $format = $overrideFormat;
+            }
 
-        switch ($format) {
-            case self::FORMAT_JSON:
-                return json_decode($response, $this->_isJsonDecodeAssoc);
-            default:
-                return $response;
+            switch ($format) {
+                case self::FORMAT_JSON:
+                    return json_decode($response, $this->_isJsonDecodeAssoc);
+                default:
+                    return $response;
+            }
         }
+        // If the validation fails, an exception will be thrown and
+        // we should never end up here. But just in case, let's return
+        // null to be on the safe side.
+        return null;
     }
 
     /**
