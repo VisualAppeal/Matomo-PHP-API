@@ -12,6 +12,9 @@
         "roave/security-advisories": "dev-latest",
         "phpunit/phpunit": "^9.0"
 	},
+    "scripts": {
+        "test": "phpunit"
+    },
 	"autoload": {
 		"psr-4": {
 			"VisualAppeal\\": "src/"
