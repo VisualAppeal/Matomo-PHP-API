@@ -6,7 +6,7 @@ A PHP wrapper class for the [Matomo](https://matomo.org/) API.
 
 ## Requirements
 
-* PHP >= 7.3 (for php 7.2 use version 1.5)
+* PHP >= 8.0 (for php 7.3/7.4 use version 1.6.1)
 * cUrl (php-curl)
 * JSON (php-json)
 
