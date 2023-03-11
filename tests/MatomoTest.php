@@ -7,9 +7,9 @@ use VisualAppeal\Matomo;
 
 class MatomoTest extends TestCase
 {
-	const TEST_SITE_URL = 'https://demo.matomo.org/';
+	const TEST_SITE_URL = 'https://demo.matomo.cloud/';
 
-	const TEST_SITE_ID = 62;
+	const TEST_SITE_ID = 1;
 
 	const TEST_TOKEN = 'anonymous';
 
