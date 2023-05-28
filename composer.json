@@ -3,14 +3,14 @@
 	"description": "API wrapper for matomo",
 	"license": "MIT",
 	"require": {
-		"php": ">=8.0",
+		"php": ">=8.2",
 		"ext-json": "*",
 		"ext-curl": "*",
-		"voku/httpful": "^2.4"
+		"guzzlehttp/guzzle": "^7.7"
     },
 	"require-dev": {
         "roave/security-advisories": "dev-latest",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^10.1"
 	},
     "scripts": {
         "test": "phpunit"

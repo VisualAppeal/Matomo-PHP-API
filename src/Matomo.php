@@ -2,9 +2,9 @@
 
 namespace VisualAppeal;
 
-use Httpful\Exception\NetworkErrorException;
-use Httpful\Request;
-use Httpful\Response;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use JsonException;
 
@@ -105,6 +105,11 @@ class Matomo
     private int $_timeout = 5;
 
     /**
+     * @var Client|null Guzzle client
+     */
+    private ?Client $_client = null;
+
+    /**
      * Create a new instance.
      *
      * @param  string  $site  URL of the matomo installation
@@ -115,6 +120,7 @@ class Matomo
      * @param  string  $date
      * @param  string  $rangeStart
      * @param  string|null  $rangeEnd
+     * @param  Client|null  $client
      */
     public function __construct(
         string $site,
@@ -124,7 +130,8 @@ class Matomo
         string $period = self::PERIOD_DAY,
         string $date = self::DATE_YESTERDAY,
         string $rangeStart = '',
-        string $rangeEnd = null
+        string $rangeEnd = null,
+        Client $client = null,
     ) {
         $this->_site       = $site;
         $this->_token      = $token;
@@ -138,6 +145,12 @@ class Matomo
             $this->setRange($rangeStart, $rangeEnd);
         } else {
             $this->setDate($date);
+        }
+
+        if ($client !== null) {
+            $this->setClient($client);
+        } else {
+            $this->setClient(new Client());
         }
     }
 
@@ -359,8 +372,8 @@ class Matomo
         $this->_rangeEnd   = $rangeEnd;
 
         if (is_null($rangeEnd)) {
-            if (str_contains($rangeStart, 'last')
-                || str_contains($rangeStart, 'previous')
+            if (str_contains($rangeStart ?? '', 'last')
+                || str_contains($rangeStart ?? '', 'previous')
             ) {
                 $this->setDate($rangeStart);
             } else {
@@ -488,6 +501,22 @@ class Matomo
     }
 
     /**
+     * @return Client|null
+     */
+    public function getClient(): ?Client
+    {
+        return $this->_client;
+    }
+
+    /**
+     * @param  Client|null  $client
+     */
+    public function setClient(?Client $client): void
+    {
+        $this->_client = $client;
+    }
+
+    /**
      * Reset all default variables.
      */
     public function reset(): Matomo
@@ -527,28 +556,21 @@ class Matomo
             throw new InvalidRequestException('Could not parse URL!');
         }
 
-        // Build the request
-        $req = Request::get($url)
-                      ->followRedirects($this->_maxRedirects)
-                      ->withTimeout($this->_timeout);
-
-        if ($this->_verifySsl) {
-            $req->enableStrictSSL();
-        } else {
-            $req->disableStrictSSL();
-        }
-
-        // Send the request
         try {
-            $response = $req->send();
-        } catch (NetworkErrorException $e) {
+            $response = $this->_client->get($url, [
+                'verify'          => $this->_verifySsl,
+                'allow_redirects' => [
+                    'max' => $this->_maxRedirects,
+                ],
+            ]);
+        } catch (GuzzleException $e) {
             // Network error, e.g. timeout or connection refused
             throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
         }
 
         // Validate if the response was successful
         if ($response->getStatusCode() !== 200) {
-            throw new InvalidRequestException($response->getRawBody(), $response->getStatusCode());
+            throw new InvalidRequestException($response->getBody(), $response->getStatusCode());
         }
 
         // Sometimes the response was unsuccessful, but the status code was 200
@@ -589,7 +611,7 @@ class Matomo
             if (is_array($value)) {
                 $params[$key] = urlencode(implode(',', $value));
             } else {
-                $params[$key] = urlencode($value);
+                $params[$key] = urlencode($value ?? '');
             }
         }
 
@@ -664,7 +686,7 @@ class Matomo
         $format = $overrideFormat ?? $this->_format;
 
         return match ($format) {
-            self::FORMAT_JSON => json_decode($response, $this->_isJsonDecodeAssoc, 512,
+            self::FORMAT_JSON => json_decode($response->getBody(), $this->_isJsonDecodeAssoc, 512,
                 JSON_THROW_ON_ERROR),
             default => $response,
         };
