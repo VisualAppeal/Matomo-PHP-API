@@ -14,8 +14,6 @@ use JsonException;
  */
 class Matomo
 {
-    public const ERROR_EMPTY = 11;
-
     public const PERIOD_DAY = 'day';
     public const PERIOD_WEEK = 'week';
     public const PERIOD_MONTH = 'month';
@@ -539,7 +537,7 @@ class Matomo
      * @param  string  $method  HTTP method
      * @param  array  $params  Query parameters
      * @param  array  $optional  Optional arguments for this api call
-     * @param  string|null  $format  Override the response format
+     * @param  string|null  $overrideFormat  Override the response format
      *
      * @return bool|object
      * @@throws InvalidRequestException|JsonException|InvalidResponseException
@@ -549,12 +547,14 @@ class Matomo
         string $method,
         array $params = [],
         array $optional = [],
-        string $format = null
+        string $overrideFormat = null
     ): mixed {
         $url = $this->_parseUrl($method, $params + $optional);
         if ($url === '') {
             throw new InvalidRequestException('Could not parse URL!');
         }
+
+        $format = $overrideFormat ?? $this->_format;
 
         try {
             $response = $this->_client->get($url, [
@@ -570,12 +570,14 @@ class Matomo
 
         // Validate if the response was successful
         if ($response->getStatusCode() !== 200) {
-            throw new InvalidRequestException($response->getBody(), $response->getStatusCode());
+            throw new InvalidRequestException($response->getBody()->getContents(),
+                $response->getStatusCode());
         }
 
         // Sometimes the response was unsuccessful, but the status code was 200
         if ($format === self::FORMAT_JSON) {
             $valid = $this->_isValidResponse($response);
+
             if ($valid !== true) {
                 throw new InvalidResponseException($valid.' ('.$this->_parseUrl($method, $params)
                                                    .')', 403);
@@ -654,22 +656,24 @@ class Matomo
      *
      * @param  mixed  $response
      *
-     * @return bool|int
+     * @return bool|string
      * @throws JsonException
      */
-    private function _isValidResponse(Response $response): bool|int
+    private function _isValidResponse(Response $response): bool|string
     {
-        if (is_null($response->getRawBody())) {
-            return self::ERROR_EMPTY;
+        $body = $response->getBody()->getContents();
+
+        if ($body === '') {
+            return 'Empty response!';
         }
 
-        $result = json_decode($response->getRawBody(), true, 512, JSON_THROW_ON_ERROR);
+        $result = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
-        if ( ! isset($result['result']) || ($result['result'] !== 'error')) {
-            return true;
+        if (isset($result['result']) && (strtolower($result['result']) === 'error')) {
+            return $result['message'];
         }
 
-        return $result['message'];
+        return true;
     }
 
     /**
@@ -686,7 +690,8 @@ class Matomo
         $format = $overrideFormat ?? $this->_format;
 
         return match ($format) {
-            self::FORMAT_JSON => json_decode($response->getBody(), $this->_isJsonDecodeAssoc, 512,
+            self::FORMAT_JSON => json_decode($response->getBody()->getContents(),
+                $this->_isJsonDecodeAssoc, 512,
                 JSON_THROW_ON_ERROR),
             default => $response,
         };

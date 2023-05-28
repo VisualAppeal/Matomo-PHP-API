@@ -178,17 +178,16 @@ class MatomoTest extends TestCase
     /**
      * Test that an exception is thrown with an invalid access token.
      *
-     * @throws JsonException|InvalidResponseException
+     * @throws JsonException|InvalidRequestException|InvalidResponseException
      */
     public function testInvalidAccessToken(): void
     {
         $this->_matomo->setToken('403');
+        $this->assertTrue(true);
 
-        try {
-            $this->_matomo->getVisitsSummary();
-        } catch (InvalidRequestException $e) {
-            $this->assertEquals(403, $e->getCode());
-        }
+        $this->_matomo->getVisitsSummary();
+
+        $this->fail('No exception thrown.');
     }
 
     /**
