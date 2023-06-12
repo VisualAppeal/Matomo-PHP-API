@@ -182,12 +182,12 @@ class MatomoTest extends TestCase
      */
     public function testInvalidAccessToken(): void
     {
+        $this->expectException(InvalidResponseException::class);
+
         $this->_matomo->setToken('403');
         $this->assertTrue(true);
 
         $this->_matomo->getVisitsSummary();
-
-        $this->fail('No exception thrown.');
     }
 
     /**
@@ -262,11 +262,11 @@ class MatomoTest extends TestCase
     public function testGetImageGraph(): void
     {
         /**
-         * @var $response Response
+         * @var $imageBinaryString string
          */
-        $response = $this->_matomo->getImageGraph('UserCountry', 'getCountry');
-        $this->assertIsObject($response);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertStringContainsString('PNG', $response->getBody());
+        $imageBinaryString = $this->_matomo->getImageGraph('UserCountry', 'getCountry');
+
+        $this->assertIsString($imageBinaryString);
+        $this->assertStringContainsString('PNG', $imageBinaryString);
     }
 }

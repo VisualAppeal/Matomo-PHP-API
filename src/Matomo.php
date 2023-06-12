@@ -4,7 +4,6 @@ namespace VisualAppeal;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use JsonException;
 
@@ -568,15 +567,17 @@ class Matomo
             throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
         }
 
+        $contents = $response->getBody()->getContents();
+
         // Validate if the response was successful
         if ($response->getStatusCode() !== 200) {
-            throw new InvalidRequestException($response->getBody()->getContents(),
+            throw new InvalidRequestException($contents,
                 $response->getStatusCode());
         }
 
         // Sometimes the response was unsuccessful, but the status code was 200
         if ($format === self::FORMAT_JSON) {
-            $valid = $this->_isValidResponse($response);
+            $valid = $this->_isValidResponse($contents);
 
             if ($valid !== true) {
                 throw new InvalidResponseException($valid.' ('.$this->_parseUrl($method, $params)
@@ -584,7 +585,7 @@ class Matomo
             }
         }
 
-        return $this->_parseResponse($response, $format);
+        return $this->_parseResponse($contents, $format);
     }
 
     /**
@@ -654,20 +655,18 @@ class Matomo
     /**
      * Check if the request was successful.
      *
-     * @param  mixed  $response
+     * @param  string  $contents
      *
      * @return bool|string
      * @throws JsonException
      */
-    private function _isValidResponse(Response $response): bool|string
+    private function _isValidResponse(string $contents): bool|string
     {
-        $body = $response->getBody()->getContents();
-
-        if ($body === '') {
+        if ($contents === '') {
             return 'Empty response!';
         }
 
-        $result = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $result = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
 
         if (isset($result['result']) && (strtolower($result['result']) === 'error')) {
             return $result['message'];
@@ -679,21 +678,21 @@ class Matomo
     /**
      * Parse request result
      *
-     * @param  Response  $response
+     * @param  string  $contents
      * @param  string|null  $overrideFormat  Override the default format
      *
      * @return mixed Either the parsed response body object (parsed from json) or the raw response object.
      * @throws JsonException
      */
-    private function _parseResponse(Response $response, string $overrideFormat = null): mixed
+    private function _parseResponse(string $contents, string $overrideFormat = null): mixed
     {
         $format = $overrideFormat ?? $this->_format;
 
         return match ($format) {
-            self::FORMAT_JSON => json_decode($response->getBody()->getContents(),
+            self::FORMAT_JSON => json_decode($contents,
                 $this->_isJsonDecodeAssoc, 512,
                 JSON_THROW_ON_ERROR),
-            default => $response,
+            default => $contents,
         };
     }
 
@@ -2677,7 +2676,7 @@ class Matomo
      *                      value without '#'
      * @param  array  $optional
      *
-     * @return bool|object
+     * @return bool|string
      * @@throws InvalidRequestException|JsonException|InvalidResponseException
      */
     public function getImageGraph(
