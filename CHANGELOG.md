@@ -1,5 +1,30 @@
 ## Changelog
 
+### 2.0.0 (2022/06/14)
+
+* Switched from httpful to guzzlehttp
+* Switched from travis ci to GitHub actions
+* Compatible to PHP 8.2
+
+### 1.7.0 (2023/03/11)
+
+* Improved error handling
+
+### 1.6.1 (2022/08/20)
+
+* Add timeout parameter
+* Small bug fixes
+
+### 1.6.0 (2022/08/20)
+
+* Test php 7.4 and require at least php 7.3
+* Small bug fixes
+
+### 1.5.3 (2022/08/20)
+
+* Convert request parameter array to string
+* Small bug fixes
+
 ### 1.5.2 (2019/08/01)
 
 * Fixed: The site ID can now be of mixed type again (e.g. 5, "9", "3,24,27", "all") or null
