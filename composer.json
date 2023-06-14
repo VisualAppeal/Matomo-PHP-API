@@ -13,7 +13,9 @@
         "phpunit/phpunit": "^10.1"
 	},
     "scripts": {
-        "test": "phpunit"
+        "test": [
+            "phpunit --no-coverage"
+        ]
     },
 	"autoload": {
 		"psr-4": {

@@ -15,7 +15,6 @@ jobs:
         php-versions: ['8.0', '8.1', '8.2']
 
     name: PHPUnit ${{ matrix.php-versions }}
-
     steps:
     - uses: actions/checkout@v2
 
@@ -29,7 +28,8 @@ jobs:
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
-          ${{ runner.os }}-php-
+          ${{ runner.os }}-php-${{ matrix.php-versions }}
+
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
