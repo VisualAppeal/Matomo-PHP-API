@@ -1,6 +1,6 @@
 # Matomo PHP API
 
-[![Build Status](https://travis-ci.org/VisualAppeal/Matomo-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Matomo-PHP-API) [![Packagist](https://img.shields.io/packagist/dt/visualappeal/matomo-php-api)](https://packagist.org/packages/visualappeal/matomo-php-api)
+[![PHPUnit](https://github.com/VisualAppeal/Matomo-PHP-API/actions/workflows/tests.yml/badge.svg)](https://github.com/VisualAppeal/Matomo-PHP-API/actions/workflows/tests.yml) [![Packagist](https://img.shields.io/packagist/dt/visualappeal/matomo-php-api)](https://packagist.org/packages/visualappeal/matomo-php-api)
 
 A PHP wrapper class for the [Matomo](https://matomo.org/) API.
 
