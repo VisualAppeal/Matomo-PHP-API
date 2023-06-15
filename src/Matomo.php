@@ -2,10 +2,12 @@
 
 namespace VisualAppeal;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request;
+use Http\Adapter\Guzzle7\Client as GuzzleAdapter;
 use InvalidArgumentException;
 use JsonException;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * Repository: https://github.com/VisualAppeal/Matomo-PHP-API
@@ -87,24 +89,9 @@ class Matomo
     private bool $_isJsonDecodeAssoc = false;
 
     /**
-     * @var bool If the certificate of the matomo installation should be verified.
+     * @var ClientInterface|null HTTP client interface
      */
-    private bool $_verifySsl = false;
-
-    /**
-     * @var int How many redirects curl should execute until aborting.
-     */
-    private int $_maxRedirects = 5;
-
-    /**
-     * @var int Timeout in seconds.
-     */
-    private int $_timeout = 5;
-
-    /**
-     * @var Client|null Guzzle client
-     */
-    private ?Client $_client = null;
+    private ?ClientInterface $_client = null;
 
     /**
      * Create a new instance.
@@ -117,7 +104,7 @@ class Matomo
      * @param  string  $date
      * @param  string  $rangeStart
      * @param  string|null  $rangeEnd
-     * @param  Client|null  $client
+     * @param  ClientInterface|null  $client
      */
     public function __construct(
         string $site,
@@ -128,7 +115,7 @@ class Matomo
         string $date = self::DATE_YESTERDAY,
         string $rangeStart = '',
         string $rangeEnd = null,
-        Client $client = null,
+        ClientInterface $client = null,
     ) {
         $this->_site       = $site;
         $this->_token      = $token;
@@ -147,7 +134,7 @@ class Matomo
         if ($client !== null) {
             $this->setClient($client);
         } else {
-            $this->setClient(new Client());
+            $this->setClient(new GuzzleAdapter);
         }
     }
 
@@ -430,85 +417,17 @@ class Matomo
     }
 
     /**
-     * If the certificate of the matomo installation should be verified.
-     *
-     * @return bool
+     * @return ClientInterface|null
      */
-    public function getVerifySsl(): bool
-    {
-        return $this->_verifySsl;
-    }
-
-    /**
-     * Set if the certificate of the matomo installation should be verified.
-     *
-     * @param  bool  $verifySsl
-     *
-     * @return Matomo
-     */
-    public function setVerifySsl(bool $verifySsl): Matomo
-    {
-        $this->_verifySsl = $verifySsl;
-
-        return $this;
-    }
-
-    /**
-     * How many redirects curl should execute until aborting.
-     *
-     * @return int
-     */
-    public function getMaxRedirects(): int
-    {
-        return $this->_maxRedirects;
-    }
-
-    /**
-     * Set how many redirects curl should execute until aborting.
-     *
-     * @param  int  $maxRedirects
-     *
-     * @return Matomo
-     */
-    public function setMaxRedirects(int $maxRedirects): Matomo
-    {
-        $this->_maxRedirects = $maxRedirects;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimeout(): int
-    {
-        return $this->_timeout;
-    }
-
-    /**
-     * @param  int  $timeout
-     *
-     * @return Matomo
-     */
-    public function setTimeout(int $timeout): Matomo
-    {
-        $this->_timeout = $timeout;
-
-        return $this;
-    }
-
-    /**
-     * @return Client|null
-     */
-    public function getClient(): ?Client
+    public function getClient(): ?ClientInterface
     {
         return $this->_client;
     }
 
     /**
-     * @param  Client|null  $client
+     * @param  ClientInterface|null  $client
      */
-    public function setClient(?Client $client): void
+    public function setClient(?ClientInterface $client): void
     {
         $this->_client = $client;
     }
@@ -556,13 +475,9 @@ class Matomo
         $format = $overrideFormat ?? $this->_format;
 
         try {
-            $response = $this->_client->get($url, [
-                'verify'          => $this->_verifySsl,
-                'allow_redirects' => [
-                    'max' => $this->_maxRedirects,
-                ],
-            ]);
-        } catch (GuzzleException $e) {
+            $request = new Request('GET', $url);
+            $response = $this->_client->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
             // Network error, e.g. timeout or connection refused
             throw new InvalidRequestException($e->getMessage(), $e->getCode(), $e);
         }

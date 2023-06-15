@@ -32,7 +32,7 @@ So you can execute multiple requests without specifying the parameters again.
 
 ### siteId
 
-The ID of your website, single number, list separated through comma "1,4,7", or "all"
+The ID of your website, single number, list separated through comma `"1,4,7"`, or `"all"`.
 
 ### period
 
@@ -50,9 +50,7 @@ If you set the period to `Matomo::PERIOD_RANGE` you can specify the range via
 	$matomo->setRange('2012-01-14', Matomo::DATE_YESTERDAY); //All data from the first date until yesterday
 	$matomo->setRange('2012-01-14'); //All data from the first date until now
 
-__When you use the period range you do not need to specify a date!__
-
-If you set it to something other than `Matomo::PERIOD_RANGE` you can specify the date via
+If you set it to something other than `Matomo::PERIOD_RANGE` you can specify the date via:
 
 	$matomo->setPeriod(x);
 	$matomo->setDate('2012-03-03');

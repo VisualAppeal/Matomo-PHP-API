@@ -1,6 +1,7 @@
 config.php
 composer.lock
 .phpunit.result.cache
+.phpunit.cache
 test-results
 
 .idea/

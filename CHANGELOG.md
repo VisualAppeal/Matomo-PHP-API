@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.1.0 (2022/06/15)
+
+* Implemented [PSR-18](https://www.php-fig.org/psr/psr-18/) support
+
 ### 2.0.0 (2022/06/14)
 
 * Switched from httpful to guzzlehttp
