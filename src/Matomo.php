@@ -4910,7 +4910,7 @@ class Matomo
         string $limitBeforeGrouping = '',
         array $optional = []
     ): mixed {
-        return $this->_request('Transitions.getTransitionsForPageTitle', [
+        return $this->_request('Transitions.getTransitionsForPageUrl', [
             'pageUrl'             => $pageUrl,
             'segment'             => $segment,
             'limitBeforeGrouping' => $limitBeforeGrouping,
