@@ -13,3 +13,4 @@
 * https://github.com/simonschaufi
 * https://github.com/stayallive
 * https://github.com/aschempp
+* https://github.com/jnngr
