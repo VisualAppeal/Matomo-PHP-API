@@ -182,7 +182,7 @@ class MatomoTest extends TestCase
      */
     public function testInvalidAccessToken(): void
     {
-        $this->expectException(InvalidResponseException::class);
+        $this->expectException(InvalidRequestException::class);
 
         $this->_matomo->setToken('403');
         $this->assertTrue(true);
