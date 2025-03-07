@@ -10,7 +10,7 @@
     },
 	"require-dev": {
         "roave/security-advisories": "dev-latest",
-        "phpunit/phpunit": "^10.1"
+        "phpunit/phpunit": "^11.5.11"
 	},
     "scripts": {
         "test": [
