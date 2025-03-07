@@ -109,13 +109,13 @@ class Matomo
     public function __construct(
         string $site,
         string $token,
-        int $siteId = null,
+        ?int $siteId = null,
         string $format = self::FORMAT_JSON,
         string $period = self::PERIOD_DAY,
         string $date = self::DATE_YESTERDAY,
         string $rangeStart = '',
-        string $rangeEnd = null,
-        ClientInterface $client = null,
+        ?string $rangeEnd = null,
+        ?ClientInterface $client = null,
     ) {
         $this->_site       = $site;
         $this->_token      = $token;
@@ -288,7 +288,7 @@ class Matomo
      *
      * @return $this
      */
-    public function setDate(string $date = null): Matomo
+    public function setDate(?string $date = null): Matomo
     {
         $this->_date       = $date;
         $this->_rangeStart = null;
@@ -349,7 +349,7 @@ class Matomo
      *
      * @return $this
      */
-    public function setRange(string $rangeStart = null, string $rangeEnd = null): Matomo
+    public function setRange(?string $rangeStart = null, ?string $rangeEnd = null): Matomo
     {
         $this->_date       = '';
         $this->_rangeStart = $rangeStart;
@@ -465,7 +465,7 @@ class Matomo
         string $method,
         array $params = [],
         array $optional = [],
-        string $overrideFormat = null
+        ?string $overrideFormat = null
     ): mixed {
         $url = $this->_parseUrl($method, $params + $optional);
         if ($url === '') {
@@ -599,7 +599,7 @@ class Matomo
      * @return mixed Either the parsed response body object (parsed from json) or the raw response object.
      * @throws JsonException
      */
-    private function _parseResponse(string $contents, string $overrideFormat = null): mixed
+    private function _parseResponse(string $contents, ?string $overrideFormat = null): mixed
     {
         $format = $overrideFormat ?? $this->_format;
 
